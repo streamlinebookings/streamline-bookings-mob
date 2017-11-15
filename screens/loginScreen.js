@@ -26,14 +26,12 @@ export default class LoginScreen extends React.Component {
 	}
 
 	handleEmail (email) {
-		console.log('EMAIL', email);
 		this.setState({
 			email: email,
 		})
 	}
 
 	handlePassword (password) {
-		console.log('PASSWORD', password);
 		this.setState({
 			password: password,
 		})
@@ -46,6 +44,8 @@ export default class LoginScreen extends React.Component {
 
 	handleLogin () {
 		console.log('HANDLELOGIN', this.state);
+
+		this.beApiUrl = this.state.localDb ? 'http://192.168.0.3:9057/api/' : 'https://streamlinebookings.com:9056/api/';
 
 		fetch(this.beApiUrl + 'login', {
 			method: 'post',
@@ -92,9 +92,6 @@ export default class LoginScreen extends React.Component {
 	//
 	render() {
 
-		let remote = 'http://www.enjoy-swimming.com/wp-content/uploads/basic-swimming-techniques.jpg';
-		const resizeMode = 'cover';
-
 		console.log('rendering');
 		return (
 
@@ -109,19 +106,19 @@ export default class LoginScreen extends React.Component {
 					height: '100%',
 				}}>
 					<Image
-						style={{ flex: 1, resizeMode }}
-						source={{ uri: remote }}/>
+						style={{ flex: 1, resizeMode: 'cover' }}
+						source={{ uri: this.imagesUrl + 'mob/backgrounds/background-login.jpg' }}/>
 				</View>
 
 				{/* Logo */}
-				<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+				<View style={{ flex: 2, justifyContent: 'flex-end', alignItems: 'center' }}>
 					<Image
-						style={{ flex: 1, resizeMode, height: '70%', width: '70%' }}
+						style={{ resizeMode: 'contain', height: '70%', width: '70%' }}
 						source={{ uri: this.imagesUrl + 'common/streamline-logo.png' }}/>
 				</View>
 
 				{/* Login form */}
-				<View style={{ flex: 2, justifyContent: 'center' }}>
+				<View style={{ flex: 3, justifyContent: 'center' }}>
 					<FormInput placeholder={'Email address'} onChangeText={ this.handleEmail }/>
 					<FormInput placeholder={'Password'} secureTextEntry={ true } onChangeText={ this.handlePassword }/>
 
