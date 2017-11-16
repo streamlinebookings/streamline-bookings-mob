@@ -69,10 +69,14 @@ export default class LoginScreen extends React.Component {
 						person: response.person,
 						group: response.group,
 						persons: response.persons,
+					}, () => {
+						console.log('StateAfterLogin', this.state);
 					});
 
 					// Go to the booked screen
-					this.props.navigation.navigate('Booked');
+					this.props.navigation.navigate('Booked', {
+						fullName: response.person.firstName + ' ' + response.person.lastName,
+					});
 
 				} else {
 					this.setState({
@@ -92,7 +96,6 @@ export default class LoginScreen extends React.Component {
 	//
 	render() {
 
-		console.log('rendering');
 		return (
 
 			<View style={{ flex: 1 }}>
@@ -166,11 +169,11 @@ export default class LoginScreen extends React.Component {
 	}
 }
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: '#fff',
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-});
+// const styles = StyleSheet.create({
+// 	container: {
+// 		flex: 1,
+// 		backgroundColor: '#fff',
+// 		alignItems: 'center',
+// 		justifyContent: 'center',
+// 	},
+// });

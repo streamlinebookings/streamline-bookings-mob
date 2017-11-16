@@ -1,114 +1,75 @@
 // Third party imports
 import React from 'react';
 import { StyleSheet, Text, TextInput, View, Image } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage, Button, CheckBox } from 'react-native-elements';
+import { FormLabel, FormInput, FormValidationMessage, Button, CheckBox, Badge } from 'react-native-elements';
 
 
 export default class BookedScreen extends React.Component {
 
 	constructor(props) {
-
 		super(props);
 		console.log('BOOKEDCONSTRUCTOR', props);
+
+		let params = props.navigation.state.params
+
+		let fullName = params && params.fullName || 'Not logged in'
 
 		this.state = {
 			errorText: false,
 			localDb: false,
+			fullName: fullName,
 		}
 
 		this.beApiUrl = this.state.localDb ? 'http://192.168.0.3:9057/api/' : 'https://streamlinebookings.com:9056/api/';
 		this.imagesUrl = 'https://streamlinebookings.com:9056/imgs/';
 
 		// Bind local methods
-		// this.handleEmail = this.handleEmail.bind(this);
-		// this.handlePassword = this.handlePassword.bind(this);
-		// this.handleLogin = this.handleLogin.bind(this);
-		// this.handleLocalDb = this.handleLocalDb.bind(this);
+		this.handleMenu = this.handleMenu.bind(this);
 	}
 
-	// handleEmail (email) {
-	// 	console.log('EMAIL', email);
-	// 	this.setState({
-	// 		email: email,
-	// 	})
-	// }
-	//
-	// handlePassword (password) {
-	// 	console.log('PASSWORD', password);
-	// 	this.setState({
-	// 		password: password,
-	// 	})
-	// }
-	// handleLocalDb () {
-	// 	this.setState({
-	// 		localDb: !this.state.localDb
-	// 	});
-	// }
-	//
-	// handleLogin () {
-	// 	console.log('HANDLELOGIN', this.state);
-	//
-	// 	let beUrl = this.state.localDb ? 'http://192.168.0.3:9057/api/login' : 'https://streamlinebookings.com:9056/api/login';
-	//
-	// 	fetch(beUrl, {
-	// 		method: 'post',
-	// 		body: JSON.stringify({
-	// 			fromMobile: true,
-	// 			email: this.state.email,
-	// 			password: this.state.password,
-	// 		})
-	// 	})
-	// 		.then(response => {
-	// 			console.log('FETCHRAWRESPONSE', response);
-	// 			if (response.status == 200) return response.json();
-	// 			return response;
-	// 		})
-	// 		.then(response => {
-	// 			console.log('LOGINREPONSE', response);
-	// 			if (response.person) {
-	// 				this.setState({
-	// 					errorText: 'Welcome ' + response.person.firstName,
-	// 					fullName: response.person.firstName + ' ' + response.person.lastName,
-	// 					person: response.person,
-	// 					group: response.group,
-	// 					persons: response.persons,
-	// 				});
-	// 			} else {
-	// 				this.setState({
-	// 					person: {},
-	// 					errorText: response._bodyText,
-	// 				})
-	// 			}
-	// 		})
-	// 		.catch(err => {
-	// 			console.log('LOGINERROR', err);
-	// 		});
-	// }
-
+	handleMenu () {
+		this.props.navigation.navigate('DrawerOpen');
+	}
 
 	//
 	// Rendering
 	//
 	render() {
 
-		console.log('rendering booked');
 		return (
 
 			<View style={{ flex: 1 }}>
 
-				<Text>Booked lessons!</Text>
-
-				{/* Background image */}
+				{/* Header image */}
 				<View style={{
-					position: 'absolute',
-					top: 0,
-					left: 0,
-					width: '100%',
-					height: '100%',
+					flex: 1,
 				}}>
 					<Image
-						style={{ flex: 1, resizeMode: 'cover' }}
+						style={{
+							flex: 1,
+							resizeMode: 'cover',
+							opacity: 0.5,
+							position: 'absolute',
+							top: 0,
+							left: 0,
+							width: '100%',
+							height: '100%',
+						}}
 						source={{ uri: this.imagesUrl + 'mob/backgrounds/background-booked.jpg' }}/>
+
+					<View style={{ flexDirection: 'row', flex: 1, justifyContent: 'space-between', alignItems: 'flex-end' }}>
+						<Button
+							icon={{ name: 'bars', type: 'font-awesome' }}
+							style={{ }}
+							backgroundColor='transparent'
+							onPress={ this.handleMenu }
+							 />
+						<Badge value={ this.state.fullName } containerStyle={{ backgroundColor: 'orange', marginBottom: 10, marginRight: 10 }}/>
+					</View>
+				</View>
+
+				<View style={{ flex: 4 }}>
+					<Text>Booked lessons</Text>
 				</View>
 
 				{/*/!* Logo *!/*/}
@@ -166,11 +127,11 @@ export default class BookedScreen extends React.Component {
 	}
 }
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		backgroundColor: '#fff',
-		alignItems: 'center',
-		justifyContent: 'center',
-	},
-});
+// const styles = StyleSheet.create({
+// 	container: {
+// 		flex: 1,
+// 		backgroundColor: '#fff',
+// 		alignItems: 'center',
+// 		justifyContent: 'center',
+// 	},
+// });
