@@ -1,7 +1,7 @@
 // Third party imports
 import React from 'react';
 import { StyleSheet, Text, TextInput, View, Image } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage, Button, CheckBox, Badge } from 'react-native-elements';
+import { FormLabel, FormInput, FormValidationMessage, Button, CheckBox, Badge, Card } from 'react-native-elements';
 
 
 export default class BookedScreen extends React.Component {
@@ -12,12 +12,14 @@ export default class BookedScreen extends React.Component {
 
 		let params = props.navigation.state.params
 
-		let fullName = params && params.fullName || 'Not logged in'
+		let fullName = params && params.fullName || 'Not logged in';
+		let persons = params && params.persons || [];
 
 		this.state = {
 			errorText: false,
 			localDb: false,
 			fullName: fullName,
+			persons: persons,
 		}
 
 		this.beApiUrl = this.state.localDb ? 'http://192.168.0.3:9057/api/' : 'https://streamlinebookings.com:9056/api/';
@@ -35,6 +37,31 @@ export default class BookedScreen extends React.Component {
 	// Rendering
 	//
 	render() {
+
+		const BookedClasses = () => {
+
+			console.log('creating cards', this.state);
+
+			return this.state.persons.map(person => {
+
+				if (!person.isSwimmer) return;
+console.log('card for ', person);
+				return (
+					<Card>
+						<View flexDirection='row' justifyContent='space-between'>
+							<Text>{ person.class.datetime }</Text>
+							<Text>{ person.class.levelName }</Text>
+						</View>
+						<View flexDirection='row' justifyContent='space-between'>
+							<Text>{ person.firstName }</Text>
+							<Text>{ person.class.cancelled ? 'CANCELLED' : '' }</Text>
+							<Text>{ person.class.recurring ? 'Recurring' : 'Not recurring' }</Text>
+						</View>
+					</Card>
+				)
+			});
+
+		}
 
 		return (
 
@@ -69,7 +96,7 @@ export default class BookedScreen extends React.Component {
 				</View>
 
 				<View style={{ flex: 4 }}>
-					<Text>Booked lessons</Text>
+					{ BookedClasses() }
 				</View>
 
 				{/*/!* Logo *!/*/}

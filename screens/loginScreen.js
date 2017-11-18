@@ -51,8 +51,8 @@ export default class LoginScreen extends React.Component {
 			method: 'post',
 			body: JSON.stringify({
 				fromMobile: true,
-				email: this.state.email,
-				password: this.state.password,
+				email: 'jjj',  // this.state.email,
+				password: '123', // this.state.password,
 			})
 		})
 			.then(response => {
@@ -76,6 +76,8 @@ export default class LoginScreen extends React.Component {
 					// Go to the booked screen
 					this.props.navigation.navigate('Booked', {
 						fullName: response.person.firstName + ' ' + response.person.lastName,
+						person: response.person,
+						persons: response.persons,
 					});
 
 				} else {
