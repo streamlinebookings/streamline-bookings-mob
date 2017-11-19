@@ -47,12 +47,15 @@ export default class LoginScreen extends React.Component {
 
 		this.beApiUrl = this.state.localDb ? 'http://192.168.0.3:9057/api/' : 'https://streamlinebookings.com:9056/api/';
 
+		let email = this.state.localDb ? 'jjj' : this.state.email;
+		let password = this.state.localDb ? '123' : this.state.email;
+
 		fetch(this.beApiUrl + 'login', {
 			method: 'post',
 			body: JSON.stringify({
 				fromMobile: true,
-				email: 'jjj',  // this.state.email,
-				password: '123', // this.state.password,
+				email: email,
+				password: password,
 			})
 		})
 			.then(response => {

@@ -47,7 +47,7 @@ export default class BookedScreen extends React.Component {
 				if (!person.isSwimmer) return;
 console.log('card for ', person);
 				return (
-					<Card>
+					<Card key={ person.id }>
 						<View flexDirection='row' justifyContent='space-between'>
 							<Text>{ person.class.datetime }</Text>
 							<Text>{ person.class.levelName }</Text>
