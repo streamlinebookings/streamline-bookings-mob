@@ -1,38 +1,100 @@
 // Third party imports
 import React from 'react';
-import { StyleSheet, Text, TextInput, View, Image } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage, Button, CheckBox, Badge, Card } from 'react-native-elements';
+import { StyleSheet, Text, TextInput, View, ScrollView, Image } from 'react-native';
+import { connect } from 'react-redux';
+import { Button, ButtonGroup, CheckBox, Badge, Card, List, ListItem } from 'react-native-elements';
 
 let moment = require('moment');
 
+// Our imports
+import { env } from '../environment';
+import { Header } from './header';
+import { BookDetailsScreen } from './bookDetailsScreen';
 
-export default class BookedScreen extends React.Component {
+
+class BookScreen extends React.Component {
 
 	constructor(props) {
 		super(props);
 		console.log('BOOKCONSTRUCTOR', props);
 
-		let params = props.navigation.state.params
+		let fullName = props.person && props.person.firstName + ' ' + props.person.lastName || 'Not logged in';
 
-		let fullName = params && params.fullName || 'Not logged in';
-		let persons = params && params.persons || [];
-
-		this.state = {
-			errorText: false,
-			localDb: false,
-			fullName: fullName,
-			persons: persons,
+		let persons = props.persons;
+		let dependantSwimmers = [];
+		if (persons && persons.length > 0) {
+			dependantSwimmers = persons.filter(p => p.isSwimmer);
 		}
 
-		this.beApiUrl = this.state.localDb ? 'http://192.168.0.3:9057/api/' : 'https://streamlinebookings.com:9056/api/';
-		this.imagesUrl = 'https://streamlinebookings.com:9056/imgs/';
-
-		// Bind local methods
-		this.handleMenu = this.handleMenu.bind(this);
+		this.state = {
+			classes: [],
+			dependantChosen: props.dependantsChosen && props.dependantsChosen.length > 0 ? props.dependantsChosen[0] : dependantSwimmers[0],
+			errorText: false,
+			fullName: fullName,
+			group: props.group,
+			localDb: props.localDb,
+			persons: persons,
+			prices: {},
+			token: props.token,
+		};
 	}
 
-	handleMenu () {
-		this.props.navigation.navigate('DrawerOpen');
+	componentDidMount(props) {
+		// Update the cards
+		this.handleChooseDependant(this.state.dependantChosen);
+	}
+
+	handleChooseDependant (person) {
+
+		this.setState({
+			dependantChosen: person
+		});
+
+		// Update the redux store with the chosen dependant, reset the classes
+		this.props.setDependantsChosen([person]);
+		this.setState({ classes: [] });
+
+		// Find classes for the level of this person
+		let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
+
+		fetch(beApiUrl + 'calendar/classes', {
+			method: 'post',
+			body: JSON.stringify({
+				levelId: person.atLevel.id,
+				token: this.state.token,
+			})
+		})
+			.then(response => {
+				console.log('CLASSESFETCHRAWRESPONSE', response);
+				if (response.status == 200) return response.json();
+				return response;
+			})
+			.then(response => {
+				console.log('CLASSESREPONSE', response);
+				if (response.prices) this.setState({ prices: response.prices });
+
+				// Discover which classes are already booked
+				let classes = response.classes.map(oneClass => {
+					oneClass.alreadyBooked = this.state.dependantChosen.classes.findIndex(c => c.id === oneClass.id) > -1 ? true : false;
+					return oneClass;
+				});
+				if (response.classes) this.setState({ classes: classes });
+			})
+			.catch(err => {
+				console.log('CLASSESERROR', err);
+			});
+
+	}
+
+	handleBook (oneClass) {
+		console.log('HANDLEBOOKACLASS', oneClass);``
+
+		// Update the redux store with the chosen class and the received prices
+		this.props.setClassChosen(oneClass);
+		this.props.setPrices(this.state.prices);
+
+		// Go to next screen
+		this.props.navigation.navigate('BookDetails');
 	}
 
 	//
@@ -40,66 +102,105 @@ export default class BookedScreen extends React.Component {
 	//
 	render() {
 
-		const BookedClasses = () => {
+		const ChooseDependants = () => {
+
+			console.log('creating dependants', this.state);
+
+			if (!this.state.persons || this.state.persons.length <= 1) return;
+
+			const dependants = this.state.persons.map(person => {
+
+				if (!person.isSwimmer) return;
+
+				return (
+					<CheckBox
+						key={ person.id }
+						title={ person.firstName }
+						iconType='font-awesome'
+						checkedIcon='check'
+						checkedColor='red'
+						containerStyle={{width: '32%'}}
+						checked={ this.state.dependantChosen.id === person.id ? true : false }
+						onPress={ () => this.handleChooseDependant(person) }
+					/>
+				);
+			});
+
+			return (
+				<View flexDirection='row' justifyContent='flex-start'>
+					{ dependants }
+				</View>
+			);
+		}
+
+		const BookClasses = () => {
 
 			console.log('creating cards', this.state);
 
-			return this.state.persons.map(person => {
+			if (!this.state.classes) return;
 
-				if (!person.isSwimmer) return;
-console.log('card for ', person);
-				return (
-					<Card key={ person.id }>
-						<View flexDirection='row' justifyContent='space-between'>
-							<Text>{ moment(person.class.datetime).format('dddd Do MMMM, h:mma') }</Text>
-							<Text>{ person.class.levelName }</Text>
-						</View>
-						<View flexDirection='row' justifyContent='space-between'>
-							<Text>{ person.firstName }</Text>
-							<Text>{ person.class.cancelled ? 'CANCELLED' : '' }</Text>
-							<Text>{ person.class.recurring ? 'Recurring' : 'Not recurring' }</Text>
-						</View>
-					</Card>
-				)
-			});
+			return (
 
+				<List>
+
+					{ this.state.classes.map(oneClass => {
+
+						let textStyle;
+						textStyle = oneClass.alreadyBooked ? { color:  'grey' } : null;
+						textStyle = oneClass.isFull ? { color:  'grey' } : textStyle;
+
+						return (
+							<ListItem key={ oneClass.id }
+							          onPress={ () => this.handleBook(oneClass) }
+							          title={
+					          	<View>
+									<View flexDirection='row' justifyContent='space-between'>
+										<Text style={ textStyle }>{ moment(oneClass.datetime).format('dddd h:mma') + (oneClass.recurring ? ' (Recurring)' : ' (Once)')}</Text>
+										<Text style={ textStyle }>{ oneClass.level.name || ''}</Text>
+									</View>
+									<View flexDirection='row' justifyContent='space-between'>
+										<Text style={ textStyle }>{ moment(oneClass.datetime).format('Do MMMM') }</Text>
+										<Text style={ textStyle }>{ (oneClass.instructor.firstName ? oneClass.instructor.firstName + ', ' : '') + 'lane ' + oneClass.laneId}</Text>
+									</View>
+									<View flexDirection='row' justifyContent='space-between'>
+										<Text style={ textStyle }>{ oneClass.duration ? oneClass.duration + ' minutes' : '' }</Text>
+										<Text style={ textStyle }>{
+											!oneClass.countBooked
+												? oneClass.cap + ' Places available'
+												: oneClass.cap
+													? (oneClass.cap - oneClass.countBooked) + ' available (max ' + oneClass.cap + ')'
+													: oneClass.countBooked + ' other swimmers'
+										}</Text>
+									</View>
+					            </View>
+					          }
+							></ListItem>
+						)
+					})}
+
+				</List>
+			)
 		}
 
 		return (
-
 			<View style={{ flex: 1 }}>
 
-				{/* Header image */}
-				<View style={{
-					flex: 1,
-				}}>
-					<Image
-						style={{
-							flex: 1,
-							resizeMode: 'cover',
-							opacity: 0.5,
-							position: 'absolute',
-							top: 0,
-							left: 0,
-							width: '100%',
-							height: '100%',
-						}}
-						source={{ uri: this.imagesUrl + 'mob/backgrounds/background-booked.jpg' }}/>
+				<Header fullName={ this.state.fullName }
+				        image={ 'mob/backgrounds/background-book.jpg' }
+				        navigation={ this.props.navigation }
+				        backTo={ 'Booked' }
+				        title='Book a Class'
+				/>
 
-					<View style={{ flexDirection: 'row', flex: 1, justifyContent: 'space-between', alignItems: 'flex-end' }}>
-						<Button
-							icon={{ name: 'bars', type: 'font-awesome' }}
-							style={{ }}
-							backgroundColor='transparent'
-							onPress={ this.handleMenu }
-							 />
-						<Badge value={ this.state.fullName } containerStyle={{ backgroundColor: 'orange', marginBottom: 10, marginRight: 10 }}/>
-					</View>
-				</View>
-
-				{/* Booked classes cards */}
+				{/* Book classes cards */}
 				<View style={{ flex: 4 }}>
-					{ BookedClasses() }
+
+					{ ChooseDependants() }
+
+					<ScrollView>
+						{ BookClasses() }
+					</ScrollView>
+
 				</View>
 
 			</View>
@@ -107,11 +208,4 @@ console.log('card for ', person);
 	}
 }
 
-// const styles = StyleSheet.create({
-// 	container: {
-// 		flex: 1,
-// 		backgroundColor: '#fff',
-// 		alignItems: 'center',
-// 		justifyContent: 'center',
-// 	},
-// });
+export default BookScreen;

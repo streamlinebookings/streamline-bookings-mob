@@ -4,7 +4,8 @@ import { StyleSheet, Text, TextInput, View, Image } from 'react-native';
 import { FormLabel, FormInput, FormValidationMessage, Button, CheckBox } from 'react-native-elements';
 
 // Our imports
-// import our env
+import { env } from '../environment';
+
 
 class LoginScreen extends React.Component {
 
@@ -12,8 +13,6 @@ class LoginScreen extends React.Component {
 
 		super(props);
 		console.log('LOGINSCREENCONSTRUCTOR', props);
-
-		this.imagesUrl = 'https://streamlinebookings.com:9056/imgs/';
 
 		this.state = {
 			email: '',
@@ -45,12 +44,12 @@ class LoginScreen extends React.Component {
 	handleLogin (email, password, localDb) {
 		console.log('HANDLELOGIN', email, password, localDb);
 
-		this.beApiUrl = localDb ? 'http://192.168.0.6:9057/api/' : 'https://streamlinebookings.com:9056/api/';
+		let beApiUrl = localDb ? env.localApiUrl : env.beApiUrl;
 
 		email = localDb ? 'jjj' : email;
 		password = localDb ? '123' : password;
 
-		fetch(this.beApiUrl + 'login', {
+		fetch(beApiUrl + 'login', {
 			method: 'post',
 			body: JSON.stringify({
 				fromMobile: true,
@@ -67,13 +66,15 @@ class LoginScreen extends React.Component {
 				console.log('LOGINREPONSE', response);
 				if (response.person) {
 
-					// Call the redux actions = set the store
+					// Call the redux action = set the store
 					this.props.setGroup(response.group);
 					this.props.setPerson(response.person);
 					this.props.setPersons(response.persons);
+					this.props.setToken(response.token);
+					this.props.setLocalDb(localDb);
 
 					// Go to next screen
-					this.props.navigation.navigate('Booked');
+					this.props.navigation.navigate('Book'); // Booked
 
 				} else {
 					this.setState({
@@ -84,6 +85,9 @@ class LoginScreen extends React.Component {
 			})
 			.catch(err => {
 				console.log('LOGINERROR', err);
+				this.setState({
+					afterLoginMessage: err
+				})
 			});
 	}
 
@@ -104,14 +108,14 @@ class LoginScreen extends React.Component {
 				}}>
 					<Image
 						style={{flex: 1, resizeMode: 'cover'}}
-						source={{uri: this.imagesUrl + 'mob/backgrounds/background-login.jpg'}}/>
+						source={{uri: env.imagesUrl + 'mob/backgrounds/background-login.jpg'}}/>
 				</View>
 
 				{/* Logo */}
 				<View style={{flex: 2, justifyContent: 'flex-end', alignItems: 'center'}}>
 					<Image
 						style={{resizeMode: 'contain', height: '70%', width: '70%'}}
-						source={{uri: this.imagesUrl + 'common/streamline-logo.png'}}/>
+						source={{uri: env.imagesUrl + 'common/streamline-logo.png'}}/>
 				</View>
 
 				{/* Login form */}

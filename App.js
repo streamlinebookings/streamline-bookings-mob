@@ -8,10 +8,11 @@ import { createStore } from 'redux';
 
 // Our imports
 import * as Action from './common/actions';
-// import LoginScreen from './screens/loginScreen';
 import LoginContainer from './screens/loginContainer';
-import BookedScreen from './screens/bookedScreen';
-import BookScreen from './screens/bookScreen';
+import BookedContainer from './screens/bookedContainer';
+import BookContainer from './screens/bookContainer';
+import BookDetailsContainer from './screens/bookDetailsContainer';
+import BookPayContainer from './screens/bookPayContainer';
 
 // Define redux store
 let store = createStore(Action.Slb, {initReduxStore: true});
@@ -38,7 +39,7 @@ const RootNavigator = DrawerNavigator(
 			}
 		},
 		Booked: {
-			screen: BookedScreen,
+			screen: BookedContainer,
 			navigationOptions: {
 				drawerLabel: 'My Classes',
 				drawerIcon: ({ tintColor }) => (
@@ -50,7 +51,7 @@ const RootNavigator = DrawerNavigator(
 			}
 		},
 		Book: {
-			screen: BookScreen,
+			screen: BookContainer,
 			navigationOptions: {
 				drawerLabel: 'Book a Class',
 				drawerIcon: ({ tintColor }) => (
@@ -60,8 +61,19 @@ const RootNavigator = DrawerNavigator(
 					/>
 				),
 			}
+		},
+		BookDetails: {
+			screen: BookDetailsContainer,
+			navigationOptions: {
+				drawerLabel: () => null
+			}
+		},
+		BookPay: {
+			screen: BookPayContainer,
+			navigationOptions: {
+				drawerLabel: () => null
+			}
 		}
-
 	}, {
 		initialRouteName: 'Login'
 	}
