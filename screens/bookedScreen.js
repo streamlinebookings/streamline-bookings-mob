@@ -185,7 +185,7 @@ class BookedScreen extends React.Component {
 				<Header fullName={ this.state.fullName }
 				        image={ 'mob/backgrounds/background-booked.jpg' }
 				        navigation={ this.props.navigation }
-				        backTo={ 'Book' }
+				        // backTo={ 'Book' }
 				        title='My Classes'
 				/>
 

@@ -7,7 +7,7 @@ let envData = {};
 if (process.env.NODE_ENV === 'production') {
 	// Production
 	envData = {
-		beApiUrl: 'https://streamlinebookings.com:9056/api',
+		beApiUrl: 'https://streamlinebookings.com:9056/api/',
 		imagesUrl: 'https://streamlinebookings.com:9056/imgs/',
 
 };
@@ -15,7 +15,7 @@ if (process.env.NODE_ENV === 'production') {
 	// Development or otherwise non-prod
 	envData = {
 		localApiUrl: 'http://192.168.0.6:9057/api/',
-		beApiUrl: 'https://streamlinebookings.com:9056/api',
+		beApiUrl: 'https://streamlinebookings.com:9056/api/',
 		imagesUrl: 'https://streamlinebookings.com:9056/imgs/',
 	};
 }

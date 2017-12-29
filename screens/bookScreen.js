@@ -186,9 +186,10 @@ class BookScreen extends React.Component {
 			<View style={{ flex: 1 }}>
 
 				<Header fullName={ this.state.fullName }
+				        // image={ 'mob/backgrounds/background-book.jpg' }
 				        image={ 'mob/backgrounds/background-book.jpg' }
 				        navigation={ this.props.navigation }
-				        backTo={ 'Booked' }
+				        // backTo={ 'Booked' }
 				        title='Book a Class'
 				/>
 

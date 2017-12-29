@@ -1,9 +1,8 @@
 // Third party imports
 import React from 'react';
-import { StyleSheet, Text, TextInput, View, Image } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage, Button, CheckBox } from 'react-native-elements';
+import { StyleSheet, Image } from 'react-native';
 import { DrawerNavigator } from 'react-navigation';
-import { connect, Provider } from 'react-redux';
+import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 
 // Our imports
@@ -15,7 +14,7 @@ import BookDetailsContainer from './screens/bookDetailsContainer';
 import BookPayContainer from './screens/bookPayContainer';
 
 // Define redux store
-let store = createStore(Action.Slb, {initReduxStore: true});
+let store = createStore(Action.Slb);
 
 // Every time the redux state changes, log it
 // Note that subscribe() returns a function for unregistering the listener
@@ -106,14 +105,5 @@ class App extends React.Component {
 		);
 	}
 }
-
-// const mapStateToProps = state => {
-// 	return state;
-// }
-//
-// App = connect (
-// 	mapStateToProps
-// )(App)
-
 
 export default App
