@@ -46,7 +46,7 @@ class LoginScreen extends React.Component {
 
 		let beApiUrl = localDb ? env.localApiUrl : env.beApiUrl;
 
-		email = localDb ? 'jjj' : email;
+		email = localDb ? 'sam@jones.com' : email;
 		password = localDb ? '123' : password;
 
 		fetch(beApiUrl + 'login', {
@@ -124,7 +124,9 @@ class LoginScreen extends React.Component {
 					<FormInput placeholder={'Password'} secureTextEntry={true} onChangeText={this.handlePassword}/>
 
 					<FormValidationMessage
-						containerStyle={{backgroundColor: 'transparent'}}>{this.state.afterLoginMessage || ''}</FormValidationMessage>
+						containerStyle={{ backgroundColor: 'transparent' }}>
+							<Text style={{ fontWeight: 'bold' }}>{ this.state.afterLoginMessage || '' }</Text>
+					</FormValidationMessage>
 
 					<Button
 						icon={{name: 'paper-plane', type: 'font-awesome'}}

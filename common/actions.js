@@ -8,7 +8,7 @@ export const SET_TOKEN = 'SET_TOKEN'
 export const SET_LOCALDB = 'SET_LOCALDB'
 export const SET_DEPENDANTSCHOSEN = 'SET_DEPENDANTSCHOSEN'
 export const SET_CLASSCHOSEN = 'SET_CLASSCHOSEN'
-export const SET_PRICES = 'SET_PRICES'
+// export const SET_PRICES = 'SET_PRICES'
 
 /*
  * Action creators
@@ -41,9 +41,9 @@ export function setClassChosen(classChosen) {
 	return { type: SET_CLASSCHOSEN, classChosen };
 }
 
-export function setPrices(prices) {
-	return { type: SET_PRICES, prices };
-}
+// export function setPrices(prices) {
+// 	return { type: SET_PRICES, prices };
+// }
 
 /*
  * Reducers
@@ -72,8 +72,8 @@ export function Slb(state = {}, action) {
 		case SET_CLASSCHOSEN:
 			return Object.assign({}, state, setClassChosen(action.classChosen));
 
-		case SET_PRICES:
-			return Object.assign({}, state, setPrices(action.prices));
+		// case SET_PRICES:
+		// 	return Object.assign({}, state, setPrices(action.prices));
 
 		default:
 			return state;

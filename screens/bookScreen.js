@@ -34,7 +34,6 @@ class BookScreen extends React.Component {
 			group: props.group,
 			localDb: props.localDb,
 			persons: persons,
-			prices: {},
 			token: props.token,
 		};
 	}
@@ -71,7 +70,6 @@ class BookScreen extends React.Component {
 			})
 			.then(response => {
 				console.log('CLASSESREPONSE', response);
-				if (response.prices) this.setState({ prices: response.prices });
 
 				// Discover which classes are already booked
 				let classes = response.classes.map(oneClass => {
@@ -89,9 +87,8 @@ class BookScreen extends React.Component {
 	handleBook (oneClass) {
 		console.log('HANDLEBOOKACLASS', oneClass);``
 
-		// Update the redux store with the chosen class and the received prices
+		// Update the redux store with the chosen class
 		this.props.setClassChosen(oneClass);
-		this.props.setPrices(this.state.prices);
 
 		// Go to next screen
 		this.props.navigation.navigate('BookDetails');

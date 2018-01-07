@@ -33,7 +33,6 @@ class BookDetailsScreen extends React.Component {
 			group: props.group,
 			localDb: props.localDb,
 			persons: persons,
-			prices: props.prices,
 			token: props.token,
 		};
 
@@ -44,11 +43,11 @@ class BookDetailsScreen extends React.Component {
 	handleBook (oneOrTerm) {
 		console.log('HANDLEBOOK1ORTERM', oneOrTerm, this.state);
 
-		let restOfTermPrice = this.state.prices.term;
+		let restOfTermPrice = this.state.classChosen.term.termRate;
 
 		// Navigate to pay screen:
 		this.props.navigation.navigate('BookPay', {
-			amount: oneOrTerm === 1 ? this.state.prices.single : restOfTermPrice,
+			amount: oneOrTerm === 1 ? this.state.classChosen.term.singleRate : restOfTermPrice,
 			oneOrTerm: oneOrTerm,
 		});
 	}
@@ -76,7 +75,7 @@ class BookDetailsScreen extends React.Component {
 				/>
 				: <ListItem
 					leftIcon={{ name: 'usd', type: 'font-awesome' }}
-					title={ formatPrice(this.state.prices.single)}
+					title={ formatPrice(this.state.classChosen.term.singleRate)}
 					hideChevron={ true }
 				/>
 		}
