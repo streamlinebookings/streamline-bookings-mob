@@ -1,9 +1,10 @@
 // Third party imports
 import React from 'react';
 import { StyleSheet, Text, TextInput, View, ScrollView, Image } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage, Button, ButtonGroup, CheckBox, Badge, Card } from 'react-native-elements';
+import { FormLabel, FormInput, FormValidationMessage, Button, ButtonGroup, CheckBox, Badge, List, ListItem } from 'react-native-elements';
 
 let moment = require('moment');
+let _ = require('lodash');
 
 // Our imports
 // import { env } from '../environment';
@@ -47,6 +48,7 @@ class BookedScreen extends React.Component {
 		// Bind local methods
 		this.handleChooseDependant = this.handleChooseDependant.bind(this);
 		this.handlePeriodTab = this.handlePeriodTab.bind(this);
+		this.handleClassActions = this.handleClassActions.bind(this);
 	}
 
 	handleChooseDependant (person) {
@@ -69,6 +71,22 @@ class BookedScreen extends React.Component {
 			periodTab: index == 0 ? 'future' : 'past'
 		});
 	}
+
+	handleClassActions (oneClass) {
+		console.log('HANDLECLASSACTIONSFOR', oneClass);
+
+		// Update the redux store with the chosen class
+
+		let newClass = _.clone(oneClass);
+		newClass.person.classes = [];
+
+		this.props.setClassChosen(newClass);
+		// this.props.setDependantsChosen(this.state.dependantsChosen);
+
+		// Go to next screen
+		this.props.navigation.navigate('BookedClassActions');
+	}
+
 
 	//
 	// Rendering
@@ -121,7 +139,7 @@ class BookedScreen extends React.Component {
 
 		const BookedClasses = () => {
 
-			console.log('creating cards', this.state);
+			console.log('creating list booked lessons', this.state);
 
 			let thesePersons = this.state.persons.filter(person => {
 
@@ -131,7 +149,6 @@ class BookedScreen extends React.Component {
 
 				return true;
 			});
-// console.log('cards for ', thesePersons);
 
 			// Create a list of all classes for the chose dependants
 			let allClasses = [];
@@ -153,30 +170,56 @@ class BookedScreen extends React.Component {
 					}
 				});
 			});
-// console.log('cards for classes ', allClasses);
 
 			// Sort the classes depending of future or past
 			allClasses.sort((a, b) => {
 				return a.datetime.localeCompare(b.datetime) * (this.state.periodTab === 'future' ? 1 : -1);
 			});
 
-			return allClasses.map(oneClass => {
-				return(
-					<Card key={oneClass.person.id + oneClass.id}
-					      containerStyle={this.state.highlightClassId === oneClass.id ? {backgroundColor: '#c2f7b2'} : {}}>
+			return (
 
-						<View flexDirection='row' justifyContent='space-between'>
-							<Text>{moment(oneClass.datetime).format('dddd Do MMMM, h:mma')}</Text>
-							<Text>{oneClass.levelName}</Text>
-						</View>
-						<View flexDirection='row' justifyContent='space-between'>
-							<Text>{oneClass.person.firstName}</Text>
-							<Text>{oneClass.cancelled ? 'CANCELLED' : ''}</Text>
-							<Text>{oneClass.recurring ? 'Recurring' : 'Not recurring'}</Text>
-						</View>
-					</Card>
-				)
-			});
+				<List>
+
+					{ allClasses.map(oneClass => {
+
+						let textStyle = {};
+						// textStyle = oneClass.alreadyBooked ? { color:  'grey' } : null;
+						// textStyle = oneClass.isFull ? { color:  'grey' } : textStyle;
+
+						return (
+							<ListItem key={oneClass.person.id + oneClass.id}
+							          onPress={ () => this.handleClassActions(oneClass) }
+							          containerStyle={this.state.highlightClassId === oneClass.id ? {backgroundColor: '#c2f7b2'} : {}}
+							          title={
+								          <View>
+									          <View flexDirection='row' justifyContent='space-between'>
+										          <Text
+											          style={textStyle}>{moment(oneClass.datetime).format('dddd h:mma') + (oneClass.recurring ? ' (Recurring)' : ' (Once)')}</Text>
+										          <Text style={textStyle}>{oneClass.level.name || ''}</Text>
+									          </View>
+									          <View flexDirection='row' justifyContent='space-between'>
+										          <Text
+											          style={textStyle}>{moment(oneClass.datetime).format('Do MMMM')}</Text>
+										          <Text
+											          style={textStyle}>{(oneClass.instructor && oneClass.instructor.firstName ? oneClass.instructor.firstName + ', ' : '') + 'lane ' + oneClass.laneId}</Text>
+									          </View>
+									          <View flexDirection='row' justifyContent='space-between'>
+										          <Text
+											          style={textStyle}>{oneClass.duration ? oneClass.duration + ' minutes' : ''}</Text>
+										          <Text style={textStyle}>{
+											          oneClass.countBooked && oneClass.countBooked > 1
+											              ? oneClass.person.firstName + ' and ' + (oneClass.countBooked - 1).toString() + ' other swimmers'
+												          : oneClass.person.firstName
+										          }</Text>
+									          </View>
+								          </View>
+							          }
+					          ></ListItem>
+						)
+					})}
+
+				</List>
+			)
 		}
 
 		return (

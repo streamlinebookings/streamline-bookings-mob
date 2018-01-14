@@ -75,7 +75,6 @@ class BookPayScreen extends React.Component {
 			// Update redux store with the result
 			this.props.setDependantsChosen([dependantChosen]);
 			this.props.setPersons(persons);
-			this.props.setPrices(response.prices);
 
 			// Navigate to bookedscreen. Force selection of the chosen dependant
 			this.props.navigation.navigate('Booked', {

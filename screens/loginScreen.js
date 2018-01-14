@@ -47,7 +47,7 @@ class LoginScreen extends React.Component {
 		let beApiUrl = localDb ? env.localApiUrl : env.beApiUrl;
 
 		email = localDb ? 'sam@jones.com' : email;
-		password = localDb ? '123' : password;
+		password = localDb ? '123456789' : password;
 
 		fetch(beApiUrl + 'login', {
 			method: 'post',
@@ -74,7 +74,7 @@ class LoginScreen extends React.Component {
 					this.props.setLocalDb(localDb);
 
 					// Go to next screen
-					this.props.navigation.navigate('Book'); // Booked
+					this.props.navigation.navigate('Book'); // Booked Book
 
 				} else {
 					this.setState({

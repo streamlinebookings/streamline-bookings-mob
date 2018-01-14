@@ -17,7 +17,6 @@ const mapDispatchToProps = dispatch => {
 	return {
 		setClassChosen: classChosen => dispatch(Action.setClassChosen(classChosen)),
 		setDependantsChosen: dependants => dispatch(Action.setDependantsChosen(dependants)),
-		setPrices: prices => dispatch(Action.setPrices(prices)),
 	};
 }
 

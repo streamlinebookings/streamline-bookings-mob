@@ -45,6 +45,8 @@ class BookScreen extends React.Component {
 
 	handleChooseDependant (person) {
 
+		if (!person) return;
+
 		this.setState({
 			dependantChosen: person
 		});
@@ -85,7 +87,7 @@ class BookScreen extends React.Component {
 	}
 
 	handleBook (oneClass) {
-		console.log('HANDLEBOOKACLASS', oneClass);``
+		console.log('HANDLEBOOKACLASS', oneClass);
 
 		// Update the redux store with the chosen class
 		this.props.setClassChosen(oneClass);
@@ -150,27 +152,27 @@ class BookScreen extends React.Component {
 							<ListItem key={ oneClass.id }
 							          onPress={ () => this.handleBook(oneClass) }
 							          title={
-					          	<View>
-									<View flexDirection='row' justifyContent='space-between'>
-										<Text style={ textStyle }>{ moment(oneClass.datetime).format('dddd h:mma') + (oneClass.recurring ? ' (Recurring)' : ' (Once)')}</Text>
-										<Text style={ textStyle }>{ oneClass.level.name || ''}</Text>
-									</View>
-									<View flexDirection='row' justifyContent='space-between'>
-										<Text style={ textStyle }>{ moment(oneClass.datetime).format('Do MMMM') }</Text>
-										<Text style={ textStyle }>{ (oneClass.instructor.firstName ? oneClass.instructor.firstName + ', ' : '') + 'lane ' + oneClass.laneId}</Text>
-									</View>
-									<View flexDirection='row' justifyContent='space-between'>
-										<Text style={ textStyle }>{ oneClass.duration ? oneClass.duration + ' minutes' : '' }</Text>
-										<Text style={ textStyle }>{
-											!oneClass.countBooked
-												? oneClass.cap + ' Places available'
-												: oneClass.cap
-													? (oneClass.cap - oneClass.countBooked) + ' available (max ' + oneClass.cap + ')'
-													: oneClass.countBooked + ' other swimmers'
-										}</Text>
-									</View>
-					            </View>
-					          }
+											<View>
+												<View flexDirection='row' justifyContent='space-between'>
+													<Text style={ textStyle }>{ moment(oneClass.datetime).format('dddd h:mma') + (oneClass.recurring ? ' (Recurring)' : ' (Once)')}</Text>
+													<Text style={ textStyle }>{ oneClass.level.name || ''}</Text>
+												</View>
+												<View flexDirection='row' justifyContent='space-between'>
+													<Text style={ textStyle }>{ moment(oneClass.datetime).format('Do MMMM') }</Text>
+													<Text style={ textStyle }>{ (oneClass.instructor.firstName ? oneClass.instructor.firstName + ', ' : '') + 'lane ' + oneClass.laneId}</Text>
+												</View>
+												<View flexDirection='row' justifyContent='space-between'>
+													<Text style={ textStyle }>{ oneClass.duration ? oneClass.duration + ' minutes' : '' }</Text>
+													<Text style={ textStyle }>{
+														!oneClass.countBooked
+															? oneClass.cap + ' Places available'
+															: oneClass.cap
+																? (oneClass.cap - oneClass.countBooked) + ' available (max ' + oneClass.cap + ')'
+																: oneClass.countBooked + ' other swimmers'
+													}</Text>
+												</View>
+											</View>
+							          }
 							></ListItem>
 						)
 					})}

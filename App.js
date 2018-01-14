@@ -9,6 +9,7 @@ import { createStore } from 'redux';
 import * as Action from './common/actions';
 import LoginContainer from './screens/loginContainer';
 import BookedContainer from './screens/bookedContainer';
+import BookedClassActionsContainer from './screens/bookedClassActionsContainer';
 import BookContainer from './screens/bookContainer';
 import BookDetailsContainer from './screens/bookDetailsContainer';
 import BookPayContainer from './screens/bookPayContainer';
@@ -47,6 +48,12 @@ const RootNavigator = DrawerNavigator(
 						style={ [styles.icon, {tintColor: tintColor}] }
 					/>
 				),
+			}
+		},
+		BookedClassActions: {
+			screen: BookedClassActionsContainer,
+			navigationOptions: {
+				drawerLabel: () => null
 			}
 		},
 		Book: {
