@@ -150,7 +150,7 @@ class BookedScreen extends React.Component {
 				return true;
 			});
 
-			// Create a list of all classes for the chose dependants
+			// Create a list of all classes for the chosen dependants
 			let allClasses = [];
 			thesePersons.map(person => {
 

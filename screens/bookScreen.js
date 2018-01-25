@@ -51,8 +51,8 @@ class BookScreen extends React.Component {
 			dependantChosen: person
 		});
 
-		// Update the redux store with the chosen dependant, reset the classes
-		this.props.setDependantsChosen([person]);
+		// Update the redux store with the chosen dependant + reset the classes
+		this.props.setDependantsChosen([ person ]);
 		this.setState({ classes: [] });
 
 		// Find classes for the level of this person

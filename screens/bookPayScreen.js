@@ -39,11 +39,15 @@ class BookPayScreen extends React.Component {
 		// Call backend to update class status
 		let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
 
+
 		fetch(beApiUrl + 'calendar/book', {
 			method: 'put',
 			body: JSON.stringify({
 				class: this.state.classChosen,
-				swimmer: this.state.dependantChosen,
+
+				// Removing the classes from the chosen dependant. This avoids a circular JSON structure
+				swimmer: Object.assign({}, this.state.dependantChosen, {classes: []}),
+
 				oneOrTerm: this.state.oneOrTerm,
 				token: this.state.token,
 			})
