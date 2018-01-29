@@ -105,6 +105,7 @@ class LoginScreen extends React.Component {
 					left: 0,
 					width: '100%',
 					height: '100%',
+					opacity: 0.6,
 				}}>
 					<Image
 						style={{flex: 1, resizeMode: 'cover'}}
