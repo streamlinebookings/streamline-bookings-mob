@@ -16,7 +16,7 @@ const mapDispatchToProps = dispatch => {
 	console.log('bookedMAPPINGDISPATCHTOPROPS');
 	return {
 		setClassChosen: classChosen => dispatch(Action.setClassChosen(classChosen)),
-		// setDependantsChosen: dependants => dispatch(Action.setDependantsChosen(dependants)),
+		setDependantsChosen: dependants => dispatch(Action.setDependantsChosen(dependants)),
 	};
 }
 

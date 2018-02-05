@@ -24,6 +24,7 @@ class LoginScreen extends React.Component {
 		this.handleEmail = this.handleEmail.bind(this);
 		this.handlePassword = this.handlePassword.bind(this);
 		this.handleLocalDb = this.handleLocalDb.bind(this);
+		this.handleRegister = this.handleRegister.bind(this);
 	}
 
 	handleEmail (email) {
@@ -74,7 +75,7 @@ class LoginScreen extends React.Component {
 					this.props.setLocalDb(localDb);
 
 					// Go to next screen
-					this.props.navigation.navigate('Book'); // Booked Book
+					this.props.navigation.navigate('Account'); // Booked Book
 
 				} else {
 					this.setState({
@@ -89,6 +90,15 @@ class LoginScreen extends React.Component {
 					afterLoginMessage: err
 				})
 			});
+	}
+	handleRegister (event) {
+		console.log('HANDLEREGISTER', event);
+
+		// Call the redux action = set the store
+		this.props.setLocalDb(this.state.localDb);
+
+		// Go to next screen
+		this.props.navigation.navigate('GroupDetails', {from: 'Login'});
 	}
 
 	render () {
@@ -136,20 +146,23 @@ class LoginScreen extends React.Component {
 						onPress={(event) => this.handleLogin(this.state.email, this.state.password, this.state.localDb) }/>
 				</View>
 
-				<View style={{flex: 2, justifyContent: 'space-between'}}>
+				<View style={{ flex: 2, justifyContent: 'space-between' }}>
 
-					<View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
+					<View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
 						<Button
-							icon={{name: 'thumbs-up', type: 'font-awesome'}}
 							backgroundColor='transparent'
+							color='black'
+							icon={{ name: 'thumb-up', type: 'fontello', color: 'black' }}
+							onPress={ this.handleRegister }
+							style={{ width: 10 }}
 							title='Create new account'
-							style={{width: 10}}
 						/>
 						<Button
-							iconRight={{name: 'thumbs-down', type: 'font-awesome'}}
 							backgroundColor='transparent'
+							color='black'
+							iconRight={{ name: 'thumb-down', type: 'fontello', color: 'black' }}
+							style={{ width: 10 }}
 							title='Forgot password'
-							style={{width: 10}}
 						/>
 					</View>
 

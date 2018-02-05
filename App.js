@@ -13,6 +13,9 @@ import BookedClassActionsContainer from './screens/bookedClassActionsContainer';
 import BookContainer from './screens/bookContainer';
 import BookDetailsContainer from './screens/bookDetailsContainer';
 import BookPayContainer from './screens/bookPayContainer';
+import AccountContainer from './screens/accountContainer';
+import GroupDetailsContainer from './screens/groupDetailsContainer';
+import CarersContainer from './screens/carersContainer';
 
 // Define redux store
 let store = createStore(Action.Slb);
@@ -36,7 +39,7 @@ const RootNavigator = DrawerNavigator(
 						style={ [styles.icon, {tintColor: tintColor}] }
 					/>
 				),
-			}
+			},
 		},
 		Booked: {
 			screen: BookedContainer,
@@ -48,13 +51,13 @@ const RootNavigator = DrawerNavigator(
 						style={ [styles.icon, {tintColor: tintColor}] }
 					/>
 				),
-			}
+			},
 		},
 		BookedClassActions: {
 			screen: BookedClassActionsContainer,
 			navigationOptions: {
 				drawerLabel: () => null
-			}
+			},
 		},
 		Book: {
 			screen: BookContainer,
@@ -66,20 +69,44 @@ const RootNavigator = DrawerNavigator(
 						style={ [styles.icon, {tintColor: tintColor}] }
 					/>
 				),
-			}
+			},
 		},
 		BookDetails: {
 			screen: BookDetailsContainer,
 			navigationOptions: {
 				drawerLabel: () => null
-			}
+			},
 		},
 		BookPay: {
 			screen: BookPayContainer,
 			navigationOptions: {
 				drawerLabel: () => null
 			}
-		}
+		},
+		Account: {
+			screen: AccountContainer,
+			navigationOptions: {
+				drawerLabel: 'Account',
+				drawerIcon: ({tintColor}) => (
+					<Image
+						source={require('./icons/hamburger-menu.png')}
+						style={[styles.icon, {tintColor: tintColor}]}
+					/>
+				),
+			},
+		},
+		GroupDetails: {
+			screen: GroupDetailsContainer,
+			navigationOptions: {
+				drawerLabel: () => null
+			},
+		},
+		Carers: {
+			screen: CarersContainer,
+			navigationOptions: {
+				drawerLabel: () => null
+			},
+		},
 	}, {
 		initialRouteName: 'Login'
 	}

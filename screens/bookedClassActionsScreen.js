@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Button, ButtonGroup, CheckBox, Badge, Card, List, ListItem } from 'react-native-elements';
 
 let moment = require('moment');
+let _ = require('lodash');
 
 // Our imports
 import { env } from '../environment';
@@ -21,10 +22,10 @@ class BookedClassActionsScreen extends React.Component {
 
 		let persons = props.persons;
 
-		let dependantSwimmers = [];
-		if (persons && persons.length > 0) {
-			dependantSwimmers = persons.filter(p => p.isSwimmer);
-		}
+		// let dependantSwimmers = [];
+		// if (persons && persons.length > 0) {
+		// 	dependantSwimmers = persons.filter(p => p.isSwimmer);
+		// }
 
 		this.state = {
 			classChosen: props.classChosen,
@@ -46,10 +47,13 @@ class BookedClassActionsScreen extends React.Component {
 		// Send cancel message to be
 		let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
 
+		let classChosen = _.clone(this.state.classChosen);
+		classChosen.person.classes = [];                    // Remove recursive classes
+
 		fetch(beApiUrl + 'messages/cancel-class', {
 			method: 'put',
 			body: JSON.stringify({
-				classChosen: this.state.classChosen,
+				classChosen: classChosen,
 				token: this.state.token,
 			})
 		})
@@ -78,7 +82,6 @@ class BookedClassActionsScreen extends React.Component {
 		const buttons = () => {
 
 			let hoursDiff = -1 * moment().diff(this.state.classChosen.datetime, 'hours');
-console.log('BUTTONS', this.state.classChosen, hoursDiff);
 			return (
 				<View style={{ flex: 1 }} flexDirection='row' justifyContent='flex-left' alignContent='flex-start'>
 					<Button
@@ -94,22 +97,15 @@ console.log('BUTTONS', this.state.classChosen, hoursDiff);
 			)
 		}
 
-		// let childNameStatus = this.state.dependantChosen.firstName;
-		// if (this.state.classChosen.alreadyBooked ) {
-		// 	childNameStatus += ' is already booked into this class';
-		// } else if (this.state.classChosen.isFull) {
-		// 	childNameStatus = 'Sorry, ' + this.state.dependantChosen.firstName + ', this class is full';
-		// }
-
 		return (
 
 			<View style={{ flex: 1 }}>
 
 				<Header fullName={ this.state.fullName }
-				        image={ 'mob/backgrounds/background-book.jpg' }
+				        image={ 'mob/backgrounds/background-booked.jpg' }
 				        navigation={ this.props.navigation }
-				        backTo={ 'Book' }
-				        title='Book a Class - Details'
+				        backTo={ 'Booked' }
+				        title='My Class - Details'
 				/>
 
 				{/* Book classes cards */}
