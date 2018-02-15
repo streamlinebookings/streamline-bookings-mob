@@ -108,36 +108,54 @@ class CarerDetailsScreen extends React.Component {
 
 				let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
 
-				/*
-
-				NEXT
-
-				    1 => be processing
-
-				    validate email address client side ????
-
-				*/
-
 				fetch(beApiUrl + 'person/update', {
 					method: 'put',
 					body: JSON.stringify({
 						fromMobile: true,
 						carer: this.state.carer,        // if carer.id => update existing, else add new
-						token: this.props.token,        // contains person, so be knows which group + venue
+						token: this.props.token,        // contains person, so be knows which venue
 					})
 				})
 					.then(response => {
 						console.log('FETCHRAWRESPONSE', response);
 						if (response.status == 200) return response.json();
+
+						this.setState({
+							errorText: response._bodyText,
+						});
 						return response;
 					})
 					.then(response => {
 						console.log('SAVECARERREPONSE', response);
 
+						// TODO Prefer a toast message 'saved'
+						this.setState({
+							errorText: 'Saved',
+						});
+
+						/*
+
+						///////////// 		NEXT 1:
+
+						// update redux group persons
+						// Replace the carer in the group with the returned version, or just add
+
+						let newGroupDependants = this.state.groupDependants ? this.state.groupDependants.slice(0) : [];  // create clone of all persons
+						let replaced = false;
+						newGroupDependants = newGroupDependants.map(dependant => {
+							if (dependant.id === response.data.person.id) {
+								replaced = true;
+								return response.data.person;
+							}
+							return dependant;
+						});
+						if (!replaced) newGroupDependants.unshift(response.data.person);
+						*/
+
 						// 2:
-						//      expect the response to be the carer
-						//      update redux carerchosen and persons
+						//      update redux carerchosen
 						//      go back to carers
+
 					});
 			}
 		}

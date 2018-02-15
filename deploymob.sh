@@ -3,6 +3,6 @@ echo "--- Git push..."
 git push origin master
 
 echo "--- Exp publish..."
-exp publish
+./node_modules/.bin/exp publish
 
 echo "--- Done"

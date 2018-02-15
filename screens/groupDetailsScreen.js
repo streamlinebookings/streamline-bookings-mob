@@ -95,6 +95,10 @@ class GroupDetailsScreen extends React.Component {
 				.then(response => {
 					console.log('FETCHRAWRESPONSE', response);
 					if (response.status == 200) return response.json();
+
+					this.setState({
+						errorText: response._bodyText,
+					});
 					return response;
 				})
 				.then(response => {
