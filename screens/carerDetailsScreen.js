@@ -1,0 +1,282 @@
+// Third party imports
+import React from 'react';
+import { StyleSheet, Text, TextInput, View, ScrollView, Image } from 'react-native';
+import { Button, ButtonCarer, Card, FormLabel, FormInput, FormValidationMessage, Icon } from 'react-native-elements';
+
+let moment = require('moment');
+let _ = require('lodash');
+
+// Our imports
+import { env } from '../environment';
+import { Header } from './header';
+
+
+class CarerDetailsScreen extends React.Component {
+
+	constructor(props) {
+		super(props);
+		console.log('CarerDetailsCONSTRUCTOR', props);
+
+		let fullName = props.person && props.person.firstName + ' ' + props.person.lastName || 'Not logged in';
+
+		this.state = {
+			carer: props.carerChosen ? props.carerChosen[0] : {},
+			errorText: false,
+			fullName: fullName,
+			hasErrors: {},
+			isRegistering: !props.person ? true : false,
+			localDb: props.localDb || false,
+			passwordVisible: false,
+		};
+
+		// Bind local methods
+		this.handleInput = this.handleInput.bind(this);
+		this.handleAddress = this.handleAddress.bind(this);
+		this.handleFirstName = this.handleFirstName.bind(this);
+		this.handleLastName = this.handleLastName.bind(this);
+		this.handleEmail = this.handleEmail.bind(this);
+		this.handlePassword = this.handlePassword.bind(this);
+		this.handlePasswordVisible = this.handlePasswordVisible.bind(this);
+		this.handlePostcode = this.handlePostcode.bind(this);
+		this.handleState = this.handleState.bind(this);
+		this.handleSuburb = this.handleSuburb.bind(this);
+		this.handleRelationship = this.handleRelationship.bind(this);
+		this.handleSaveOrNext = this.handleSaveOrNext.bind(this);
+	}
+
+	handleInput (inputSource, data) {
+		console.log('HANDLEINPUT', inputSource, data);
+		let newData = Object.assign({}, this.state.carer);
+		newData[inputSource] = data;
+		this.setState({ carer: newData});
+	}
+	handleAddress (data) {
+		this.handleInput('address', data);
+	}
+	handleFirstName (data) {
+		this.handleInput('firstName', data);
+	}
+	handleLastName (data) {
+		this.handleInput('lastName', data);
+	}
+	handleEmail (data) {
+		this.handleInput('email', data);
+	}
+	handlePassword (data) {
+		this.handleInput('password', data);
+	}
+	handlePasswordVisible () {
+		this.setState({
+			passwordVisible: !this.state.passwordVisible,
+		})
+	}
+	handlePostcode (data) {
+		this.handleInput('postcode', data);
+	}
+	handleState (data) {
+		this.handleInput('state', data);
+	}
+	handleSuburb (data) {
+		this.handleInput('suburb', data);
+	}
+	handleRelationship (data) {
+		this.handleInput('relationship', data);
+	}
+
+
+	handleSaveOrNext () {
+		console.log('HANDLESAVEORNEXT', this.state);
+
+		if (this.state.isRegistering) {
+			// Next
+			if (this.validateCarer()) {
+
+				// Fill redux store with new carer details
+				this.props.setCarer(this.state.carer);
+
+				/*
+					what about create a new carer during registration?
+						3: no save, only redux store for carer and carers, and back to carers
+				 */
+
+				// Go to new screen
+				this.props.navigation.navigate('Carers')
+			}
+		} else {
+			// Save
+			if (this.validateCarer()) {
+
+				let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
+
+				/*
+
+				NEXT
+
+				    1 => be processing
+
+				    validate email address client side ????
+
+				*/
+
+				fetch(beApiUrl + 'person/update', {
+					method: 'put',
+					body: JSON.stringify({
+						fromMobile: true,
+						carer: this.state.carer,        // if carer.id => update existing, else add new
+						token: this.props.token,        // contains person, so be knows which group + venue
+					})
+				})
+					.then(response => {
+						console.log('FETCHRAWRESPONSE', response);
+						if (response.status == 200) return response.json();
+						return response;
+					})
+					.then(response => {
+						console.log('SAVECARERREPONSE', response);
+
+						// 2:
+						//      expect the response to be the carer
+						//      update redux carerchosen and persons
+						//      go back to carers
+					});
+			}
+		}
+	}
+
+	validateCarer() {
+		this.setState({
+			errorText: '',
+			hasErrors: {},
+		});
+
+		if (this.state.carer && !this.state.carer.firstName) {
+			this.setState({
+				errorText: 'Please give a carer\'s first name',
+				hasErrors: { firstName: true }
+			});
+			this.formInputFirstName.shake();
+			return false;
+		}
+		if (this.state.carer && !this.state.carer.email) {
+			this.setState({
+				errorText: 'Please give an email address',
+				hasErrors: { email: true }
+			});
+			this.formInputEmail.shake();
+			return false;
+		}
+		return true;
+	}
+
+	//
+	// Rendering
+	//
+	render() {
+
+		console.log('rendering carer details', this.state, this.props);
+
+		const errorStyle = { backgroundColor: '#f7edf6' };
+
+		return (
+			<View style={{ flex: 1 }} flexDirection='column'>
+
+				<Header fullName={ this.state.fullName }
+				        image={ 'mob/backgrounds/background-account.jpg' }
+				        navigation={ this.props.navigation }
+				        backTo={ 'Carers' }
+				        title='Carer Details'
+				/>
+
+				<View style={{ flex: 4 }}>
+					<ScrollView>
+
+						{ this.state.isRegistering ?
+							<Card containerStyle={{backgroundColor: 'lightgreen'}}>
+								<Text>To register, please complete this and the following screens with family and person details</Text>
+							</Card>
+						: null}
+
+						<FormLabel>Carer</FormLabel>
+						<View style={{ flex: 11 }} flexDirection='row' justifyContent='space-between' >
+							<View style={{ flex: 5 }}>
+								<FormInput placeholder={ 'First name' }
+								           value={ this.state.carer.firstName }
+								           containerStyle={ this.state.hasErrors.firstName ? errorStyle : null }
+								           onChangeText={ this.handleFirstName }
+								           ref={ ref => this.formInputFirstName = ref }/>
+							</View>
+							<View style={{ flex: 5 }}>
+								<FormInput placeholder={ 'Last name' }
+								           value={ this.state.carer.lastName }
+								           onChangeText={ this.handleLastName }/>
+							</View>
+						</View>
+
+						<FormLabel>Email & password { this.state.isRegistering
+															? '- use these to login to this app after registration'
+															: this.state.carer.id
+																? '- you can change your password here'
+																: '' }</FormLabel>
+						<FormInput placeholder={ 'Email address' }
+						           value={ this.state.carer.email }
+						           containerStyle={ this.state.hasErrors.email ? errorStyle : null }
+						           onChangeText={ this.handleEmail }
+						           ref={ ref => this.formInputEmail = ref }/>
+						<View style={{ flex: 11 }} flexDirection='row' justifyContent='space-between' >
+							<View style={{ flex: 9 }}>
+								<FormInput placeholder={ 'Password' }
+								           secureTextEntry={ !this.state.passwordVisible }
+								           onChangeText={ this.handlePassword }/>
+							</View>
+							<View style={{ flex: 2 }}>
+								<Icon reverse raised name='eye' type='feather' color='blue' size={ 14 }
+								      onPress={ this.handlePasswordVisible }/>
+							</View>
+						</View>
+
+						<FormLabel>Address</FormLabel>
+						<FormInput placeholder={ 'Address' }
+						           value={ this.state.carer.address }
+						           onChangeText={ this.handleAddress }/>
+
+						<FormInput placeholder={ 'Suburb' }
+						           value={ this.state.carer.suburb }
+						           onChangeText={ this.handleSuburb }/>
+
+						<View style={{ flex: 11 }} flexDirection='row' justifyContent='space-around'>
+							<View style={{ flex: 5 }}>
+								<FormInput placeholder={ 'State' }
+								           value={ this.state.carer.state }
+								           onChangeText={ this.handleState }/>
+							</View>
+							<View style={{ flex: 5 }}>
+								<FormInput placeholder={ 'Postcode' }
+								           value={ this.state.carer.postcode }
+								           onChangeText={ this.handlePostcode }/>
+							</View>
+						</View>
+
+						<FormLabel>Relationship</FormLabel>
+						<FormInput placeholder={ 'Relationship to dependant(s)' }
+						           value={ this.state.carer.relationship }
+						           onChangeText={ this.handleRelationship }/>
+
+						<FormValidationMessage
+							containerStyle={{ backgroundColor: 'transparent' }}>
+							<Text style={{ fontWeight: 'bold' }}>{ this.state.errorText || '' }</Text>
+						</FormValidationMessage>
+
+						<Button
+							icon={{ name: 'paper-plane', type: 'font-awesome' }}
+							backgroundColor='green'
+							title={ this.state.isRegistering ? 'Next' : 'Save' }
+							onPress={ this.handleSaveOrNext }/>
+
+					</ScrollView>
+				</View>
+			</View>
+		);
+	}
+}
+
+export default CarerDetailsScreen

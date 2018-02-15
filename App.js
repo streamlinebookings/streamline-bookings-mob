@@ -16,6 +16,7 @@ import BookPayContainer from './screens/bookPayContainer';
 import AccountContainer from './screens/accountContainer';
 import GroupDetailsContainer from './screens/groupDetailsContainer';
 import CarersContainer from './screens/carersContainer';
+import CarerDetailsContainer from './screens/carerDetailsContainer';
 
 // Define redux store
 let store = createStore(Action.Slb);
@@ -103,6 +104,12 @@ const RootNavigator = DrawerNavigator(
 		},
 		Carers: {
 			screen: CarersContainer,
+			navigationOptions: {
+				drawerLabel: () => null
+			},
+		},
+		CarerDetails: {
+			screen: CarerDetailsContainer,
 			navigationOptions: {
 				drawerLabel: () => null
 			},

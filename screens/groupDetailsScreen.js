@@ -26,6 +26,7 @@ class GroupDetailsScreen extends React.Component {
 			errorText: false,
 			from: from,
 			fullName: fullName,
+			hasErrors: {},
 			isRegistering: !props.person ? true : false,
 			localDb: props.localDb || false,
 		};
@@ -73,7 +74,7 @@ class GroupDetailsScreen extends React.Component {
 				this.props.setGroup(this.state.group);
 
 				// Go to new screen
-				this.props.navigation.navigate('CarersDetails')
+				this.props.navigation.navigate('Carers')
 			}
 		} else {
 			// Save
@@ -103,10 +104,16 @@ class GroupDetailsScreen extends React.Component {
 	}
 
 	validateGroup() {
-		this.setState({errorText: ''});
+		this.setState({
+			errorText: '',
+			hasErrors: {},
+		});
 
 		if (this.state.group && !this.state.group.name) {
-			this.setState({errorText: 'Please give a family or group name'});
+			this.setState({
+				errorText: 'Please give a family or group name',
+				hasErrors: { name: true },
+			});
 			this.formInputName.shake();
 			return false;
 		}
@@ -120,11 +127,13 @@ class GroupDetailsScreen extends React.Component {
 
 		console.log('rendering group details', this.state, this.props);
 
+		const errorStyle = { backgroundColor: '#f7edf6' };
+
 		return (
 			<View style={{ flex: 1 }}>
 
 				<Header fullName={ this.state.fullName }
-				        image={ 'mob/backgrounds/background-groupDetails.jpg' }
+				        image={ 'mob/backgrounds/background-account.jpg' }
 				        navigation={ this.props.navigation }
 				        backTo={ this.state.from || 'Account' }
 				        title='Family / Group Details'
@@ -142,6 +151,7 @@ class GroupDetailsScreen extends React.Component {
 						<FormLabel>Family / Group</FormLabel>
 						<FormInput placeholder={ 'Family or Group name' }
 						           value={ this.state.group.name }
+						           containerStyle={ this.state.hasErrors.name ? errorStyle : null }
 						           onChangeText={ this.handleName }
 						           ref={ ref => this.formInputName = ref }/>
 

@@ -6,9 +6,9 @@ export const SET_PERSON = 'SET_PERSON'
 export const SET_PERSONS = 'SET_PERSONS'
 export const SET_TOKEN = 'SET_TOKEN'
 export const SET_LOCALDB = 'SET_LOCALDB'
+export const SET_CARERCHOSEN = 'SET_CARERCHOSEN'
 export const SET_DEPENDANTSCHOSEN = 'SET_DEPENDANTSCHOSEN'
 export const SET_CLASSCHOSEN = 'SET_CLASSCHOSEN'
-// export const SET_PRICES = 'SET_PRICES'
 
 /*
  * Action creators
@@ -33,6 +33,10 @@ export function setLocalDb(localDb) {
 	return { type: SET_LOCALDB, localDb };
 }
 
+export function setCarerChosen(carerChosen) {
+	return { type: SET_CARERCHOSEN, carerChosen };
+}
+
 export function setDependantsChosen(dependantsChosen) {
 	return { type: SET_DEPENDANTSCHOSEN, dependantsChosen };
 }
@@ -40,10 +44,6 @@ export function setDependantsChosen(dependantsChosen) {
 export function setClassChosen(classChosen) {
 	return { type: SET_CLASSCHOSEN, classChosen };
 }
-
-// export function setPrices(prices) {
-// 	return { type: SET_PRICES, prices };
-// }
 
 /*
  * Reducers
@@ -66,14 +66,14 @@ export function Slb(state = {}, action) {
 		case SET_LOCALDB:
 			return Object.assign({}, state, setLocalDb(action.localDb));
 
+		case SET_CARERCHOSEN:
+			return Object.assign({}, state, setCarerChosen(action.carerChosen));
+
 		case SET_DEPENDANTSCHOSEN:
 			return Object.assign({}, state, setDependantsChosen(action.dependantsChosen));
 
 		case SET_CLASSCHOSEN:
 			return Object.assign({}, state, setClassChosen(action.classChosen));
-
-		// case SET_PRICES:
-		// 	return Object.assign({}, state, setPrices(action.prices));
 
 		default:
 			return state;

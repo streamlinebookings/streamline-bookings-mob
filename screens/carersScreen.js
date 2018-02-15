@@ -28,7 +28,7 @@ class CarersScreen extends React.Component {
 			// from: from,
 			fullName: fullName,
 			isRegistering: !props.person ? true : false,
-			// localDb: props.localDb || false,
+			localDb: props.localDb || false,
 		};
 
 		// Bind local methods
@@ -38,8 +38,30 @@ class CarersScreen extends React.Component {
 		// this.handlePostcode = this.handlePostcode.bind(this);
 		// this.handleState = this.handleState.bind(this);
 		// this.handleSuburb = this.handleSuburb.bind(this);
-		// this.handleSaveOrNext = this.handleSaveOrNext.bind(this);
+		this.handleNext = this.handleNext.bind(this);
+		this.handleAddCarer = this.handleAddCarer.bind(this);
 	}
+
+	handleCarerActions (carer) {
+		console.log('HANDLECARERACTIONSFOR', carer);
+
+		// Update the redux store with the chosen dependant
+		this.props.setCarerChosen([carer]);
+
+		// Go to next screen
+		this.props.navigation.navigate('CarerDetails');
+	}
+
+	handleAddCarer () {
+		console.log('HANDLEADDCARER');
+
+		// Ensure nobody is chosen in the redux store
+		this.props.setCarerChosen();
+
+		// Go to next screen
+		this.props.navigation.navigate('CarerDetails');
+	}
+
 
 	// handleInput (inputSource, data) {
 	// 	console.log('HANDLEINPUT', inputSource, data);
@@ -62,45 +84,45 @@ class CarersScreen extends React.Component {
 	// handleSuburb (data) {
 	// 	this.handleInput('suburb', data);
 	// }
-	//
-	// handleSaveOrNext () {
-	// 	console.log('HANDLESAVEORNEXT', this.state);
-	//
-	// 	if (this.state.isRegistering) {
-	// 		// Next
-	// 		if (this.validateCarer()) {
-	//
-	// 			// Fill redux store with new carer details
-	// 			this.props.setCarer(this.state.carer);
-	//
-	// 			// Go to new screen
-	// 			this.props.navigation.navigate('CarersDetails')
-	// 		}
-	// 	} else {
-	// 		// Save
-	//
-	// 		let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
-	//
-	// 		/////////////// NEXT
-	//
-	// 		// fetch(beApiUrl + 'group/update', {
-	// 		// 	method: 'put',
-	// 		// 	body: JSON.stringify({
-	// 		// 		fromMobile: true,
-	// 		// 		group: this.state.group,
-	// 		// 	})
-	// 		// })
-	// 		// 	.then(response => {
-	// 		// 		console.log('FETCHRAWRESPONSE', response);
-	// 		// 		if (response.status == 200) return response.json();
-	// 		// 		return response;
-	// 		// 	})
-	// 		// 	.then(response => {
-	// 		// 		console.log('SAVEGROUPREPONSE', response);
-	// 		// 	});
-	// 	}
-	// }
-	//
+
+	handleNext () {
+		console.log('HANDLENEXT', this.state);
+
+		if (this.state.isRegistering) {
+			// Next
+			if (this.validateCarer()) {
+
+				// Fill redux store with new carer details
+				this.props.setCarer(this.state.carer);
+
+				// Go to new screen
+				this.props.navigation.navigate('CarersDetails')
+			}
+		} else {
+			// Save
+
+			let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
+
+			/////////////// NEXT
+
+			// fetch(beApiUrl + 'group/update', {
+			// 	method: 'put',
+			// 	body: JSON.stringify({
+			// 		fromMobile: true,
+			// 		group: this.state.group,
+			// 	})
+			// })
+			// 	.then(response => {
+			// 		console.log('FETCHRAWRESPONSE', response);
+			// 		if (response.status == 200) return response.json();
+			// 		return response;
+			// 	})
+			// 	.then(response => {
+			// 		console.log('SAVEGROUPREPONSE', response);
+			// 	});
+		}
+	}
+
 	// validateCarer() {
 	// 	this.setState({errorText: ''});
 	//
@@ -130,27 +152,6 @@ class CarersScreen extends React.Component {
 
 				return true;
 			});
-
-			// Create a list of all................
-			// let allCarers = [];
-			// carers.map(person => {
-			//
-			// 	person.classes.map(carer => {
-			//
-			// 		// Ignore empty objects
-			// 		if (!Object.keys(carer).length) return;
-			//
-			// 		// Add person info to the class
-			// 		carer.person = person;
-			//
-			// 		// Only display the classes in the requested period
-			// 		if (this.state.periodTab === 'future') {
-			// 			if (moment(carer.datetime).isAfter(/* now */)) allCarers.push(carer);
-			// 		} else {
-			// 			if (moment(carer.datetime).isBefore(/* now */)) allCarers.push(carer);
-			// 		}
-			// 	});
-			// });
 
 			// Sort the carers on first name
 			allCarers.sort((a, b) => {
@@ -190,13 +191,24 @@ class CarersScreen extends React.Component {
 
 		const buttons = () => {
 			return (
-				<View style={{ flex: 1 }} flexDirection='row' justifyContent='space-around'>
+				<View style={{ flex: 1 }} flexDirection='row' justifyContent='space-around' alignItems='center'>
 					<Button
 						icon={{name: 'plus', type: 'font-awesome'}}
 						backgroundColor='green'
 						title='Add a carer'
-						onPress={ this.handlePaid }
+						onPress={ this.handleAddCarer }
 					/>
+
+					{ this.state.isRegistering ?
+						<Button
+							icon={{ name: 'paper-plane', type: 'font-awesome' }}
+							backgroundColor='green'
+							title={ 'Next' }
+							onPress={ this.handleNext }
+						/>
+						: null
+					}
+
 				</View>
 			)
 		}
@@ -215,9 +227,11 @@ class CarersScreen extends React.Component {
 
 				<View style={{ flex: 4 }}>
 					<ScrollView>
+
 						{ carersList() }
 
 						{ buttons() }
+
 					</ScrollView>
 				</View>
 

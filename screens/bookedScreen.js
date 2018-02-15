@@ -79,11 +79,6 @@ class BookedScreen extends React.Component {
 		this.props.setDependantsChosen([oneClass.person]);
 		this.props.setClassChosen(oneClass);
 
-		// // Update the redux store with the chosen class but remove recursive classes
-		// let newClass = _.clone(oneClass);
-		// // newClass.person.classes = [];
-		// this.props.setClassChosen(newClass);
-
 		// Go to next screen
 		this.props.navigation.navigate('BookedClassActions');
 	}
