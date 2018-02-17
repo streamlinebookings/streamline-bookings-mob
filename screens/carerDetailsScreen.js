@@ -27,6 +27,7 @@ class CarerDetailsScreen extends React.Component {
 			isRegistering: !props.person ? true : false,
 			localDb: props.localDb || false,
 			passwordVisible: false,
+			persons: props.persons || [],
 		};
 
 		// Bind local methods
@@ -94,11 +95,6 @@ class CarerDetailsScreen extends React.Component {
 				// Fill redux store with new carer details
 				this.props.setCarer(this.state.carer);
 
-				/*
-					what about create a new carer during registration?
-						3: no save, only redux store for carer and carers, and back to carers
-				 */
-
 				// Go to new screen
 				this.props.navigation.navigate('Carers')
 			}
@@ -112,49 +108,54 @@ class CarerDetailsScreen extends React.Component {
 					method: 'put',
 					body: JSON.stringify({
 						fromMobile: true,
-						carer: this.state.carer,        // if carer.id => update existing, else add new
-						token: this.props.token,        // contains person, so be knows which venue
+						carer: Object.assign({}, this.state.carer, { isCarer: true }),        // if carer.id => update existing, else add new
+						token: this.props.token,
 					})
 				})
 					.then(response => {
 						console.log('FETCHRAWRESPONSE', response);
 						if (response.status == 200) return response.json();
 
-						this.setState({
-							errorText: response._bodyText,
-						});
-						return response;
+						// This isn't nice. I can't force the Promise to reject here (why???), so have to pass a
+						// error string and let the then() decide if the data is good or not :-(
+						return response._bodyText;
 					})
 					.then(response => {
 						console.log('SAVECARERREPONSE', response);
 
+						if (!_.isObject(response)) {
+							this.setState({
+								errorText: response.replace('[', '').replace(']', '').replace(/\"/g, '').trim(),
+							});
+							return;
+						}
+
 						// TODO Prefer a toast message 'saved'
+						// https://www.npmjs.com/package/react-native-simple-toast
 						this.setState({
 							errorText: 'Saved',
 						});
 
-						/*
-
-						///////////// 		NEXT 1:
-
-						// update redux group persons
 						// Replace the carer in the group with the returned version, or just add
-
-						let newGroupDependants = this.state.groupDependants ? this.state.groupDependants.slice(0) : [];  // create clone of all persons
+						let newPersons = this.state.persons ? this.state.persons.slice(0) : [];  // create clone of all persons
 						let replaced = false;
-						newGroupDependants = newGroupDependants.map(dependant => {
-							if (dependant.id === response.data.person.id) {
+						newPersons = newPersons.map(person => {
+							if (person.id === response.person.id) {
 								replaced = true;
-								return response.data.person;
+								return response.person;
 							}
-							return dependant;
+							return person;
 						});
-						if (!replaced) newGroupDependants.unshift(response.data.person);
-						*/
+						if (!replaced) newPersons.unshift(response.person);
 
-						// 2:
-						//      update redux carerchosen
-						//      go back to carers
+						// Fill redux store with new group persons
+						this.props.setPersons(newPersons);
+
+						// Go back to carers
+						this.props.navigation.navigate('Carers')
+					})
+					.catch(error => {
+						console.log('SAVECARERerror', error);
 
 					});
 			}

@@ -16,6 +16,8 @@ const mapDispatchToProps = dispatch => {
 	console.log('carerDetailsMAPPINGDISPATCHTOPROPS');
 	return {
 		// setCarer: carer => dispatch(Action.setCarer(carer)),
+		setPersons: persons => dispatch(Action.setPersons(persons)),
+
 	};
 }
 
