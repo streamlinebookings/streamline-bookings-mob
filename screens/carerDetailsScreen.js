@@ -248,7 +248,7 @@ class CarerDetailsScreen extends React.Component {
 								           onChangeText={ this.handlePassword }/>
 							</View>
 							<View style={{ flex: 2 }}>
-								<Icon reverse raised name='eye' type='feather' color='blue' size={ 14 }
+								<Icon reverse raised name='eye' type='feather' color='lightgrey' size={ 14 }
 								      onPress={ this.handlePasswordVisible }/>
 							</View>
 						</View>

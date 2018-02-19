@@ -76,34 +76,54 @@ class GroupDetailsScreen extends React.Component {
 				// Go to new screen
 				this.props.navigation.navigate('Carers')
 			}
+
 		} else {
+
 			// Save
+			if (this.validateGroup()) {
 
-			let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
+				let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
 
-			/////////////// NEXT
-			///////////////    NEED TO ADD A TOKEN, check if have a group.id
-			///////////////    this is update an existing group (ie not create a new account = group)
-
-			fetch(beApiUrl + 'group/update', {
-				method: 'put',
-				body: JSON.stringify({
-					fromMobile: true,
-					group: this.state.group,
+				fetch(beApiUrl + 'group/update', {
+					method: 'put',
+					body: JSON.stringify({
+						fromMobile: true,
+						group: this.state.group,         // if group.id => update existing, else add new
+						token: this.props.token,
+					})
 				})
-			})
-				.then(response => {
-					console.log('FETCHRAWRESPONSE', response);
-					if (response.status == 200) return response.json();
+					.then(response => {
+						console.log('FETCHRAWRESPONSE', response);
+						if (response.status == 200) return response.json();
 
-					this.setState({
-						errorText: response._bodyText,
+						this.setState({
+							errorText: response._bodyText,
+						});
+						return response;
+					})
+					.then(response => {
+						console.log('SAVEGROUPREPONSE', response);
+
+						if (!_.isObject(response)) {
+							this.setState({
+								errorText: response.replace('[', '').replace(']', '').replace(/\"/g, '').trim(),
+							});
+							return;
+						}
+
+						// TODO Prefer a toast message 'saved'
+						// https://www.npmjs.com/package/react-native-simple-toast
+						this.setState({
+							errorText: 'Saved',
+						});
+
+						// Fill redux store with new group
+						this.props.setGroup(response.group);
+
+						// Go back to carers
+						this.props.navigation.navigate('Account')
 					});
-					return response;
-				})
-				.then(response => {
-					console.log('SAVEGROUPREPONSE', response);
-				});
+			}
 		}
 	}
 

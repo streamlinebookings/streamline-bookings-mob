@@ -65,13 +65,13 @@ class AccountScreen extends React.Component {
 		   							          </View>}
 		   			          ></ListItem>
 		   					<ListItem key={ 'dependants' }
-		   					          onPress={ () => this.handleNext('dependants') }
+		   					          onPress={ () => this.props.navigation.navigate('Dependants') }
 		   					          title={ <View flexDirection='row' justifyContent='space-between'>
 		   								          <Text>Dependants and children</Text>
 		   							          </View>}
 		   			          ></ListItem>
 		   					<ListItem key={ 'financials' }
-		   					          onPress={ () => this.handleNext('financials') }
+		   					          // onPress={ this.props.navigation.navigate('Financials') }
 		   					          title={ <View flexDirection='row' justifyContent='space-between'>
 		   								          <Text>Financial details</Text>
 		   							          </View>}

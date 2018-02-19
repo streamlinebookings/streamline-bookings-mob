@@ -7,16 +7,17 @@ import { createStore } from 'redux';
 
 // Our imports
 import * as Action from './common/actions';
-import LoginContainer from './screens/loginContainer';
+import AccountContainer from './screens/accountContainer';
 import BookedContainer from './screens/bookedContainer';
 import BookedClassActionsContainer from './screens/bookedClassActionsContainer';
 import BookContainer from './screens/bookContainer';
 import BookDetailsContainer from './screens/bookDetailsContainer';
 import BookPayContainer from './screens/bookPayContainer';
-import AccountContainer from './screens/accountContainer';
-import GroupDetailsContainer from './screens/groupDetailsContainer';
 import CarersContainer from './screens/carersContainer';
 import CarerDetailsContainer from './screens/carerDetailsContainer';
+import DependantsContainer from './screens/dependantsContainer';
+import GroupDetailsContainer from './screens/groupDetailsContainer';
+import LoginContainer from './screens/loginContainer';
 
 // Define redux store
 let store = createStore(Action.Slb);
@@ -114,6 +115,18 @@ const RootNavigator = DrawerNavigator(
 				drawerLabel: () => null
 			},
 		},
+		Dependants: {
+			screen: DependantsContainer,
+			navigationOptions: {
+				drawerLabel: () => null
+			},
+		},
+		// DependantDetails: {
+		// 	screen: DependantDetailsContainer,
+		// 	navigationOptions: {
+		// 		drawerLabel: () => null
+		// 	},
+		// },
 	}, {
 		initialRouteName: 'Login'
 	}
