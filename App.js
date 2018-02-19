@@ -16,6 +16,7 @@ import BookPayContainer from './screens/bookPayContainer';
 import CarersContainer from './screens/carersContainer';
 import CarerDetailsContainer from './screens/carerDetailsContainer';
 import DependantsContainer from './screens/dependantsContainer';
+import DependantDetailsContainer from './screens/dependantDetailsContainer';
 import GroupDetailsContainer from './screens/groupDetailsContainer';
 import LoginContainer from './screens/loginContainer';
 
@@ -121,12 +122,12 @@ const RootNavigator = DrawerNavigator(
 				drawerLabel: () => null
 			},
 		},
-		// DependantDetails: {
-		// 	screen: DependantDetailsContainer,
-		// 	navigationOptions: {
-		// 		drawerLabel: () => null
-		// 	},
-		// },
+		DependantDetails: {
+			screen: DependantDetailsContainer,
+			navigationOptions: {
+				drawerLabel: () => null
+			},
+		},
 	}, {
 		initialRouteName: 'Login'
 	}
