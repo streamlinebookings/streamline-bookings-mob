@@ -15,7 +15,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
 	console.log('carerDetailsMAPPINGDISPATCHTOPROPS');
 	return {
-		// setCarer: carer => dispatch(Action.setCarer(carer)),
+		setCarerChosen: carer => dispatch(Action.setCarerChosen(carer)),
 		setPersons: persons => dispatch(Action.setPersons(persons)),
 
 	};

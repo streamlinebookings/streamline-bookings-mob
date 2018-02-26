@@ -1,9 +1,8 @@
 // Third party imports
 import React from 'react';
-import { StyleSheet, Text, TextInput, View, ScrollView, Image } from 'react-native';
+import { Image, Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Button, ButtonDependant, Card, CheckBox, FormLabel, FormInput, FormValidationMessage, Icon } from 'react-native-elements';
-//import DateTimePicker from 'react-native-modal-datetime-picker';
-// https://github.com/mmazzarolo/react-native-modal-datetime-picker
+import DateTimePicker from 'react-native-modal-datetime-picker';
 
 let moment = require('moment');
 let _ = require('lodash');
@@ -30,24 +29,21 @@ class DependantDetailsScreen extends React.Component {
 			localDb: props.localDb || false,
 			passwordVisible: false,
 			persons: props.persons || [],
+			showDatePicker: false,
 		};
 
 		// Bind local methods
 		this.handleInput = this.handleInput.bind(this);
 		this.handleAddress = this.handleAddress.bind(this);
+		this.handleDob = this.handleDob.bind(this);
 		this.handleEmail = this.handleEmail.bind(this);
 		this.handleFirstName = this.handleFirstName.bind(this);
 		this.handleGender = this.handleGender.bind(this);
 		this.handleLastName = this.handleLastName.bind(this);
 		this.handleMedicalIndication = this.handleMedicalIndication.bind(this);
-		this.handlePassword = this.handlePassword.bind(this);
-		this.handlePasswordVisible = this.handlePasswordVisible.bind(this);
 		this.handlePhone = this.handlePhone.bind(this);
-		this.handlePostcode = this.handlePostcode.bind(this);
-		this.handleState = this.handleState.bind(this);
-		this.handleSuburb = this.handleSuburb.bind(this);
-		this.handleRelationship = this.handleRelationship.bind(this);
 		this.handleSaveOrNext = this.handleSaveOrNext.bind(this);
+		this.toggleDatePicker = this.toggleDatePicker.bind(this);
 	}
 
 	handleInput (inputSource, data) {
@@ -58,6 +54,9 @@ class DependantDetailsScreen extends React.Component {
 	}
 	handleAddress (data) {
 		this.handleInput('address', data);
+	}
+	handleDob (data) {
+		this.handleInput('dob', data);
 	}
 	handleEmail (data) {
 		this.handleInput('email', data);
@@ -74,30 +73,15 @@ class DependantDetailsScreen extends React.Component {
 	handleMedicalIndication (data) {
 		this.handleInput('hasMedicalIndication', !this.state.dependant.hasMedicalIndication);
 	}
-	handlePassword (data) {
-		this.handleInput('password', data);
-	}
-	handlePasswordVisible () {
-		this.setState({
-			passwordVisible: !this.state.passwordVisible,
-		})
-	}
-	handlePostcode (data) {
-		this.handleInput('postcode', data);
-	}
 	handlePhone (data) {
 		this.handleInput('phone', data);
 	}
-	handleState (data) {
-		this.handleInput('state', data);
+	toggleDatePicker (data) {
+		this.setState({
+			showDatePicker: !this.state.showDatePicker,
+		});
+		Keyboard.dismiss();
 	}
-	handleSuburb (data) {
-		this.handleInput('suburb', data);
-	}
-	handleRelationship (data) {
-		this.handleInput('relationship', data);
-	}
-
 
 	handleSaveOrNext () {
 		console.log('HANDLESAVEORNEXT', this.state);
@@ -190,14 +174,6 @@ class DependantDetailsScreen extends React.Component {
 			this.formInputFirstName.shake();
 			return false;
 		}
-		if (this.state.dependant && !this.state.dependant.email) {
-			this.setState({
-				errorText: 'Please give an email address',
-				hasErrors: { email: true }
-			});
-			this.formInputEmail.shake();
-			return false;
-		}
 		return true;
 	}
 
@@ -256,6 +232,19 @@ class DependantDetailsScreen extends React.Component {
 						           onChangeText={ this.handleEmail }/>
 
 						<FormLabel>Date of Birth</FormLabel>
+						<FormInput
+								 placeholder={ 'Tap here to set the date of birth' }
+								 value={ this.state.dependant.dob
+											? moment(this.state.dependant.dob).format('D MMMM YYYY')
+											: null }
+						         onFocus={ this.toggleDatePicker }/>
+						<DateTimePicker
+							isVisible={ this.state.showDatePicker }
+							onConfirm={ this.handleDob }
+							onCancel={ this.toggleDatePicker }
+							date={ new Date(moment(this.state.dependant.dob).format()) || new Date() }
+							maximumDate={ new Date() }
+						/>
 
 						<FormLabel>More information</FormLabel>
 						{/* Medical Indication */}
@@ -291,11 +280,13 @@ class DependantDetailsScreen extends React.Component {
 							          style={{ flex: 1 }}/>
 						</View>
 
-						{/*level info if we have it: this.state.dependant.atLevel.name */}
-
-
-
-
+						{/* Show the current level */}
+						{ this.state.dependant.atLevel && this.state.dependant.atLevel.name ?
+							<FormInput placeholder={ this.state.dependant.atLevel.name }
+							           disabled={ true }
+							           value={ 'Current level is: ' + this.state.dependant.atLevel.name }/>
+							: null
+						}
 
 						<FormValidationMessage
 							containerStyle={{ backgroundColor: 'transparent' }}>

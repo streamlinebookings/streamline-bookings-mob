@@ -1,7 +1,7 @@
 // Third party imports
 import React from 'react';
 import { StyleSheet, Text, TextInput, View, ScrollView, Image } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage, Button, ButtonGroup, CheckBox, Badge, List, ListItem } from 'react-native-elements';
+import { Card, FormLabel, FormInput, FormValidationMessage, Button, ButtonGroup, CheckBox, Badge, List, ListItem } from 'react-native-elements';
 
 let moment = require('moment');
 let _ = require('lodash');
@@ -42,10 +42,25 @@ class AccountScreen extends React.Component {
 
 				<View style={{ flex: 4 }}>
 					<ScrollView>
+
+						{ this.state.isRegistering ?
+							<Card containerStyle={{backgroundColor: 'lightgreen'}}>
+								<Text>
+									Thank you for registering!
+								</Text>
+								<Text style={{ paddingTop: 5 }}>
+									Please continue to add the swimmers' and other details.
+								</Text>
+								<Text style={{ paddingTop: 5 }}>
+									See you soon!
+								</Text>
+							</Card>
+						: null }
+
 						<List>
 							{ this.state.isRegistering ?
 			                    <ListItem key={ 'chooseVenue' }
-			                              onPress={ () => { this.props.navigation.navigate('ChooseVenue') }}
+			                              onPress={ () => { this.props.navigation.navigate('Venues') }}
 			                              title={ <View flexDirection='row' justifyContent='space-between'>
 			                                          <Text>Choose a swimming school</Text>
 			                                      </View>}

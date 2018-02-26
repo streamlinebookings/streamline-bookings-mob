@@ -98,7 +98,8 @@ class LoginScreen extends React.Component {
 		this.props.setLocalDb(this.state.localDb);
 
 		// Go to next screen
-		this.props.navigation.navigate('GroupDetails', {from: 'Login'});
+		this.props.navigation.navigate('CarerDetails', {from: 'Login'});
+		// this.props.navigation.navigate('Venues', {from: 'Login'});
 	}
 
 	render () {
@@ -131,8 +132,15 @@ class LoginScreen extends React.Component {
 
 				{/* Login form */}
 				<View style={{flex: 3, justifyContent: 'center'}}>
-					<FormInput placeholder={'Email address'} onChangeText={this.handleEmail}/>
-					<FormInput placeholder={'Password'} secureTextEntry={true} onChangeText={this.handlePassword}/>
+					<FormInput
+						placeholder={ 'Email address' }
+						placeholderTextColor={ '#666060' }
+						onChangeText={ this.handleEmail }/>
+					<FormInput
+						placeholder={ 'Password' }
+						placeholderTextColor={ '#666060' }
+						secureTextEntry={ true }
+						onChangeText={ this.handlePassword }/>
 
 					<FormValidationMessage
 						containerStyle={{ backgroundColor: 'transparent' }}>

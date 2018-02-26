@@ -19,13 +19,17 @@ class CarerDetailsScreen extends React.Component {
 
 		let fullName = props.person && props.person.firstName + ' ' + props.person.lastName || 'Not logged in';
 
+		let from = !props.person && props.navigation.state && props.navigation.state.params && props.navigation.state.params.from || null;
+
 		this.state = {
-			carer: props.carerChosen ? props.carerChosen[0] : {},
+			carer: props.carerChosen ? props.carerChosen : {},
 			errorText: false,
+			from: from,
 			fullName: fullName,
 			hasErrors: {},
 			isRegistering: !props.person ? true : false,
 			localDb: props.localDb || false,
+			password: null,
 			passwordVisible: false,
 			persons: props.persons || [],
 		};
@@ -69,6 +73,7 @@ class CarerDetailsScreen extends React.Component {
 	}
 	handlePassword (data) {
 		this.handleInput('password', data);
+		// this.handleInput('setPassword', true);
 	}
 	handlePasswordVisible () {
 		this.setState({
@@ -97,10 +102,10 @@ class CarerDetailsScreen extends React.Component {
 			if (this.validateCarer()) {
 
 				// Fill redux store with new carer details
-				this.props.setCarer(this.state.carer);
+				this.props.setCarerChosen(this.state.carer);
 
 				// Go to new screen
-				this.props.navigation.navigate('Carers')
+				this.props.navigation.navigate('Venues')
 			}
 		} else {
 			// Save
@@ -180,12 +185,28 @@ class CarerDetailsScreen extends React.Component {
 			this.formInputFirstName.shake();
 			return false;
 		}
+		if (this.state.isRegistering && this.state.carer && !this.state.carer.lastName) {
+			this.setState({
+				errorText: 'Please give a carer\'s last name',
+				hasErrors: { lastName: true }
+			});
+			this.formInputLastName.shake();
+			return false;
+		}
 		if (this.state.carer && !this.state.carer.email) {
 			this.setState({
 				errorText: 'Please give an email address',
 				hasErrors: { email: true }
 			});
 			this.formInputEmail.shake();
+			return false;
+		}
+		if (this.state.isRegistering && this.state.carer && !this.state.carer.password) {
+			this.setState({
+				errorText: 'Please give a carer\'s password',
+				hasErrors: { password: true }
+			});
+			this.formInputPassword.shake();
 			return false;
 		}
 		return true;
@@ -206,7 +227,7 @@ class CarerDetailsScreen extends React.Component {
 				<Header fullName={ this.state.fullName }
 				        image={ 'mob/backgrounds/background-account.jpg' }
 				        navigation={ this.props.navigation }
-				        backTo={ 'Carers' }
+				        backTo={ this.state.from || 'Carers' }
 				        title='Carer Details'
 				/>
 
@@ -215,7 +236,9 @@ class CarerDetailsScreen extends React.Component {
 
 						{ this.state.isRegistering ?
 							<Card containerStyle={{backgroundColor: 'lightgreen'}}>
-								<Text>To register, please complete this and the following screens with family and person details</Text>
+								<Text>
+									To register, please complete these details and continue to select your swimming school.
+								</Text>
 							</Card>
 						: null}
 
@@ -225,25 +248,30 @@ class CarerDetailsScreen extends React.Component {
 								<FormInput placeholder={ 'First name' }
 								           value={ this.state.carer.firstName }
 								           containerStyle={ this.state.hasErrors.firstName ? errorStyle : null }
-								           onChangeText={ this.handleFirstName }
-								           ref={ ref => this.formInputFirstName = ref }/>
+								           ref={ ref => this.formInputFirstName = ref }
+								           onChangeText={ this.handleFirstName }/>
 							</View>
 							<View style={{ flex: 5 }}>
 								<FormInput placeholder={ 'Last name' }
 								           value={ this.state.carer.lastName }
+								           containerStyle={ this.state.hasErrors.lastName ? errorStyle : null }
+								           ref={ ref => this.formInputLastName = ref }
 								           onChangeText={ this.handleLastName }/>
 							</View>
 						</View>
 
-						<FormLabel>Phone & Email & Password { this.state.isRegistering
-															? '- use these to login to this app after registration'
+						<FormLabel>Contact details { this.state.isRegistering
+															? '- these will be your login details to this app'
 															: this.state.carer.id
 																? '- you can change your password here'
 																: '' }</FormLabel>
-						<FormInput placeholder={ 'Phone' }
-						           value={ this.state.carer.phone }
-						           containerStyle={ this.state.hasErrors.phone ? errorStyle : null }
-						           onChangeText={ this.handlePhone }/>
+						{ !this.state.isRegistering ?
+							<FormInput placeholder={ 'Phone' }
+							           value={ this.state.carer.phone }
+							           containerStyle={ this.state.hasErrors.phone ? errorStyle : null }
+							           onChangeText={ this.handlePhone }/>
+							: null
+						}
 						<FormInput placeholder={ 'Email address' }
 						           value={ this.state.carer.email }
 						           containerStyle={ this.state.hasErrors.email ? errorStyle : null }
@@ -252,7 +280,10 @@ class CarerDetailsScreen extends React.Component {
 						<View style={{ flex: 11 }} flexDirection='row' justifyContent='space-between' >
 							<View style={{ flex: 9 }}>
 								<FormInput placeholder={ 'Password' }
+								           value={ this.state.carer.password || null }
 								           secureTextEntry={ !this.state.passwordVisible }
+								           containerStyle={ this.state.hasErrors.password ? errorStyle : null }
+								           ref={ ref => this.formInputPassword = ref }
 								           onChangeText={ this.handlePassword }/>
 							</View>
 							<View style={{ flex: 2 }}>
@@ -261,32 +292,36 @@ class CarerDetailsScreen extends React.Component {
 							</View>
 						</View>
 
-						<FormLabel>Address</FormLabel>
-						<FormInput placeholder={ 'Address' }
-						           value={ this.state.carer.address }
-						           onChangeText={ this.handleAddress }/>
+						{ !this.state.isRegistering ?
+							<View>
+								<FormLabel>Address</FormLabel>
+								<FormInput placeholder={ 'Address' }
+								           value={ this.state.carer.address }
+								           onChangeText={ this.handleAddress }/>
 
-						<FormInput placeholder={ 'Suburb' }
-						           value={ this.state.carer.suburb }
-						           onChangeText={ this.handleSuburb }/>
+								<FormInput placeholder={ 'Suburb' }
+								           value={ this.state.carer.suburb }
+								           onChangeText={ this.handleSuburb }/>
 
-						<View style={{ flex: 11 }} flexDirection='row' justifyContent='space-around'>
-							<View style={{ flex: 5 }}>
-								<FormInput placeholder={ 'State' }
-								           value={ this.state.carer.state }
-								           onChangeText={ this.handleState }/>
-							</View>
-							<View style={{ flex: 5 }}>
-								<FormInput placeholder={ 'Postcode' }
-								           value={ this.state.carer.postcode }
-								           onChangeText={ this.handlePostcode }/>
-							</View>
-						</View>
+								<View style={{ flex: 11 }} flexDirection='row' justifyContent='space-around'>
+									<View style={{ flex: 5 }}>
+										<FormInput placeholder={ 'State' }
+										           value={ this.state.carer.state }
+										           onChangeText={ this.handleState }/>
+									</View>
+									<View style={{ flex: 5 }}>
+										<FormInput placeholder={ 'Postcode' }
+										           value={ this.state.carer.postcode }
+										           onChangeText={ this.handlePostcode }/>
+									</View>
+								</View>
 
-						<FormLabel>Relationship</FormLabel>
-						<FormInput placeholder={ 'Relationship to dependant(s)' }
-						           value={ this.state.carer.relationship }
-						           onChangeText={ this.handleRelationship }/>
+								<FormLabel>Relationship</FormLabel>
+								<FormInput placeholder={ 'Relationship to dependant(s)' }
+								           value={ this.state.carer.relationship }
+								           onChangeText={ this.handleRelationship }/>
+							</View> : null
+						}
 
 						<FormValidationMessage
 							containerStyle={{ backgroundColor: 'transparent' }}>

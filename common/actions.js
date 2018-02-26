@@ -9,6 +9,7 @@ export const SET_LOCALDB = 'SET_LOCALDB'
 export const SET_CARERCHOSEN = 'SET_CARERCHOSEN'
 export const SET_DEPENDANTSCHOSEN = 'SET_DEPENDANTSCHOSEN'
 export const SET_CLASSCHOSEN = 'SET_CLASSCHOSEN'
+export const SET_VENUECHOSEN = 'SET_VENUECHOSEN'
 
 /*
  * Action creators
@@ -45,6 +46,10 @@ export function setClassChosen(classChosen) {
 	return { type: SET_CLASSCHOSEN, classChosen };
 }
 
+export function setVenueChosen(venueChosen) {
+	return { type: SET_VENUECHOSEN, venueChosen };
+}
+
 /*
  * Reducers
  */
@@ -74,6 +79,9 @@ export function Slb(state = {}, action) {
 
 		case SET_CLASSCHOSEN:
 			return Object.assign({}, state, setClassChosen(action.classChosen));
+
+		case SET_VENUECHOSEN:
+			return Object.assign({}, state, setVenueChosen(action.venueChosen));
 
 		default:
 			return state;

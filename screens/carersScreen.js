@@ -46,7 +46,7 @@ class CarersScreen extends React.Component {
 		console.log('HANDLECARERACTIONSFOR', carer);
 
 		// Update the redux store with the chosen dependant
-		this.props.setCarerChosen([carer]);
+		this.props.setCarerChosen(carer);
 
 		// Go to next screen
 		this.props.navigation.navigate('CarerDetails');

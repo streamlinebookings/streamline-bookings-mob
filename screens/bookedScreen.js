@@ -185,7 +185,7 @@ class BookedScreen extends React.Component {
 						return (
 							<ListItem key={oneClass.person.id + oneClass.id}
 							          onPress={ () => this.handleClassActions(oneClass) }
-							          containerStyle={this.state.highlightClassId === oneClass.id ? {backgroundColor: '#c2f7b2'} : {}}
+							          containerStyle={ this.state.highlightClassId === oneClass.id ? {backgroundColor: '#c2f7b2'} : {} }
 							          title={
 								          <View>
 									          <View flexDirection='row' justifyContent='space-between'>

@@ -19,6 +19,8 @@ import DependantsContainer from './screens/dependantsContainer';
 import DependantDetailsContainer from './screens/dependantDetailsContainer';
 import GroupDetailsContainer from './screens/groupDetailsContainer';
 import LoginContainer from './screens/loginContainer';
+import VenuesContainer from './screens/venuesContainer';
+// import VenueDetailsContainer from './screens/venueDetailsContainer';
 
 // Define redux store
 let store = createStore(Action.Slb);
@@ -128,6 +130,18 @@ const RootNavigator = DrawerNavigator(
 				drawerLabel: () => null
 			},
 		},
+		Venues: {
+			screen: VenuesContainer,
+			navigationOptions: {
+				drawerLabel: () => null
+			},
+		},
+		// VenueDetails: {
+		// 	screen: VenueDetailsContainer,
+		// 	navigationOptions: {
+		// 		drawerLabel: () => null
+		// 	},
+		// },
 	}, {
 		initialRouteName: 'Login'
 	}
