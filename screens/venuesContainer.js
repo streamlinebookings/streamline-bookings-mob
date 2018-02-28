@@ -15,6 +15,10 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
 	console.log('venuesMAPPINGDISPATCHTOPROPS');
 	return {
+		setGroup: group => dispatch(Action.setGroup(group)),
+		setPerson: person => dispatch(Action.setPerson(person)),
+		setPersons: persons => dispatch(Action.setPersons(persons)),
+		setToken: token => dispatch(Action.setToken(token)),
 		setVenueChosen: venue => dispatch(Action.setVenueChosen(venue)),
 	};
 }

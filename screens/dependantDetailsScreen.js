@@ -3,6 +3,7 @@ import React from 'react';
 import { Image, Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Button, ButtonDependant, Card, CheckBox, FormLabel, FormInput, FormValidationMessage, Icon } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 let moment = require('moment');
 let _ = require('lodash');
@@ -197,7 +198,7 @@ class DependantDetailsScreen extends React.Component {
 				/>
 
 				<View style={{ flex: 4 }}>
-					<ScrollView>
+					<KeyboardAwareScrollView resetScrollToCoords={{ x: 0, y: 0 }}>
 
 						{ this.state.isRegistering ?
 							<Card containerStyle={{backgroundColor: 'lightgreen'}}>
@@ -225,11 +226,13 @@ class DependantDetailsScreen extends React.Component {
 						<FormInput placeholder={ 'Phone' }
 						           value={ this.state.dependant.phone }
 						           containerStyle={ this.state.hasErrors.phone ? errorStyle : null }
-						           onChangeText={ this.handlePhone }/>
+						           onChangeText={ this.handlePhone }
+						           keyboardType={ 'phone-pad' }/>
 						<FormInput placeholder={ 'Email address' }
 						           value={ this.state.dependant.email }
 						           containerStyle={ this.state.hasErrors.email ? errorStyle : null }
-						           onChangeText={ this.handleEmail }/>
+						           onChangeText={ this.handleEmail }
+						           keyboardType={ 'email-address' }/>
 
 						<FormLabel>Date of Birth</FormLabel>
 						<FormInput
@@ -299,7 +302,7 @@ class DependantDetailsScreen extends React.Component {
 							title={ this.state.isRegistering ? 'Next' : 'Save' }
 							onPress={ this.handleSaveOrNext }/>
 
-					</ScrollView>
+					</KeyboardAwareScrollView>
 				</View>
 			</View>
 		);

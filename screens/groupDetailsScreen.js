@@ -2,6 +2,7 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, View, ScrollView, Image } from 'react-native';
 import { Card, FormLabel, FormInput, FormValidationMessage, Button, ButtonGroup, CheckBox, Badge, List, ListItem } from 'react-native-elements';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 let moment = require('moment');
 let _ = require('lodash');
@@ -164,7 +165,7 @@ class GroupDetailsScreen extends React.Component {
 				/>
 
 				<View style={{ flex: 4 }}>
-					<ScrollView>
+					<KeyboardAwareScrollView resetScrollToCoords={{ x: 0, y: 0 }}>
 
 						{ this.state.isRegistering ?
 							<Card containerStyle={{backgroundColor: 'lightgreen'}}>
@@ -212,7 +213,7 @@ class GroupDetailsScreen extends React.Component {
 							title={ this.state.isRegistering ? 'Next' : 'Save' }
 							onPress={ this.handleSaveOrNext }/>
 
-					</ScrollView>
+					</KeyboardAwareScrollView>
 				</View>
 			</View>
 		);

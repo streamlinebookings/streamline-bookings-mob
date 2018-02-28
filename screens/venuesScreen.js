@@ -34,7 +34,7 @@ class VenuesScreen extends React.Component {
 		};
 
 		// Bind local methods
-		this.handleNext = this.handleNext.bind(this);
+		this.handleRegister = this.handleRegister.bind(this);
 		this.handleVenueActions = this.handleVenueActions.bind(this);
 	}
 
@@ -72,8 +72,8 @@ class VenuesScreen extends React.Component {
 		});
 	}
 
-	handleNext () {
-		console.log('HANDLENEXT', this.state);
+	handleRegister () {
+		console.log('HandleRegister', this.state);
 
 		if (this.state.isRegistering) {
 			// Register
@@ -94,14 +94,8 @@ class VenuesScreen extends React.Component {
 				.then(response => {
 					console.log('REGISTERREPONSE', response);
 
-
-					////////////////////////////////////
-					// make like login: set token, etc
-
-
 					if (response.person) {
-
-						// Call the redux action = set the store
+						// Call the redux actions = set the store
 						this.props.setGroup(response.group);
 						this.props.setPerson(response.person);
 						this.props.setPersons(response.persons);
@@ -185,7 +179,7 @@ class VenuesScreen extends React.Component {
 							icon={{ name: 'paper-plane', type: 'font-awesome' }}
 							backgroundColor='green'
 							title={ 'Register' }
-							onPress={ this.handleNext }
+							onPress={ this.handleRegister }
 						/>
 						: null
 					}
@@ -204,6 +198,7 @@ class VenuesScreen extends React.Component {
 				        navigation={ this.props.navigation }
 						backTo={ 'CarerDetails' }
 					    title='Schools'
+					    noMenu={ this.state.isRegistering ? true : false }
 				/>
 
 				<View style={{ flex: 4 }}>

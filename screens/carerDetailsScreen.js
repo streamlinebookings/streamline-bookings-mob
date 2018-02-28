@@ -2,6 +2,7 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, View, ScrollView, Image } from 'react-native';
 import { Button, ButtonCarer, Card, FormLabel, FormInput, FormValidationMessage, Icon } from 'react-native-elements';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 let moment = require('moment');
 let _ = require('lodash');
@@ -229,10 +230,11 @@ class CarerDetailsScreen extends React.Component {
 				        navigation={ this.props.navigation }
 				        backTo={ this.state.from || 'Carers' }
 				        title='Carer Details'
+				        noMenu={ this.state.isRegistering ? true : false }
 				/>
 
 				<View style={{ flex: 4 }}>
-					<ScrollView>
+					<KeyboardAwareScrollView resetScrollToCoords={{ x: 0, y: 0 }}>
 
 						{ this.state.isRegistering ?
 							<Card containerStyle={{backgroundColor: 'lightgreen'}}>
@@ -269,13 +271,15 @@ class CarerDetailsScreen extends React.Component {
 							<FormInput placeholder={ 'Phone' }
 							           value={ this.state.carer.phone }
 							           containerStyle={ this.state.hasErrors.phone ? errorStyle : null }
-							           onChangeText={ this.handlePhone }/>
+							           onChangeText={ this.handlePhone }
+									   keyboardType={ 'phone-pad' }/>
 							: null
 						}
 						<FormInput placeholder={ 'Email address' }
 						           value={ this.state.carer.email }
 						           containerStyle={ this.state.hasErrors.email ? errorStyle : null }
 						           onChangeText={ this.handleEmail }
+						           keyboardType={ 'email-address' }
 						           ref={ ref => this.formInputEmail = ref }/>
 						<View style={{ flex: 11 }} flexDirection='row' justifyContent='space-between' >
 							<View style={{ flex: 9 }}>
@@ -334,7 +338,7 @@ class CarerDetailsScreen extends React.Component {
 							title={ this.state.isRegistering ? 'Next' : 'Save' }
 							onPress={ this.handleSaveOrNext }/>
 
-					</ScrollView>
+					</KeyboardAwareScrollView>
 				</View>
 			</View>
 		);

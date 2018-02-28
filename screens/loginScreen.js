@@ -135,7 +135,8 @@ class LoginScreen extends React.Component {
 					<FormInput
 						placeholder={ 'Email address' }
 						placeholderTextColor={ '#666060' }
-						onChangeText={ this.handleEmail }/>
+						onChangeText={ this.handleEmail }
+						keyboardType={ 'email-address' }/>
 					<FormInput
 						placeholder={ 'Password' }
 						placeholderTextColor={ '#666060' }

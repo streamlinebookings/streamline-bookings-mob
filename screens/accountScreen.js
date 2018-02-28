@@ -19,7 +19,10 @@ class AccountScreen extends React.Component {
 
 		let fullName = props.person && props.person.firstName + ' ' + props.person.lastName || 'Not logged in';
 
+		let afterRegister = props.navigation.state && props.navigation.state.params && props.navigation.state.params.afterRegister || null;
+
 		this.state = {
+			afterRegister: afterRegister,
 			fullName: fullName,
 			isRegistering: !props.person ? true : false,
 		}
@@ -43,13 +46,13 @@ class AccountScreen extends React.Component {
 				<View style={{ flex: 4 }}>
 					<ScrollView>
 
-						{ this.state.isRegistering ?
+						{ this.state.afterRegister ?
 							<Card containerStyle={{backgroundColor: 'lightgreen'}}>
 								<Text>
-									Thank you for registering!
+									Thank you for registering! You will be contacted with a few days.
 								</Text>
 								<Text style={{ paddingTop: 5 }}>
-									Please continue to add the swimmers' and other details.
+									Please add the swimmers' details and complete your personal details.
 								</Text>
 								<Text style={{ paddingTop: 5 }}>
 									See you soon!
@@ -83,14 +86,20 @@ class AccountScreen extends React.Component {
 		   					          onPress={ () => this.props.navigation.navigate('Dependants') }
 		   					          title={ <View flexDirection='row' justifyContent='space-between'>
 		   								          <Text>Dependants and children</Text>
-		   							          </View>}
+		   							          </View> }
+						              subtitle={ this.props.persons.filter(person => person.isDependant).length <= 0
+						                            ? 'You haven\'t registered any dependants yet'
+							                        : null }
 		   			          ></ListItem>
 		   					<ListItem key={ 'financials' }
 		   					          // onPress={ this.props.navigation.navigate('Financials') }
 		   					          title={ <View flexDirection='row' justifyContent='space-between'>
 		   								          <Text>Financial details</Text>
 		   							          </View>}
-		   			          ></ListItem>
+						              subtitle={ !this.props.person.paymentMethod
+							              ? 'You haven\'t given a payment method yet'
+							              : null }
+						    ></ListItem>
 						</List>
 					</ScrollView>
 				</View>

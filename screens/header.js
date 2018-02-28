@@ -19,6 +19,7 @@ export class Header extends React.Component {
 			fullName: props.fullName,
 			headerTitle: props.title,
 			image: props.image,
+			noMenu: props.noMenu || false,
 		}
 
 		// Bind local methods
@@ -69,11 +70,13 @@ export class Header extends React.Component {
 							backgroundColor='transparent'
 							onPress={ this.handleGoBack }
 						/>
-						<Button
-							icon={{ name: 'bars', type: 'font-awesome', color: 'green' }}
-							backgroundColor='transparent'
-							onPress={ this.handleMenu }
+						{ !this.state.noMenu ?
+							<Button
+								icon={{ name: 'bars', type: 'font-awesome', color: 'green' }}
+								backgroundColor='transparent'
+								onPress={ this.handleMenu }
 							 />
+						: null }
 					</View>
 					<Badge value={ this.state.fullName } containerStyle={{ backgroundColor: 'orange', marginBottom: 10, marginRight: 10 }}/>
 				</View>
