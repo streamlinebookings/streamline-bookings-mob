@@ -31,7 +31,7 @@ export class Header extends React.Component {
 		if (this.state.backTo) {
 			this.props.navigation.navigate(this.state.backTo);
 		} else {
-			this.props.navigation.goBack();
+			this.props.navigation.navigate('Home');
 		}
 	}
 

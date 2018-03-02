@@ -188,7 +188,7 @@ class BookScreen extends React.Component {
 				        // image={ 'mob/backgrounds/background-book.jpg' }
 				        image={ 'mob/backgrounds/background-book.jpg' }
 				        navigation={ this.props.navigation }
-				        // backTo={ 'Booked' }
+				        backTo={ 'Home' }
 				        title='Book a Class'
 				/>
 

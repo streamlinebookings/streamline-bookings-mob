@@ -39,7 +39,7 @@ class AccountScreen extends React.Component {
 				<Header fullName={ this.state.fullName }
 				        image={ 'mob/backgrounds/background-account.jpg' }
 				        navigation={ this.props.navigation }
-				        // backTo={ 'Book' }
+				        backTo={ 'Home' }
 				        title='Account'
 				/>
 

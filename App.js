@@ -18,6 +18,7 @@ import CarerDetailsContainer from './screens/carerDetailsContainer';
 import DependantsContainer from './screens/dependantsContainer';
 import DependantDetailsContainer from './screens/dependantDetailsContainer';
 import GroupDetailsContainer from './screens/groupDetailsContainer';
+import HomeContainer from './screens/homeContainer';
 import LoginContainer from './screens/loginContainer';
 import VenuesContainer from './screens/venuesContainer';
 // import VenueDetailsContainer from './screens/venueDetailsContainer';
@@ -34,10 +35,17 @@ let unsubscribe = store.subscribe(() =>
 
 const RootNavigator = DrawerNavigator(
 	{
-		Login: {
-			screen: LoginContainer,
+		NoHome: {
+			screen: HomeContainer,
 			navigationOptions: {
-				drawerLabel: 'Login',
+				drawerLabel: ' ',
+				drawerIcon: () => null,
+			},
+		},
+		Home: {
+			screen: HomeContainer,
+			navigationOptions: {
+				drawerLabel: 'Home',
 				drawerIcon: ({ tintColor }) => (
 					<Image
 						source={ require('./icons/hamburger-menu.png') }
@@ -142,6 +150,25 @@ const RootNavigator = DrawerNavigator(
 		// 		drawerLabel: () => null
 		// 	},
 		// },
+		Login: {
+			screen: LoginContainer,
+			navigationOptions: {
+				drawerLabel: () => null
+			}
+		},
+		Logout: {
+			screen: LoginContainer,
+			navigationOptions: {
+				drawerLabel: 'Logout',
+				drawerIcon: ({ tintColor }) => (
+					<Image
+						source={ require('./icons/hamburger-menu.png') }
+						style={ [styles.icon, {tintColor: tintColor}] }
+					/>
+				),
+			},
+		},
+
 	}, {
 		initialRouteName: 'Login',
 	}

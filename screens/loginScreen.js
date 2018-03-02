@@ -76,7 +76,7 @@ class LoginScreen extends React.Component {
 					this.props.setLocalDb(localDb);
 
 					// Go to next screen
-					this.props.navigation.navigate('Account'); // Booked Book
+					this.props.navigation.navigate('Home');
 
 				} else {
 					this.setState({
@@ -104,6 +104,12 @@ class LoginScreen extends React.Component {
 	render () {
 
 		console.log('RENDERINGLOGINSCREEN', this.props, this.state);
+
+		/////////////////////////// NEXT
+		// // Logout before login
+		// if (this.props.person) {
+		// 	this.props.setPerson(null);
+		// }
 
 		return (
 			<View style={{flex: 1}}>

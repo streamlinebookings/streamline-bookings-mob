@@ -93,7 +93,7 @@ class BookedScreen extends React.Component {
 
 			console.log('creating dependants', this.state);
 
-			if (this.state.persons.length <= 1) return;
+			if (!this.state.persons || this.state.persons.length <= 1) return;
 
 			const dependants = this.state.persons.map(person => {
 
@@ -137,7 +137,8 @@ class BookedScreen extends React.Component {
 
 			console.log('creating list booked lessons', this.state);
 
-			let thesePersons = this.state.persons.filter(person => {
+			let thesePersons = !this.state.persons ? [] :
+				this.state.persons.filter(person => {
 
 				if (!person.isSwimmer) return false;
 
@@ -224,7 +225,7 @@ class BookedScreen extends React.Component {
 				<Header fullName={ this.state.fullName }
 				        image={ 'mob/backgrounds/background-booked.jpg' }
 				        navigation={ this.props.navigation }
-				        // backTo={ 'Book' }
+				        backTo={ 'Home' }
 				        title='My Classes'
 				/>
 
