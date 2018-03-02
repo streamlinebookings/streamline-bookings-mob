@@ -15,6 +15,7 @@ class LoginScreen extends React.Component {
 		console.log('LOGINSCREENCONSTRUCTOR', props);
 
 		this.state = {
+			buttonPressed: false,
 			email: '',
 			password: '',
 			localDb: false,
@@ -94,12 +95,15 @@ class LoginScreen extends React.Component {
 	handleRegister (event) {
 		console.log('HANDLEREGISTER', event);
 
+		this.setState({
+			buttonPressed: true,
+		});
+
 		// Call the redux action = set the store
 		this.props.setLocalDb(this.state.localDb);
 
 		// Go to next screen
 		this.props.navigation.navigate('CarerDetails', {from: 'Login'});
-		// this.props.navigation.navigate('Venues', {from: 'Login'});
 	}
 
 	render () {
@@ -159,7 +163,7 @@ class LoginScreen extends React.Component {
 
 					<View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
 						<Button
-							backgroundColor='transparent'
+							backgroundColor={ this.state.buttonPressed ? 'pink' : 'aqua' }
 							color='black'
 							icon={{ name: 'thumb-up', type: 'fontello', color: 'black' }}
 							onPress={ this.handleRegister }
@@ -167,7 +171,7 @@ class LoginScreen extends React.Component {
 							title='Create new account'
 						/>
 						<Button
-							backgroundColor='transparent'
+							backgroundColor={ this.state.buttonPressed ? 'pink' : 'aqua' }
 							color='black'
 							iconRight={{ name: 'thumb-down', type: 'fontello', color: 'black' }}
 							style={{ width: 10 }}

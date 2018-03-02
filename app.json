@@ -1,5 +1,15 @@
 {
   "expo": {
-    "sdkVersion": "22.0.0"
+    "sdkVersion": "22.0.0",
+    "name": "Streamline Bookings",
+    //"icon": "./path/to/your/app-icon.png",
+    "version": "1.0.0",
+    "slug": "streamline-bookings",
+    "ios": {
+      "bundleIdentifier": "com.streamlinebookings.bookingsapp"
+    },
+    "android": {
+      "package": "com.streamlinebookings.bookingsapp"
+    }
   }
 }
