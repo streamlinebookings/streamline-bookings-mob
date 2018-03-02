@@ -93,18 +93,10 @@ class LoginScreen extends React.Component {
 			});
 	}
 	handleRegister () {
-		// console.log('HANDLEREGISTER', event);
-
-		// this.setState({
-		// 	localDb: !this.state.localDb
-		// });
 		this.setState({
 			buttonPressed: true,
 		});
 
-		// // Call the redux action = set the store
-		// this.props.setLocalDb(this.state.localDb);
-		//
 		// Go to next screen
 		this.props.navigation.navigate('CarerDetails', {from: 'Login'});
 	}
@@ -165,22 +157,20 @@ class LoginScreen extends React.Component {
 				<View style={{ flex: 2, justifyContent: 'space-between' }}>
 
 					<View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-						{/*<Button*/}
-							{/*backgroundColor={ this.state.buttonPressed ? 'pink' : 'lime' }*/}
-							{/*color='black'*/}
-							{/*icon={{ name: 'thumb-up', type: 'fontello', color: 'black' }}*/}
-							{/*/!*onPress={ this.handleRegister }*!/*/}
-							{/*onPress={ this.handleLocalDb }*/}
-							{/*style={{ width: 10 }}*/}
-							{/*title='Create new account'*/}
-						{/*/>*/}
 						<Button
-							backgroundColor={ this.state.buttonPressed ? 'pink' : 'aqua' }
+							backgroundColor={ this.state.buttonPressed ? 'pink' : 'transparent' }
+							color='black'
+							icon={{ name: 'thumb-up', type: 'fontello', color: 'black' }}
+							style={{ width: 10 }}
+							title='Create an account'
+							onPress={ this.handleRegister }
+						/>
+						<Button
+							backgroundColor={ this.state.buttonPressed ? 'pink' : 'transparent' }
 							color='black'
 							iconRight={{ name: 'thumb-down', type: 'fontello', color: 'black' }}
 							style={{ width: 10 }}
 							title='Forgot password'
-							onPress={ this.handleRegister }
 						/>
 					</View>
 
