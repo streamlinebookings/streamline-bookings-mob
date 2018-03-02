@@ -92,16 +92,19 @@ class LoginScreen extends React.Component {
 				})
 			});
 	}
-	handleRegister (event) {
-		console.log('HANDLEREGISTER', event);
+	handleRegister () {
+		// console.log('HANDLEREGISTER', event);
 
+		// this.setState({
+		// 	localDb: !this.state.localDb
+		// });
 		this.setState({
 			buttonPressed: true,
 		});
 
-		// Call the redux action = set the store
-		this.props.setLocalDb(this.state.localDb);
-
+		// // Call the redux action = set the store
+		// this.props.setLocalDb(this.state.localDb);
+		//
 		// Go to next screen
 		this.props.navigation.navigate('CarerDetails', {from: 'Login'});
 	}
@@ -162,20 +165,22 @@ class LoginScreen extends React.Component {
 				<View style={{ flex: 2, justifyContent: 'space-between' }}>
 
 					<View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-						<Button
-							backgroundColor={ this.state.buttonPressed ? 'pink' : 'aqua' }
-							color='black'
-							icon={{ name: 'thumb-up', type: 'fontello', color: 'black' }}
-							onPress={ this.handleRegister }
-							style={{ width: 10 }}
-							title='Create new account'
-						/>
+						{/*<Button*/}
+							{/*backgroundColor={ this.state.buttonPressed ? 'pink' : 'lime' }*/}
+							{/*color='black'*/}
+							{/*icon={{ name: 'thumb-up', type: 'fontello', color: 'black' }}*/}
+							{/*/!*onPress={ this.handleRegister }*!/*/}
+							{/*onPress={ this.handleLocalDb }*/}
+							{/*style={{ width: 10 }}*/}
+							{/*title='Create new account'*/}
+						{/*/>*/}
 						<Button
 							backgroundColor={ this.state.buttonPressed ? 'pink' : 'aqua' }
 							color='black'
 							iconRight={{ name: 'thumb-down', type: 'fontello', color: 'black' }}
 							style={{ width: 10 }}
 							title='Forgot password'
+							onPress={ this.handleRegister }
 						/>
 					</View>
 
@@ -184,9 +189,9 @@ class LoginScreen extends React.Component {
 						iconType='font-awesome'
 						checkedIcon='check'
 						checkedColor='red'
-						containerStyle={{backgroundColor: 'pink', marginBottom: 20}}
-						checked={this.state.localDb}
-						onPress={this.handleLocalDb}
+						containerStyle={{ backgroundColor: 'pink', marginBottom: 20 }}
+						checked={ this.state.localDb }
+						onPress={ this.handleLocalDb }
 					/>
 
 				</View>
