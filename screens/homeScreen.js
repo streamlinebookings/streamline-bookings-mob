@@ -1,7 +1,7 @@
 // Third party imports
 import React from 'react';
 import { StyleSheet, Text, TextInput, View, Image } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage, Button, CheckBox } from 'react-native-elements';
+import { Badge, FormLabel, FormInput, FormValidationMessage, Button, CheckBox } from 'react-native-elements';
 
 // Our imports
 import { env } from '../environment';
@@ -14,92 +14,16 @@ class HomeScreen extends React.Component {
 		super(props);
 		console.log('HOMESCREENCONSTRUCTOR', props);
 
+		let fullName = props.person && props.person.firstName + ' ' + props.person.lastName || 'Not logged in';
+
 		this.state = {
 			buttonPressed: false,
 			email: '',
+			fullName: fullName,
 			password: '',
 			localDb: false,
 		};
-
-		// Bind local methods
-		// this.handleEmail = this.handleEmail.bind(this);
-		// this.handlePassword = this.handlePassword.bind(this);
-		// this.handleLocalDb = this.handleLocalDb.bind(this);
-		// this.handleRegister = this.handleRegister.bind(this);
 	}
-
-	// handleEmail (email) {
-	// 	this.setState({
-	// 		email: email,
-	// 	})
-	// }
-	// handlePassword (password) {
-	// 	this.setState({
-	// 		password: password,
-	// 	})
-	// }
-	// handleLocalDb () {
-	// 	this.setState({
-	// 		localDb: !this.state.localDb
-	// 	});
-	// }
-	// handleHome (email, password, localDb) {
-	// 	console.log('HANDLEHOME', email, password, localDb);
-	//
-	// 	let beApiUrl = localDb ? env.localApiUrl : env.beApiUrl;
-	//
-	// 	email = localDb ? 'sam@jones.com' : email;
-	// 	password = localDb ? '123456789' : password;
-	//
-	// 	fetch(beApiUrl + 'home', {
-	// 		method: 'post',
-	// 		body: JSON.stringify({
-	// 			fromMobile: true,
-	// 			email: email,
-	// 			password: password,
-	// 		})
-	// 	})
-	// 		.then(response => {
-	// 			console.log('FETCHRAWRESPONSE', response);
-	// 			if (response.status == 200) return response.json();
-	// 			return response;
-	// 		})
-	// 		.then(response => {
-	// 			console.log('HOMEREPONSE', response);
-	// 			if (response.person) {
-	//
-	// 				// Call the redux action = set the store
-	// 				this.props.setGroup(response.group);
-	// 				this.props.setPerson(response.person);
-	// 				this.props.setPersons(response.persons);
-	// 				this.props.setToken(response.token);
-	// 				this.props.setLocalDb(localDb);
-	//
-	// 				// Go to next screen
-	// 				this.props.navigation.navigate('Account'); // Booked Book
-	//
-	// 			} else {
-	// 				this.setState({
-	// 					person: {},
-	// 					afterHomeMessage: response._bodyText,
-	// 				})
-	// 			}
-	// 		})
-	// 		.catch(err => {
-	// 			console.log('HOMEERROR', err);
-	// 			this.setState({
-	// 				afterHomeMessage: err
-	// 			})
-	// 		});
-	// }
-	// handleRegister () {
-	// 	this.setState({
-	// 		buttonPressed: true,
-	// 	});
-	//
-	// 	// Go to next screen
-	// 	this.props.navigation.navigate('CarerDetails', {from: 'Home'});
-	// }
 
 	render () {
 
@@ -118,15 +42,21 @@ class HomeScreen extends React.Component {
 					opacity: 0.6,
 				}}>
 					<Image
-						style={{flex: 1, resizeMode: 'cover'}}
-						source={{uri: env.imagesUrl + 'mob/backgrounds/background-home.jpg'}}/>
+						style={{ flex: 1, resizeMode: 'cover' }}
+						source={{ uri: env.imagesUrl + 'mob/backgrounds/background-login.jpg' }}/>
 				</View>
 
-				{/* Logo */}
-				<View style={{flex: 2, justifyContent: 'flex-end', alignItems: 'center'}}>
+				{/* Name and Logo */}
+				<View style={{ flex: 2, justifyContent: 'flex-end', alignItems: 'center' }}>
+
+					<View style={{ alignSelf: 'flex-end' }}>
+						<Badge
+							value={ this.state.fullName }
+							containerStyle={{ backgroundColor: 'orange', marginBottom: 0, marginRight: 10 }}/>
+					</View>
 					<Image
-						style={{resizeMode: 'contain', height: '70%', width: '70%'}}
-						source={{uri: env.imagesUrl + 'common/streamline-logo.png'}}/>
+						style={{ resizeMode: 'contain', height: '70%', width: '70%' }}
+						source={{ uri: env.imagesUrl + 'common/streamline-logo.png' }}/>
 				</View>
 
 				{/* Home form */}
@@ -154,8 +84,7 @@ class HomeScreen extends React.Component {
 
 				<View style={{ flex: 1 }}></View>
 
-
-				</View>
+			</View>
 		)
 	}
 };

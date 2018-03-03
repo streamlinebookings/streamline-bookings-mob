@@ -1,10 +1,11 @@
 // Third party imports
 import React from 'react';
 import { StyleSheet, Text, TextInput, View, Image } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage, Button, CheckBox } from 'react-native-elements';
+import { Badge, FormLabel, FormInput, FormValidationMessage, Button, CheckBox } from 'react-native-elements';
 
 // Our imports
 import { env } from '../environment';
+import VenuesScreen from "./venuesScreen";
 
 
 class LoginScreen extends React.Component {
@@ -14,15 +15,20 @@ class LoginScreen extends React.Component {
 		super(props);
 		console.log('LOGINSCREENCONSTRUCTOR', props);
 
+		let fullName = props.person && props.person.firstName + ' ' + props.person.lastName || 'Not logged in';
+
 		this.state = {
 			buttonPressed: false,
 			email: '',
-			password: '',
+			fullName: fullName,
 			localDb: false,
+			password: '',
 		};
 
 		// Bind local methods
 		this.handleEmail = this.handleEmail.bind(this);
+		this.handleLogin = this.handleLogin.bind(this);
+		this.handleLogout = this.handleLogout.bind(this);
 		this.handlePassword = this.handlePassword.bind(this);
 		this.handleLocalDb = this.handleLocalDb.bind(this);
 		this.handleRegister = this.handleRegister.bind(this);
@@ -92,6 +98,21 @@ class LoginScreen extends React.Component {
 				})
 			});
 	}
+	handleLogout () {
+		console.log('HANDLELOGOUT');
+
+		// Call the redux action = set the store
+		this.props.setGroup();
+		this.props.setPerson();
+		this.props.setPersons();
+		this.props.setToken();
+		this.props.setLocalDb();
+
+		this.setState({
+			fullName: 'Not logged in',
+		});
+
+	}
 	handleRegister () {
 		this.setState({
 			buttonPressed: true,
@@ -103,13 +124,98 @@ class LoginScreen extends React.Component {
 
 	render () {
 
-		console.log('RENDERINGLOGINSCREEN', this.props, this.state);
+		console.log('RENDERINGLOGINSCREEN', this.props, this.state, env);
 
-		/////////////////////////// NEXT
-		// // Logout before login
-		// if (this.props.person) {
-		// 	this.props.setPerson(null);
-		// }
+		const LoginForm = () => {
+
+			return (
+				<View style={{flex: 3, justifyContent: 'center'}}>
+
+					<View>
+						<FormInput
+							placeholder={ 'Email address' }
+							placeholderTextColor={ '#666060' }
+							onChangeText={ this.handleEmail }
+							keyboardType={ 'email-address' }/>
+						<FormInput
+							placeholder={ 'Password' }
+							placeholderTextColor={ '#666060' }
+							secureTextEntry={ true }
+							onChangeText={ this.handlePassword }/>
+
+						<FormValidationMessage
+							containerStyle={{ backgroundColor: 'transparent' }}>
+							<Text style={{ fontWeight: 'bold' }}>{ this.state.afterLoginMessage || '' }</Text>
+						</FormValidationMessage>
+
+						<Button
+							icon={{name: 'paper-plane', type: 'font-awesome'}}
+							backgroundColor='green'
+							title='Login'
+							onPress={(event) => this.handleLogin(this.state.email, this.state.password, this.state.localDb) }/>
+					</View>
+
+					<View style={{ flex: 2, justifyContent: 'space-between' }}>
+
+						{/* Register and forgot buttons */}
+						<View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
+							<Button
+								backgroundColor={ this.state.buttonPressed ? 'pink' : 'transparent' }
+								color='black'
+								icon={{ name: 'thumb-up', type: 'fontello', color: 'black' }}
+								style={{ width: 10 }}
+								title='Create an account'
+								onPress={ this.handleRegister }
+							/>
+							<Button
+								backgroundColor={ this.state.buttonPressed ? 'pink' : 'transparent' }
+								color='black'
+								iconRight={{ name: 'thumb-down', type: 'fontello', color: 'black' }}
+								style={{ width: 10 }}
+								title='Forgot password'
+							/>
+						</View>
+
+						{/* Dev database */}
+						{ env.env === 'development' ?
+							<CheckBox
+								title='Use development database'
+								iconType='font-awesome'
+								checkedIcon='check'
+								checkedColor='red'
+								containerStyle={{ backgroundColor: 'pink', marginBottom: 20 }}
+								checked={ this.state.localDb }
+								onPress={ this.handleLocalDb }
+							/>
+							: null }
+
+					</View>
+				</View>
+			);
+		}
+
+		const LogoutForm = () => {
+			return (
+				<View style={{ flex: 3 }}>
+
+					<View style={{ flex: 2, justifyContent: 'space-around' }}>
+						<Button
+							icon={{name: 'power-off', type: 'font-awesome'}}
+							backgroundColor='green'
+							title='Log out'
+							onPress={ this.handleLogout }/>
+
+						<Button
+							icon={{name: 'bars', type: 'font-awesome'}}
+							backgroundColor='green'
+							title='Return'
+							onPress={ () => this.props.navigation.navigate('Home') }/>
+					</View>
+					<View style={{ flex: 2 }}></View>
+				</View>
+			);
+		}
+
 
 		return (
 			<View style={{flex: 1}}>
@@ -128,69 +234,22 @@ class LoginScreen extends React.Component {
 						source={{uri: env.imagesUrl + 'mob/backgrounds/background-login.jpg'}}/>
 				</View>
 
-				{/* Logo */}
+				{/* Name and Logo */}
 				<View style={{flex: 2, justifyContent: 'flex-end', alignItems: 'center'}}>
+					{ this.props.person ?
+						<View style={{ alignSelf: 'flex-end' }}>
+							<Badge
+								value={ this.state.fullName }
+								containerStyle={{ backgroundColor: 'orange', marginBottom: 0, marginRight: 10 }}/>
+						</View>
+					: null }
 					<Image
 						style={{resizeMode: 'contain', height: '70%', width: '70%'}}
 						source={{uri: env.imagesUrl + 'common/streamline-logo.png'}}/>
 				</View>
 
-				{/* Login form */}
-				<View style={{flex: 3, justifyContent: 'center'}}>
-					<FormInput
-						placeholder={ 'Email address' }
-						placeholderTextColor={ '#666060' }
-						onChangeText={ this.handleEmail }
-						keyboardType={ 'email-address' }/>
-					<FormInput
-						placeholder={ 'Password' }
-						placeholderTextColor={ '#666060' }
-						secureTextEntry={ true }
-						onChangeText={ this.handlePassword }/>
+				{ this.props.person ? LogoutForm() : LoginForm() }
 
-					<FormValidationMessage
-						containerStyle={{ backgroundColor: 'transparent' }}>
-							<Text style={{ fontWeight: 'bold' }}>{ this.state.afterLoginMessage || '' }</Text>
-					</FormValidationMessage>
-
-					<Button
-						icon={{name: 'paper-plane', type: 'font-awesome'}}
-						backgroundColor='green'
-						title='Login'
-						onPress={(event) => this.handleLogin(this.state.email, this.state.password, this.state.localDb) }/>
-				</View>
-
-				<View style={{ flex: 2, justifyContent: 'space-between' }}>
-
-					<View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-						<Button
-							backgroundColor={ this.state.buttonPressed ? 'pink' : 'transparent' }
-							color='black'
-							icon={{ name: 'thumb-up', type: 'fontello', color: 'black' }}
-							style={{ width: 10 }}
-							title='Create an account'
-							onPress={ this.handleRegister }
-						/>
-						<Button
-							backgroundColor={ this.state.buttonPressed ? 'pink' : 'transparent' }
-							color='black'
-							iconRight={{ name: 'thumb-down', type: 'fontello', color: 'black' }}
-							style={{ width: 10 }}
-							title='Forgot password'
-						/>
-					</View>
-
-					<CheckBox
-						title='Local'
-						iconType='font-awesome'
-						checkedIcon='check'
-						checkedColor='red'
-						containerStyle={{ backgroundColor: 'pink', marginBottom: 20 }}
-						checked={ this.state.localDb }
-						onPress={ this.handleLocalDb }
-					/>
-
-				</View>
 			</View>
 		)
 	}

@@ -60,9 +60,19 @@ export class Header extends React.Component {
 					}}
 					source={{ uri: env.imagesUrl + this.state.image }}/>
 
-				<View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-					<Text style={{ fontWeight: 'bold', marginRight: 10 }}>{ this.state.headerTitle }</Text>
+				<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+					{ !this.state.noMenu ?
+						<View style={{ flexDirection: 'row', width: 100, justifyContent: 'flex-start' , paddingLeft: 10 }}>
+							<Button
+								icon={{ name: 'bars', type: 'font-awesome', color: 'green' }}
+								backgroundColor='transparent'
+								onPress={ this.handleMenu }
+							/>
+						</View>
+						: null }
+					<Text style={{ fontWeight: 'bold', marginRight: 10, paddingTop: 10 }}>{ this.state.headerTitle }</Text>
 				</View>
+
 				<View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
 					<View style={{ flexDirection: 'row', width: 100, justifyContent: 'flex-start', paddingLeft: 10 }}>
 						<Button
@@ -70,13 +80,6 @@ export class Header extends React.Component {
 							backgroundColor='transparent'
 							onPress={ this.handleGoBack }
 						/>
-						{ !this.state.noMenu ?
-							<Button
-								icon={{ name: 'bars', type: 'font-awesome', color: 'green' }}
-								backgroundColor='transparent'
-								onPress={ this.handleMenu }
-							 />
-						: null }
 					</View>
 					<Badge value={ this.state.fullName } containerStyle={{ backgroundColor: 'orange', marginBottom: 10, marginRight: 10 }}/>
 				</View>
