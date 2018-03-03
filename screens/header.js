@@ -61,15 +61,15 @@ export class Header extends React.Component {
 					source={{ uri: env.imagesUrl + this.state.image }}/>
 
 				<View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-					{ !this.state.noMenu ?
-						<View style={{ flexDirection: 'row', width: 100, justifyContent: 'flex-start' , paddingLeft: 10 }}>
+					<View style={{ flexDirection: 'row', width: 100, justifyContent: 'flex-start' , paddingLeft: 10 }}>
+						{ !this.state.noMenu ?
 							<Button
 								icon={{ name: 'bars', type: 'font-awesome', color: 'green' }}
 								backgroundColor='transparent'
 								onPress={ this.handleMenu }
 							/>
-						</View>
 						: null }
+					</View>
 					<Text style={{ fontWeight: 'bold', marginRight: 10, paddingTop: 10 }}>{ this.state.headerTitle }</Text>
 				</View>
 

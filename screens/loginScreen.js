@@ -94,7 +94,7 @@ class LoginScreen extends React.Component {
 			.catch(err => {
 				console.log('LOGINERROR', err);
 				this.setState({
-					afterLoginMessage: err
+					afterLoginMessage: 'Unknown error :-(  Possibly the internet or the server is unavailable'
 				})
 			});
 	}
