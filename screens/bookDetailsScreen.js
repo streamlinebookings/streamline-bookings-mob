@@ -34,10 +34,12 @@ class BookDetailsScreen extends React.Component {
 			localDb: props.localDb,
 			persons: persons,
 			token: props.token,
+			waitingListButtonText: 'Join wait list',
 		};
 
 		// Bind local methods
 		this.handleBook = this.handleBook.bind(this);
+		this.handleWaitingList = this.handleWaitingList.bind(this);
 	}
 
 	handleBook (oneOrTerm) {
@@ -49,6 +51,48 @@ class BookDetailsScreen extends React.Component {
 		this.props.navigation.navigate('BookPay', {
 			amount: oneOrTerm === 1 ? this.state.classChosen.term.singleRate : restOfTermPrice,
 			oneOrTerm: oneOrTerm,
+		});
+	}
+
+	handleWaitingList () {
+		console.log('HANDLEWaitingList', this.state);
+
+		// Notify back end
+		let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
+		fetch(beApiUrl + 'calendar/joinwait', {
+			method: 'put',
+			body: JSON.stringify({
+				class: this.state.classChosen,
+
+				// Removing the classes from the chosen dependant. This avoids a circular JSON structure
+				swimmer: Object.assign({}, this.state.dependantChosen, {classes: []}),
+
+				token: this.state.token,
+			})
+		})
+			.then(response => {
+				console.log('JOINWAITFETCHRAWRESPONSE', response);
+				if (response.status == 200) return response.json();
+				return response;
+			})
+			.then(response => {
+				console.log('JOINWAITREPONSE', response);
+
+				let text = response.queueLength ? response.queueLength.toString() + 'p waiting' : 'On wait list'
+				this.setState({
+					waitingListButtonText: text,
+				});
+			})
+			.catch(err => {
+				console.log('JOINWAITERROR', err);
+				this.setState({
+					waitingListButtonText: 'ERROR!',
+				});
+			});
+
+		// Change button text
+		this.setState({
+			waitingListButtonText: 'Joining...'
 		});
 	}
 
@@ -89,10 +133,10 @@ class BookDetailsScreen extends React.Component {
 				<View style={{ flex: 1 }} flexDirection='row' justifyContent='space-around'>
 					{ !this.state.classChosen.alreadyBooked && !this.state.classChosen.isFull ?
 						<Button
-						icon={{name: 'tag', type: 'font-awesome'}}
-						backgroundColor='green'
-						title='Book 1 lesson'
-						onPress={() => this.handleBook(1)}
+							icon={{name: 'tag', type: 'font-awesome'}}
+							backgroundColor='green'
+							title='Book 1 lesson'
+							onPress={() => this.handleBook(1)}
 						/>
 						: null
 					}
@@ -110,7 +154,7 @@ class BookDetailsScreen extends React.Component {
 		}
 
 		let childNameStatus = this.state.dependantChosen.firstName;
-		if (this.state.classChosen.alreadyBooked ) {
+		if (this.state.classChosen.alreadyBooked) {
 			childNameStatus += ' is already booked into this class';
 		} else if (this.state.classChosen.isFull) {
 			childNameStatus = 'Sorry, ' + this.state.dependantChosen.firstName + ', this class is full';
@@ -135,7 +179,25 @@ class BookDetailsScreen extends React.Component {
 						<List>
 							<ListItem
 								leftIcon={{ name: 'child', type: 'font-awesome' }}
-								title={ childNameStatus }
+								title={
+									<View style={{ flex: 1 }} flexDirection='row' justifyContent='space-between' alignItems='center'>
+										<Text>{ childNameStatus }</Text>
+										{ this.state.classChosen.isFull && !this.state.classChosen.alreadyBooked && !this.state.classChosen.onWaitingList ?
+											<Button
+												icon={{ name: 'hourglass', type: 'font-awesome' }}
+												backgroundColor='green'
+												title={ this.state.waitingListButtonText }
+												onPress={ this.handleWaitingList }
+												buttonStyle={{ width: 130, borderRadius: 5 }}
+											/>
+										: null }
+									</View>
+								}
+								subtitle={
+									this.state.classChosen.onWaitingList ?
+										this.state.dependantChosen.firstName + ' is on the waiting list (' + this.state.classChosen.waiters.length.toString() + ' persons)'
+										: null
+								}
 								hideChevron={ true }
 							/>
 							<ListItem

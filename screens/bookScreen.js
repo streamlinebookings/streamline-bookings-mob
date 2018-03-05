@@ -73,11 +73,18 @@ class BookScreen extends React.Component {
 			.then(response => {
 				console.log('CLASSESREPONSE', response);
 
-				// Discover which classes are already booked
+				// Discover which classes are already booked, and, discover if the swimmer is on a waiting list for this class
 				let classes = response.classes.map(oneClass => {
 					oneClass.alreadyBooked = this.state.dependantChosen.classes.findIndex(c => c.id === oneClass.id) > -1 ? true : false;
+
+					oneClass.onWaitingList = oneClass.waiters.findIndex(c => c.id === this.state.dependantChosen.id) > -1 ? true : false;
+
 					return oneClass;
 				});
+
+
+
+
 				if (response.classes) this.setState({ classes: classes });
 			})
 			.catch(err => {
