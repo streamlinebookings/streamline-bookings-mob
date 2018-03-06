@@ -174,7 +174,7 @@ class BookScreen extends React.Component {
 														!oneClass.countBooked
 															? oneClass.cap + ' Places available'
 															: oneClass.cap
-																? (oneClass.cap - oneClass.countBooked) + ' available (max ' + oneClass.cap + ')'
+																? Math.max(0, oneClass.cap - oneClass.countBooked) + ' available (max ' + oneClass.cap + ')'
 																: oneClass.countBooked + ' other swimmers'
 													}</Text>
 												</View>

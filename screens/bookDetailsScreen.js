@@ -228,7 +228,7 @@ class BookDetailsScreen extends React.Component {
 									!this.state.classChosen.countBooked
 										? this.state.classChosen.cap + ' Places available'
 										: this.state.classChosen.cap
-											? (this.state.classChosen.cap - this.state.classChosen.countBooked) + ' places left (max ' + this.state.classChosen.cap + ' swimmers)'
+											? Math.max(0, this.state.classChosen.cap - this.state.classChosen.countBooked) + ' places left (max ' + this.state.classChosen.cap + ' swimmers)'
 											: this.state.classChosen.countBooked + ' other swimmers'
 								}
 								hideChevron={ true }
