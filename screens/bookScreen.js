@@ -125,7 +125,7 @@ class BookScreen extends React.Component {
 						iconType='font-awesome'
 						checkedIcon='check'
 						checkedColor='red'
-						containerStyle={{width: '32%'}}
+						containerStyle={{ width: (this.state.persons.length <= 5 ? '32%' : '20%') }}
 						checked={ this.state.dependantChosen.id === person.id ? true : false }
 						onPress={ () => this.handleChooseDependant(person) }
 					/>
@@ -134,7 +134,9 @@ class BookScreen extends React.Component {
 
 			return (
 				<View flexDirection='row' justifyContent='flex-start'>
-					{ dependants }
+					<ScrollView horizontal={ true }>
+						{ dependants }
+					</ScrollView>
 				</View>
 			);
 		}
@@ -202,7 +204,7 @@ class BookScreen extends React.Component {
 				{/* Book classes cards */}
 				<View style={{ flex: 4 }}>
 
-					{ ChooseDependants() }
+						{ ChooseDependants() }
 
 					<ScrollView>
 						{ BookClasses() }

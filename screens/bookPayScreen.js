@@ -49,6 +49,9 @@ class BookPayScreen extends React.Component {
 				swimmer: Object.assign({}, this.state.dependantChosen, {classes: []}),
 
 				oneOrTerm: this.state.oneOrTerm,
+				payment: {
+					amount: this.state.amount,
+				},
 				token: this.state.token,
 			})
 		})

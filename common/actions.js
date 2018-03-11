@@ -10,6 +10,7 @@ export const SET_CARERCHOSEN = 'SET_CARERCHOSEN'
 export const SET_DEPENDANTSCHOSEN = 'SET_DEPENDANTSCHOSEN'
 export const SET_CLASSCHOSEN = 'SET_CLASSCHOSEN'
 export const SET_VENUECHOSEN = 'SET_VENUECHOSEN'
+export const SET_PAYMENTMETHODCHOSEN = 'SET_PAYMENTMETHODCHOSEN'
 
 /*
  * Action creators
@@ -17,37 +18,32 @@ export const SET_VENUECHOSEN = 'SET_VENUECHOSEN'
 export function setGroup(group) {
 	return { type: SET_GROUP, group }
 }
-
 export function setPerson(person) {
 	return { type: SET_PERSON, person }
 }
-
 export function setPersons(persons) {
 	return { type: SET_PERSONS, persons }
 }
-
 export function setToken(token) {
 	return { type: SET_TOKEN, token };
 }
-
 export function setLocalDb(localDb) {
 	return { type: SET_LOCALDB, localDb };
 }
-
 export function setCarerChosen(carerChosen) {
 	return { type: SET_CARERCHOSEN, carerChosen };
 }
-
 export function setDependantsChosen(dependantsChosen) {
 	return { type: SET_DEPENDANTSCHOSEN, dependantsChosen };
 }
-
 export function setClassChosen(classChosen) {
 	return { type: SET_CLASSCHOSEN, classChosen };
 }
-
 export function setVenueChosen(venueChosen) {
 	return { type: SET_VENUECHOSEN, venueChosen };
+}
+export function setPaymentMethodChosen(paymentMethodChosen) {
+	return { type: SET_PAYMENTMETHODCHOSEN, paymentMethodChosen };
 }
 
 /*
@@ -82,6 +78,9 @@ export function Slb(state = {}, action) {
 
 		case SET_VENUECHOSEN:
 			return Object.assign({}, state, setVenueChosen(action.venueChosen));
+
+		case SET_PAYMENTMETHODCHOSEN:
+			return Object.assign({}, state, setPaymentMethodChosen(action.paymentMethodChosen));
 
 		default:
 			return state;

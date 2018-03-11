@@ -151,9 +151,8 @@ class VenuesScreen extends React.Component {
 
 						return (
 							<ListItem key={ venue.id }
-
 							          containerStyle={ this.state.highlightVenueId === venue.id ? {backgroundColor: '#c2f7b2'} : {} }
-
+							          hideChevron={ true }
 							          onPress={ () => this.handleVenueActions(venue) }
 							          title={
 								          <View>
