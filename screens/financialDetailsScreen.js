@@ -22,29 +22,40 @@ class FinancialDetailsScreen extends React.Component {
 
 		let fullName = props.person && props.person.firstName + ' ' + props.person.lastName || 'Not logged in';
 
+		let paymentMethod = {
+			creditcard: {},
+			paypal: {},
+		};
+		let paymentMethodType = '';
+		if (props.paymentMethodChosen && props.paymentMethodChosen.length > 0) {
+			paymentMethodType = props.paymentMethodChosen[0].type;
+			paymentMethod[paymentMethodType] = props.paymentMethodChosen[0];
+		}
+		let editable = true;
+		if (paymentMethodType === 'creditcard') editable = false;
+
 		this.state = {
 			errorText: false,
 			fullName: fullName,
 			hasErrors: {},
 			localDb: props.localDb || false,
-			paymentMethod: {
-				creditcard: {},
-				paypal: {},
-			},
-			paymentMethodChosen: '',
+			paymentMethod: paymentMethod,
+			paymentMethodType: paymentMethodType,
+			paymentMethodEditable: editable,
 			persons: props.persons || [],
 			showDatePicker: false,
 		};
 
 		// Bind local methods
 		this.handleChooseMethod = this.handleChooseMethod.bind(this);
+		this.handleDelete = this.handleDelete.bind(this);
 		this.handleSave = this.handleSave.bind(this);
 		this.toggleDatePicker = this.toggleDatePicker.bind(this);
 	}
 
 	handleChooseMethod (method) {
 		console.log('HandleChooseMethod', method);
-		this.setState({ paymentMethodChosen: method });
+		this.setState({ paymentMethodType: method });
 	}
 	handleCreditCard(property, data) {
 		let newData = {};
@@ -64,6 +75,14 @@ class FinancialDetailsScreen extends React.Component {
 		Keyboard.dismiss();
 	}
 
+	handleDelete () {
+		console.log('HandleDelete', this.state);
+
+		this.setState({
+			errorText: 'Creditcard delete not yet implemented',
+		});
+	}
+
 	handleSave () {
 		console.log('HandleSave', this.state);
 
@@ -71,8 +90,8 @@ class FinancialDetailsScreen extends React.Component {
 
 				let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
 
-				let method = this.state.paymentMethod[this.state.paymentMethodChosen];
-				method.type = this.state.paymentMethodChosen;
+				let method = this.state.paymentMethod[this.state.paymentMethodType];
+				method.type = this.state.paymentMethodType;
 
 				fetch(beApiUrl + 'person/update', {
 					method: 'put',
@@ -181,7 +200,7 @@ class FinancialDetailsScreen extends React.Component {
 					checkedIcon='check'
 					checkedColor='red'
 					containerStyle={{ width: '32%' }}
-					checked={ this.state.paymentMethodChosen === 'creditcard' ? true : false }
+					checked={ this.state.paymentMethodType === 'creditcard' ? true : false }
 					onPress={ () => this.handleChooseMethod('creditcard') }
 				/>
 				<CheckBox
@@ -191,7 +210,7 @@ class FinancialDetailsScreen extends React.Component {
 					checkedIcon='check'
 					checkedColor='red'
 					containerStyle={{ width: '32%' }}
-					checked={ this.state.paymentMethodChosen === 'paypal' ? true : false }
+					checked={ this.state.paymentMethodType === 'paypal' ? true : false }
 					onPress={ () => this.handleChooseMethod('paypal') }
 				/>
 			</View>
@@ -199,7 +218,7 @@ class FinancialDetailsScreen extends React.Component {
 
 		const creditCardForm = () => {
 
-			if (this.state.paymentMethodChosen !== 'creditcard') return null;
+			if (this.state.paymentMethodType !== 'creditcard') return null;
 
 			return (
 				<View>
@@ -214,7 +233,10 @@ class FinancialDetailsScreen extends React.Component {
 							          </View>
 						          }
 						          containerStyle={ this.state.hasErrors.brand ? errorStyle : { backgroundColor: 'transparent' }}
-						          onPress={ () => this.handleCreditCard('brand', 'visa') }
+						          onPress={ this.state.paymentMethodEditable ?
+						          	() => this.handleCreditCard('brand', 'visa')
+						            : null
+						          }
 						          onIconPress={ () => this.handleCreditCard('brand', 'visa') }
 						          checked={ this.state.paymentMethod.creditcard.brand === 'visa' ? true : false }
 						/>
@@ -226,22 +248,32 @@ class FinancialDetailsScreen extends React.Component {
 							          </View>
 						          }
 						          containerStyle={ this.state.hasErrors.brand ? errorStyle : { backgroundColor: 'transparent' }}
-						          onPress={ () => this.handleCreditCard('brand', 'mastercard') }
+						          onPress={ this.state.paymentMethodEditable ?
+							          () => this.handleCreditCard('brand', 'mastercard')
+							          : null
+						          }
 						          onIconPress={ () => this.handleCreditCard('brand', 'mastercard') }
 						          checked={ this.state.paymentMethod.creditcard.brand === 'mastercard' ? true : false }
-						          />
+						          editable={ this.state.paymentMethodEditable ? true : false }
+						/>
 					</View>
 
 					{/*<FormLabel>Card Details</FormLabel>*/}
 
 					<FormInput placeholder={'Name on card'}
 					           value={ this.state.paymentMethod.creditcard.name || '' }
+					           editable={ this.state.paymentMethodEditable ? true : false }
 					           containerStyle={ this.state.hasErrors.name ? errorStyle : null }
 					           onChangeText={ data => this.handleCreditCard('name', data) }
 					           ref={ ref => this.formInputCreditCardName = ref }/>
 
 					<FormInput placeholder={'Card number'}
-					           value={ this.state.paymentMethod.creditcard.number || '' }
+					           value={
+					           	    this.state.paymentMethodEditable
+						                ? this.state.paymentMethod.creditcard.number || ''
+						                : '**** **** **** ' + this.state.paymentMethod.creditcard.last4
+					           }
+					           editable={ this.state.paymentMethodEditable ? true : false }
 					           containerStyle={ this.state.hasErrors.number ? errorStyle : null }
 					           onChangeText={ data => this.handleCreditCard('number', data) }
 					           ref={ ref => this.formInputCreditCardNumber = ref }/>
@@ -251,6 +283,7 @@ class FinancialDetailsScreen extends React.Component {
 						value={ this.state.paymentMethod.creditcard.expiryDate
 							? moment(this.state.paymentMethod.creditcard.expiryDate).format('MMMM YYYY')
 							: null }
+						editable={ this.state.paymentMethodEditable ? true : false }
 						containerStyle={ this.state.hasErrors.expiryDate ? errorStyle : null }
 						onFocus={ this.toggleDatePicker }/>
 					<DateTimePicker
@@ -268,6 +301,34 @@ class FinancialDetailsScreen extends React.Component {
 			<View>
 			</View>
 		)
+
+		const buttons = () => {
+
+			if (!this.state.paymentMethodType) return;
+
+			return (
+				<View style={{ flex: 1 }} flexDirection='row' justifyContent='space-around'>
+
+					{!this.state.paymentMethodEditable
+						?
+							<Button
+								icon={{ name: 'trash', type: 'font-awesome' }}
+								title='Delete'
+								onPress={ this.handleDelete }
+								buttonStyle={{ width: '100%', borderRadius: 5}}
+							/>
+						:
+							<Button
+								icon={{ name: 'paper-plane', type: 'font-awesome' }}
+								backgroundColor='green'
+								title={ 'Save' }
+								onPress={ this.handleSave }
+								buttonStyle={{ width: '100%', borderRadius: 5}}
+							/>
+					}
+				</View>
+			)
+		}
 
 
 		return (
@@ -289,111 +350,12 @@ class FinancialDetailsScreen extends React.Component {
 
 						{ payPalForm }
 
-						{/*// form for either*/}
-
-						{/*/!*{ this.state.isRegistering ?*!/*/}
-							{/*/!*<Card containerStyle={{backgroundColor: 'lightgreen'}}>*!/*/}
-								{/*/!*<Text>To register, please complete this and the following screens with family and person details</Text>*!/*/}
-							{/*/!*</Card>*!/*/}
-						{/*/!*: null}*!/*/}
-
-						{/*// button cc or paypal*/}
-						{/**/}
-						{/*<FormLabel>Financial</FormLabel>*/}
-						{/*<View style={{ flex: 11 }} flexDirection='row' justifyContent='space-between' >*/}
-							{/*<View style={{ flex: 5 }}>*/}
-								{/*<FormInput placeholder={ 'First name' }*/}
-								           {/*value={ this.state.financial.firstName }*/}
-								           {/*containerStyle={ this.state.hasErrors.firstName ? errorStyle : null }*/}
-								           {/*onChangeText={ this.handleFirstName }*/}
-								           {/*ref={ ref => this.formInputFirstName = ref }/>*/}
-							{/*</View>*/}
-							{/*<View style={{ flex: 5 }}>*/}
-								{/*<FormInput placeholder={ 'Last name' }*/}
-								           {/*value={ this.state.financial.lastName }*/}
-								           {/*onChangeText={ this.handleLastName }/>*/}
-							{/*</View>*/}
-						{/*</View>*/}
-
-						{/*<FormLabel>Phone & Email</FormLabel>*/}
-						{/*<FormInput placeholder={ 'Phone' }*/}
-						           {/*value={ this.state.financial.phone }*/}
-						           {/*containerStyle={ this.state.hasErrors.phone ? errorStyle : null }*/}
-						           {/*onChangeText={ this.handlePhone }*/}
-						           {/*keyboardType={ 'phone-pad' }/>*/}
-						{/*<FormInput placeholder={ 'Email address' }*/}
-						           {/*value={ this.state.financial.email }*/}
-						           {/*containerStyle={ this.state.hasErrors.email ? errorStyle : null }*/}
-						           {/*onChangeText={ this.handleEmail }*/}
-						           {/*keyboardType={ 'email-address' }/>*/}
-
-						{/*<FormLabel>Date of Birth</FormLabel>*/}
-						{/*<FormInput*/}
-								 {/*placeholder={ 'Tap here to set the date of birth' }*/}
-								 {/*value={ this.state.financial.dob*/}
-											{/*? moment(this.state.financial.dob).format('D MMMM YYYY')*/}
-											{/*: null }*/}
-						         {/*onFocus={ this.toggleDatePicker }/>*/}
-						{/*<DateTimePicker*/}
-							{/*isVisible={ this.state.showDatePicker }*/}
-							{/*onConfirm={ this.handleDob }*/}
-							{/*onCancel={ this.toggleDatePicker }*/}
-							{/*date={ new Date(moment(this.state.financial.dob).format()) || new Date() }*/}
-							{/*maximumDate={ new Date() }*/}
-						{/*/>*/}
-
-						{/*<FormLabel>More information</FormLabel>*/}
-						{/*/!* Medical Indication *!/*/}
-						{/*<CheckBox title={ (this.state.financial.firstName || '') + ' has a medical indication' }*/}
-								  {/*textStyle={{ fontWeight: 'normal', fontSize: 14, color: '#86939e' }}*/}
-						          {/*containerStyle={{ backgroundColor: 'transparent' }}*/}
-								  {/*onPress={ this.handleMedicalIndication }*/}
-								  {/*onIconPress={ this.handleMedicalIndication }*/}
-								  {/*checked={ this.state.financial.hasMedicalIndication }/>*/}
-
-						{/*/!* Gender *!/*/}
-						{/*<View style={{ flex: 3 }} flexDirection='row' justifyContent='flex-start' >*/}
-							{/*<CheckBox title='Ms'*/}
-							          {/*textStyle={{ fontWeight: 'normal', fontSize: 14, color: '#86939e' }}*/}
-							          {/*containerStyle={{ backgroundColor: 'transparent' }}*/}
-							          {/*onPress={ () => this.handleGender('ms') }*/}
-							          {/*onIconPress={ () => this.handleGender('ms') }*/}
-							          {/*checked={ this.state.financial.gender === 'ms' }*/}
-							          {/*style={{ flex: 1 }}/>*/}
-							{/*<CheckBox title='Mr'*/}
-							          {/*textStyle={{ fontWeight: 'normal', fontSize: 14, color: '#86939e' }}*/}
-							          {/*containerStyle={{ backgroundColor: 'transparent' }}*/}
-							          {/*onPress={ () => this.handleGender('mr') }*/}
-							          {/*onIconPress={ () => this.handleGender('mr') }*/}
-							          {/*checked={ this.state.financial.gender === 'mr' }*/}
-							          {/*style={{ flex: 1 }}/>*/}
-							{/*<CheckBox title='Mx'*/}
-							          {/*textStyle={{ fontWeight: 'normal', fontSize: 14, color: '#86939e' }}*/}
-							          {/*containerStyle={{ backgroundColor: 'transparent' }}*/}
-							          {/*onPress={ () => this.handleGender('mx') }*/}
-							          {/*onIconPress={ () => this.handleGender('mx') }*/}
-							          {/*checked={ this.state.financial.gender !== 'ms' && this.state.financial.gender !== 'mr' }*/}
-							          {/*style={{ flex: 1 }}/>*/}
-						{/*</View>*/}
-
-						{/*/!* Show the current level *!/*/}
-						{/*{ this.state.financial.atLevel && this.state.financial.atLevel.name ?*/}
-							{/*<FormInput placeholder={ this.state.financial.atLevel.name }*/}
-							           {/*disabled={ true }*/}
-							           {/*value={ 'Current level is: ' + this.state.financial.atLevel.name }/>*/}
-							{/*: null*/}
-						{/*}*/}
-
 						<FormValidationMessage
 							containerStyle={{ backgroundColor: 'transparent' }}>
 							<Text style={{ fontWeight: 'bold' }}>{ this.state.errorText || '' }</Text>
 						</FormValidationMessage>
 
-						<Button
-							icon={{ name: 'paper-plane', type: 'font-awesome' }}
-							backgroundColor='green'
-							title={ 'Save' }
-							onPress={ this.handleSave }/>
+						{ buttons() }
 
 					</KeyboardAwareScrollView>
 				</View>

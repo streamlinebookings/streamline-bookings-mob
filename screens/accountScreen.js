@@ -96,7 +96,7 @@ class AccountScreen extends React.Component {
 		   					          title={ <View flexDirection='row' justifyContent='space-between'>
 		   								          <Text>Financial details</Text>
 		   							          </View>}
-						              subtitle={ !this.props.person.paymentMethod
+						              subtitle={ !this.props.person.paymentMethods.length
 							              ? 'You haven\'t given a payment method yet'
 							              : null }
 						    ></ListItem>
