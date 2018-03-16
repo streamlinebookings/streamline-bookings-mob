@@ -55,13 +55,15 @@ class BookScreen extends React.Component {
 		this.props.setDependantsChosen([ person ]);
 		this.setState({ classes: [] });
 
+		if (!person.atLevels || person.atLevels.length == 0) return;
+
 		// Find classes for the level of this person
 		let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
 
 		fetch(beApiUrl + 'calendar/classes', {
 			method: 'post',
 			body: JSON.stringify({
-				levelId: person.atLevel.id,
+				levelId: person.atLevels[0].id,
 				token: this.state.token,
 			})
 		})
@@ -81,9 +83,6 @@ class BookScreen extends React.Component {
 
 					return oneClass;
 				});
-
-
-
 
 				if (response.classes) this.setState({ classes: classes });
 			})
