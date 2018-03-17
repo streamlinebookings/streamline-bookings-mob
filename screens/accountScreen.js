@@ -73,7 +73,7 @@ class AccountScreen extends React.Component {
 		   					<ListItem key={ 'groupDetails' }
 		   					          onPress={ () => { this.props.navigation.navigate('GroupDetails') }}
 		   					          title={ <View flexDirection='row' justifyContent='space-between'>
-		   								          <Text>Family or Group details</Text>
+		   								          <Text>Family details</Text>
 		   							          </View>}
 		   			          ></ListItem>
 		   					<ListItem key={ 'carers' }

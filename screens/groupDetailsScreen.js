@@ -161,7 +161,7 @@ class GroupDetailsScreen extends React.Component {
 				        image={ 'mob/backgrounds/background-account.jpg' }
 				        navigation={ this.props.navigation }
 				        backTo={ this.state.from || 'Account' }
-				        title='Family / Group Details'
+				        title='Family Details'
 				/>
 
 				<View style={{ flex: 4 }}>

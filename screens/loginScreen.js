@@ -136,12 +136,16 @@ class LoginScreen extends React.Component {
 							placeholder={ 'Email address' }
 							placeholderTextColor={ '#666060' }
 							onChangeText={ this.handleEmail }
-							keyboardType={ 'email-address' }/>
+							keyboardType={ 'email-address' }
+							selectionColor={ 'red' }
+							style={{ color: '#000000' }}/>
 						<FormInput
 							placeholder={ 'Password' }
 							placeholderTextColor={ '#666060' }
 							secureTextEntry={ true }
-							onChangeText={ this.handlePassword }/>
+							onChangeText={ this.handlePassword }
+							selectionColor={ 'red' }
+							style={{ color: '#000000' }}/>
 
 						<FormValidationMessage
 							containerStyle={{ backgroundColor: 'transparent' }}>
