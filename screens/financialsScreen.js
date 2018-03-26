@@ -166,7 +166,7 @@ class FinancialsScreen extends React.Component {
 								          <View>
 									          <View flexDirection='row' justifyContent='space-between'>
 										          <Text style={textStyle}>{
-											         _.capitalize(financial.type) + ' ********' + financial.last4
+											         _.capitalize(financial.type) + ' **** **** **** ' + financial.last4
 										          }</Text>
 									          </View>
 								          </View>

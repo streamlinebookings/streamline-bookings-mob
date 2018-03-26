@@ -80,22 +80,23 @@ class BookedClassActionsScreen extends React.Component {
 	render() {
 
 		const buttons = () => {
-
 			let hoursDiff = -1 * moment().diff(this.state.classChosen.datetime, 'hours');
 			return (
-				<View style={{ flex: 1 }} flexDirection='row' justifyContent='flex-left' alignContent='flex-start'>
+				<View style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-start' }}>
 					<Button
 						icon={{ name: 'power-off', type: 'font-awesome' }}
 						backgroundColor='green'
 						title={ this.state.dependantChosen.firstName + ' won\'t attend' }
 						onPress={ () => this.handleCancel() }
-						disabled={ hoursDiff < 24 ? true : false }
-					/>
-					{ hoursDiff < 24 ? <Text>You must cancel more than 24 hours in advance</Text> : null }
+						disabled={ hoursDiff < 24 ? true : false } />
+
+					{ hoursDiff < 24 ?
+						<Text style={{ width: '50%', color: '#6b6b6b' }}>You may only cancel more than 24 hours in advance</Text>
+						: null }
 
 				</View>
-			)
-		}
+			);
+		};
 
 		return (
 
@@ -105,39 +106,40 @@ class BookedClassActionsScreen extends React.Component {
 				        image={ 'mob/backgrounds/background-booked.jpg' }
 				        navigation={ this.props.navigation }
 				        backTo={ 'Booked' }
-				        title='My Class - Details'
-				/>
+				        title='My Class - Details' />
 
 				{/* Book classes cards */}
 				<View style={{ flex: 4 }}>
 					<View style={{ flex: 4 }}>
 
 						<ScrollView>
-						<List>
-							<ListItem
-								leftIcon={{ name: 'child', type: 'font-awesome' }}
-								title={ this.state.dependantChosen.firstName }
-								hideChevron={ true }
-							/>
-							<ListItem
-								leftIcon={{ name: 'bar-chart', type: 'font-awesome' }}
-								title={ this.state.classChosen.level.name }
-								hideChevron={ true }
-							/>
-							<ListItem
-								leftIcon={{ name: 'calendar', type: 'font-awesome' }}
-								title={
-									this.state.classChosen.recurring
-										? moment(this.state.classChosen.datetime).format('dddd h:mma')
-										: moment(this.state.classChosen.datetime).format('dddd Do MMMM h:mma')
-								}
-								subtitle={ this.state.classChosen.duration ? this.state.classChosen.duration + ' minutes' : null }
-								hideChevron={ true }
-							/>
-						</List>
+							<List>
+								<ListItem
+									leftIcon={{ name: 'child', type: 'font-awesome' }}
+									title={ this.state.dependantChosen.firstName }
+									hideChevron={ true }
+								/>
+								<ListItem
+									leftIcon={{ name: 'bar-chart', type: 'font-awesome' }}
+									title={ this.state.classChosen.level.name }
+									hideChevron={ true }
+								/>
+								<ListItem
+									leftIcon={{ name: 'calendar', type: 'font-awesome' }}
+									title={
+										this.state.classChosen.recurring
+											? moment(this.state.classChosen.datetime).format('dddd h:mma')
+											: moment(this.state.classChosen.datetime).format('dddd Do MMMM h:mma')
+									}
+									subtitle={ this.state.classChosen.duration ? this.state.classChosen.duration + ' minutes' : null }
+									hideChevron={ true }
+								/>
+							</List>
 						</ScrollView>
 					</View>
+
 					{ buttons() }
+
 				</View>
 			</View>
 		);

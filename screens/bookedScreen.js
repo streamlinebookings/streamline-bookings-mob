@@ -153,7 +153,7 @@ class BookedScreen extends React.Component {
 			let allClasses = [];
 			thesePersons.map(person => {
 
-				person.classes.map(oneClass => {
+				person.classes && person.classes.map(oneClass => {
 
 					// Ignore empty objects
 					if (!Object.keys(oneClass).length) return;

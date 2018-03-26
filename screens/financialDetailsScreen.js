@@ -75,80 +75,188 @@ class FinancialDetailsScreen extends React.Component {
 		Keyboard.dismiss();
 	}
 
-	handleDelete () {
+	async handleDelete () {
 		console.log('HandleDelete', this.state);
 
+		// Update the be with paymentGateway tokens
 		this.setState({
-			errorText: 'Creditcard delete not yet implemented',
+			errorText: 'Updating your details...',
 		});
+
+		let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
+
+		response = await fetch(beApiUrl + 'person/update', {
+			method: 'put',
+			body: JSON.stringify({
+				fromMobile: true,
+				paymentMethodTokenized: this.state.paymentMethod[this.state.paymentMethodType],
+				paymentMethodDelete: true,
+				token: this.props.token,
+			})
+		});
+		console.log('FETCHRAWRESPONSE', response);
+
+		if (response.status != 200) {
+			this.setState({
+				errorText: response._bodyText.replace('[', '').replace(']', '').replace(/\"/g, '').trim(),
+			});
+			return;
+		}
+
+		// TODO try/catch around this
+		responseData = await response.json();
+		console.log('DELETEINANCIALREPONSE', responseData);
+
+		// TODO Void the card at the gateway
+
+		// this.setState({
+		// 	errorText: 'Revoking card details...',
+		// });
+		//
+		// let response, responseData;
+		// response = await fetch(env.payGateUrl + 'transactions/voids', {
+		// 	method: 'post',
+		// 	headers: {
+		// 		'API-Version': '5.2',
+		// 		'Content-Type': 'application/json',
+		// 		'Authorization': env.payGateAuth,
+		// 	},
+		// 	body: JSON.stringify({
+		// 		yourConsumerReference: this.props.person.id,
+		// 		cardToken: this.state.paymentMethod[this.state.paymentMethodType].cardToken,
+		// 		// yourPaymentReference: timestamp,
+		// 		// cardNumber: this.state.paymentMethod.creditcard.number,
+		// 		// expiryDate: moment(this.state.paymentMethod.creditcard.expiryDate).format('MM/YY'),
+		// 		// cv2: this.state.paymentMethod.creditcard.cv2,
+		// 		judoId: env.payGateId,
+		// 	}),
+		// });
+		// console.log('JUDOVOIDRAWRESPONSE', response);
+		//
+		// responseData = await response.json();
+		// console.log('JUDOVOIDEPONSE', response.status, responseData);
+		//
+
+		// Update state and redux
+		this.replacePersonInGroup(responseData.person);
+		this.props.setPerson(responseData.person);
+		this.props.setPersons(this.state.persons);
+
+		// Go back to financials
+		this.props.navigation.navigate('Financials')
 	}
 
-	handleSave () {
+	async handleSave () {
 		console.log('HandleSave', this.state);
 
 		if (this.validateCreditcard()) {
 
-				let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
+			this.setState({
+				errorText: 'Please wait while checking card details...',
+			});
 
-				let method = this.state.paymentMethod[this.state.paymentMethodType];
-				method.type = this.state.paymentMethodType;
 
-				fetch(beApiUrl + 'person/update', {
-					method: 'put',
-					body: JSON.stringify({
-						fromMobile: true,
-						paymentMethod: method,
-						token: this.props.token,
-					})
+			let timestamp = new Date().getTime();
+			let response, responseData;
+
+			response = await fetch(env.payGateUrl + 'transactions/registercard', {
+				method: 'post',
+				headers: {
+					'API-Version': '5.2',
+					'Content-Type': 'application/json',
+					'Authorization': env.payGateAuth,
+				},
+				body: JSON.stringify({
+					yourConsumerReference: this.props.person.id,
+					yourPaymentReference: timestamp,
+					cardNumber: this.state.paymentMethod.creditcard.number,
+					expiryDate: moment(this.state.paymentMethod.creditcard.expiryDate).format('MM/YY'),
+					cv2: this.state.paymentMethod.creditcard.cv2,
+					judoId: env.payGateId,
+				}),
+			});
+			console.log('JUDOREGISTERRAWRESPONSE', response);
+
+			responseData = await response.json();
+			console.log('JUDOREGISTERREPONSE', response.status, responseData);
+
+			if (response.status != 200) {
+				let allMessages = [responseData.message];
+				responseData.details && responseData.details.forEach(detail => allMessages.push(detail.message));
+				console.log('ALLMESSAGES', responseData.message, allMessages.join(', '));
+				this.setState({
+					errorText: allMessages.join(', '),
+				});
+				return;
+			}
+
+			// Update the be with paymentGateway tokens
+			this.setState({
+				errorText: 'Please wait while updating your personal details...',
+			});
+
+			let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
+			let methodTokenized = {
+				type: this.state.paymentMethodType,
+				cardDetails: responseData.cardDetails,
+				// consumer: responseData.consumer,
+			};
+
+			response = await fetch(beApiUrl + 'person/update', {
+				method: 'put',
+				body: JSON.stringify({
+					fromMobile: true,
+					paymentMethodTokenized: methodTokenized,
+					token: this.props.token,
 				})
-					.then(response => {
-						console.log('FETCHRAWRESPONSE', response);
-						if (response.status == 200) return response.json();
+			});
+			console.log('FETCHRAWRESPONSE', response);
 
-						// This isn't nice. I can't force the Promise to reject here (why???), so have to pass a
-						// error string and let the then() decide if the data is good or not :-(
-						return response._bodyText;
-					})
-					.then(response => {
-						console.log('SAVEFINANCIALREPONSE', response);
+			if (response.status != 200) {
+				this.setState({
+					errorText: response._bodyText.replace('[', '').replace(']', '').replace(/\"/g, '').trim(),
+				});
+				return;
+			}
 
-						if (!_.isObject(response)) {
-							this.setState({
-								errorText: response.replace('[', '').replace(']', '').replace(/\"/g, '').trim(),
-							});
-							return;
-						}
+			// TODO try/catch around this
+			responseData = await response.json();
+			console.log('SAVEFINANCIALREPONSE', responseData);
 
-						// TODO Prefer a toast message 'saved'
-						// https://www.npmjs.com/package/react-native-simple-toast
-						this.setState({
-							errorText: 'Saved',
-						});
+			// TODO Prefer a toast message 'saved'
+			// https://www.npmjs.com/package/react-native-simple-toast
+			this.setState({
+				errorText: 'Saved',
+			});
 
-						// Replace in redux store the current person with the returned version, and update persons
-						let newPersons = this.state.persons ? this.state.persons.slice(0) : [];  // create clone of all persons
-						let replaced = false;
-						newPersons = newPersons.map(person => {
-							if (person.id === response.person.id) {
-								replaced = true;
-								return response.person;
-							}
-							return person;
-						});
-						if (!replaced) console.log('ERROR - LOGGED IN PERSON NOT FOUND IN GROUP ARRAY')
+			// Update state and redux store with new person and group persons
+			this.replacePersonInGroup(responseData.person);
+			this.props.setPerson(responseData.person);
+			this.props.setPersons(this.state.persons);
 
-						// Fill redux store with new person and group persons
-						this.props.setPerson(response.person);
-						this.props.setPersons(newPersons);
-
-						// Go back to financials
-						this.props.navigation.navigate('Financials')
-					})
-					.catch(error => {
-						console.log('SAVEFINANCIALerror', error);
-
-					});
+			// Go back to financials
+			this.props.navigation.navigate('Financials')
 		}
+	}
+
+	replacePersonInGroup(newPerson) {
+		// Replace in the group the current person with the new version
+		let newPersons = this.state.persons ? this.state.persons.slice(0) : [];  // create clone of all persons
+		let replaced = false;
+		newPersons = newPersons.map(person => {
+			if (person.id === newPerson.id) {
+				replaced = true;
+				return newPerson;
+			}
+			return person;
+		});
+
+		if (!replaced) console.log('ERROR - LOGGED IN PERSON NOT FOUND IN GROUP ARRAY');
+
+		this.setState({
+			person: newPerson,
+			persons: newPersons,
+		});
 	}
 
 	validateCreditcard() {
@@ -156,22 +264,27 @@ class FinancialDetailsScreen extends React.Component {
 		let errorText = '';
 
 		if (!this.state.paymentMethod.creditcard.brand) {
-			errorText: 'Please choose the creditcard type',
+			errorText = 'Please choose the creditcard type',
 			errorsList.brand = true;
 		}
 		if (!this.state.paymentMethod.creditcard.name) {
 			this.formInputCreditCardName.shake();
-			errorText: 'Please enter all creditcard details',
+			errorText = 'Please enter all creditcard details',
 			errorsList.name = true;
 		}
 		if (!this.state.paymentMethod.creditcard.number) {
 			this.formInputCreditCardNumber.shake();
-			errorText: 'Please enter all creditcard details',
+			errorText = 'Please enter all creditcard details',
 			errorsList.number = true;
 		}
 		if (!this.state.paymentMethod.creditcard.expiryDate) {
-			errorText: 'Please enter all creditcard details',
+			errorText = 'Please enter all creditcard details',
 			errorsList.expiryDate = true;
+		}
+		if (!this.state.paymentMethod.creditcard.cv2) {
+			this.formInputCreditCardCv2.shake();
+			errorText = 'Please enter all creditcard details',
+			errorsList.cv2 = true;
 		}
 
 		this.setState({
@@ -191,30 +304,35 @@ class FinancialDetailsScreen extends React.Component {
 
 		const errorStyle = { backgroundColor: '#f7edf6' };
 
-		const chooseMethod = (
-			<View flexDirection='row' justifyContent='space-around'>
-				<CheckBox
-					key={ 'creditcard' }
-					title={ 'Credit/Debit Card' }
-					iconType='font-awesome'
-					checkedIcon='check'
-					checkedColor='red'
-					containerStyle={{ width: '32%' }}
-					checked={ this.state.paymentMethodType === 'creditcard' ? true : false }
-					onPress={ () => this.handleChooseMethod('creditcard') }
-				/>
-				<CheckBox
-					key={ 'paypal' }
-					title={ 'PayPal' }
-					iconType='font-awesome'
-					checkedIcon='check'
-					checkedColor='red'
-					containerStyle={{ width: '32%' }}
-					checked={ this.state.paymentMethodType === 'paypal' ? true : false }
-					onPress={ () => this.handleChooseMethod('paypal') }
-				/>
-			</View>
-		)
+		const chooseMethod = () => {
+
+			if (!this.state.paymentMethodEditable) return null;
+
+			return (
+				<View flexDirection='row' justifyContent='space-around'>
+					<CheckBox
+						key={'creditcard'}
+						title={'Credit/Debit Card'}
+						iconType='font-awesome'
+						checkedIcon='check'
+						checkedColor='red'
+						containerStyle={{width: '32%'}}
+						checked={this.state.paymentMethodType === 'creditcard' ? true : false}
+						onPress={() => this.handleChooseMethod('creditcard')}
+					/>
+					<CheckBox
+						key={'paypal'}
+						title={'PayPal'}
+						iconType='font-awesome'
+						checkedIcon='check'
+						checkedColor='red'
+						containerStyle={{width: '32%'}}
+						checked={this.state.paymentMethodType === 'paypal' ? true : false}
+						onPress={() => this.handleChooseMethod('paypal')}
+					/>
+				</View>
+			)
+		}
 
 		const creditCardForm = () => {
 
@@ -276,6 +394,7 @@ class FinancialDetailsScreen extends React.Component {
 					           editable={ this.state.paymentMethodEditable ? true : false }
 					           containerStyle={ this.state.hasErrors.number ? errorStyle : null }
 					           onChangeText={ data => this.handleCreditCard('number', data) }
+					           keyboardType={ 'numeric' }
 					           ref={ ref => this.formInputCreditCardNumber = ref }/>
 
 					<FormInput
@@ -293,6 +412,19 @@ class FinancialDetailsScreen extends React.Component {
 						date={ new Date(moment(this.state.paymentMethod.creditcard.expiryDate).format()) || new Date() }
 						minimumDate={ new Date() }
 					/>
+
+					<FormInput placeholder={'CSV or CVV'}
+					           value={
+						           this.state.paymentMethodEditable
+							           ? this.state.paymentMethod.creditcard.cv2 || ''
+							           : ''
+					           }
+					           editable={ this.state.paymentMethodEditable ? true : false }
+					           containerStyle={ this.state.hasErrors.cv2 ? errorStyle : null }
+					           onChangeText={ data => this.handleCreditCard('cv2', data) }
+					           keyboardType={ 'numeric' }
+					           ref={ ref => this.formInputCreditCardCv2 = ref }/>
+
 				</View>
 			)
 		}
@@ -344,7 +476,7 @@ class FinancialDetailsScreen extends React.Component {
 				<View style={{ flex: 4 }}>
 					<KeyboardAwareScrollView resetScrollToCoords={{ x: 0, y: 0 }}>
 
-						{ chooseMethod }
+						{ chooseMethod() }
 
 						{ creditCardForm() }
 

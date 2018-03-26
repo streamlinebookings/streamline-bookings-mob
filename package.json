@@ -19,7 +19,6 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "//": "redux: ^3.7.2",
     "exp": "^49.2.2",
     "expo": "^22.0.2",
     "moment": "^2.19.3",
@@ -29,6 +28,8 @@
     "react-native-keyboard-aware-scroll-view": "^0.4.4",
     "react-native-modal-datetime-picker": "^4.13.0",
     "react-navigation": "1.0.0-beta.15",
-    "react-redux": "^5.0.6"
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "shortid": "^2.2.8"
   }
 }

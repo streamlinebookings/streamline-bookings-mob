@@ -130,7 +130,7 @@ class BookDetailsScreen extends React.Component {
 
 		const buttons = () => {
 			return (
-				<View style={{ flex: 1 }} flexDirection='row' justifyContent='space-around'>
+				<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around' }}>
 					{ !this.state.classChosen.alreadyBooked && !this.state.classChosen.isFull ?
 						<Button
 							icon={{name: 'tag', type: 'font-awesome'}}
@@ -172,9 +172,9 @@ class BookDetailsScreen extends React.Component {
 				/>
 
 				{/* Book classes cards */}
-				<View style={{ flex: 4 }}>
-					<View style={{ flex: 4 }}>
+				<View style={{ flex: 5 }}>
 
+					<View style={{ flex: 4 }}>
 						<ScrollView>
 						<List>
 							<ListItem
@@ -249,6 +249,7 @@ class BookDetailsScreen extends React.Component {
 						</List>
 						</ScrollView>
 					</View>
+
 					{ buttons() }
 				</View>
 			</View>
