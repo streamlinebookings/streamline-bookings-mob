@@ -195,6 +195,8 @@ class FinancialDetailsScreen extends React.Component {
 				errorText: 'Please wait while updating your personal details...',
 			});
 
+			if (!responseData.cardDetails.cardToken) responseData.cardDetails.cardToken = 'fakeToken:-('
+
 			let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
 			let methodTokenized = {
 				type: this.state.paymentMethodType,

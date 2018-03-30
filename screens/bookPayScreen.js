@@ -126,11 +126,12 @@ class BookPayScreen extends React.Component {
 			errorText: responseData.result + ': ' + responseData.message,
 		});
 
+		//////////// NEXT - see JUDOPAY
 		//////////// if (responseData.result != 'Success') return;
 
 		// Update backend
 		this.setState({
-			errorText: 'Please wait while updating account details...',
+			errorText:  responseData.result.toUpperCase() + ': ' + 'Please wait while updating account details...',
 		});
 
 		// Call backend to update class status
@@ -145,6 +146,7 @@ class BookPayScreen extends React.Component {
 					amount: this.state.amount,
 					id: paymentId,
 					paymentMethod: this.state.paymentMethodChosen,
+					receiptId: responseData.receiptId,
 				},
 				// Removing the classes from the chosen dependant. This avoids a circular JSON structure
 				swimmer: Object.assign({}, this.state.dependantChosen, {classes: []}),

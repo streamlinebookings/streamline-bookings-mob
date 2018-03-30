@@ -2,7 +2,7 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, View, ScrollView, Image } from 'react-native';
 import { connect } from 'react-redux';
-import { Button, ButtonGroup, CheckBox, Badge, Card, List, ListItem } from 'react-native-elements';
+import { Button, ButtonGroup, CheckBox, Badge, Card, FormValidationMessage, List, ListItem } from 'react-native-elements';
 
 let moment = require('moment');
 let _ = require('lodash');
@@ -22,14 +22,10 @@ class BookedClassActionsScreen extends React.Component {
 
 		let persons = props.persons;
 
-		// let dependantSwimmers = [];
-		// if (persons && persons.length > 0) {
-		// 	dependantSwimmers = persons.filter(p => p.isSwimmer);
-		// }
-
 		this.state = {
 			classChosen: props.classChosen,
 			dependantChosen: props.dependantsChosen[0],
+			errorText: '',
 			fullName: fullName,
 			group: props.group,
 			localDb: props.localDb,
@@ -41,37 +37,63 @@ class BookedClassActionsScreen extends React.Component {
 		this.handleCancel = this.handleCancel.bind(this);
 	}
 
-	handleCancel () {
+	async handleCancel () {
 		console.log('HandleCancel', this.state);
 
-		// Send cancel message to be
+		// Call backend to cancel the  class
 		let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
 
 		let classChosen = _.clone(this.state.classChosen);
 		classChosen.person.classes = [];                    // Remove recursive classes
 
-		fetch(beApiUrl + 'messages/cancel-class', {
+console.log('CHECK: DEPcHOSEN = CLASS.PERSON', this.state.dependantChosen.id, classChosen.person.id);
+
+		response = await fetch(beApiUrl + 'calendar/cancel', {
 			method: 'put',
 			body: JSON.stringify({
-				classChosen: classChosen,
+				class: classChosen,
+				swimmer: classChosen.person,
 				token: this.state.token,
 			})
-		})
-		.then(response => {
-			console.log('CANCELFETCHRAWRESPONSE', response);
-			if (response.status == 200) return response.json();
-			return response;
-		})
-		.then(response => {
-			console.log('CANCELREPONSE', response);
+		});
+		console.log('CANCELFETCHRAWRESPONSE', response);
 
-			// expect only a status response: message sent or not
+		if (response.status !== 200) {
+			this.setState({
+				errorText: response._bodyText + '. Please login to this app again.',
+			});
+			return;
+		}
 
-		})
-		.catch(err => {
-			console.log('CANCELERROR', err);
+		let responseData = await response.json();
+		console.log('CANCELREPONSE', responseData);
+
+		// Update state with the new classes for this dependant
+		let dependantChosen = this.state.dependantChosen;
+		dependantChosen.classes = responseData.classes;
+
+		let persons = this.state.persons.map(person => {
+			if (person.id === dependantChosen.id) {
+				person.classes = responseData.classes;
+			}
+			return person;
 		});
 
+		this.setState({
+			dependantChosen: dependantChosen,
+			persons: persons,
+		});
+
+		// Update redux store with the result
+		this.props.setDependantsChosen([dependantChosen]);
+		this.props.setPersons(persons);
+
+		// TODO notify user that cancelled and credits given
+
+		// Navigate back to bookedscreen. Force selection of the chosen dependant
+		this.props.navigation.navigate('Booked', {
+			dependantChosen: dependantChosen,
+		});
 	}
 
 	//
@@ -137,6 +159,11 @@ class BookedClassActionsScreen extends React.Component {
 							</List>
 						</ScrollView>
 					</View>
+
+					<FormValidationMessage
+						containerStyle={{ backgroundColor: 'transparent' }}>
+						<Text style={{ fontWeight: 'bold' }}>{ this.state.errorText || '' }</Text>
+					</FormValidationMessage>
 
 					{ buttons() }
 
