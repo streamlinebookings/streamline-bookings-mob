@@ -1,7 +1,7 @@
 // Third party imports
 import React from 'react';
 import { StyleSheet, Text, TextInput, View, ScrollView, Image } from 'react-native';
-import { FormLabel, FormInput, FormValidationMessage, Button, ButtonGroup, CheckBox, Badge, List, ListItem } from 'react-native-elements';
+import { Card, FormLabel, FormInput, FormValidationMessage, Button, ButtonGroup, CheckBox, Badge, List, ListItem } from 'react-native-elements';
 
 let moment = require('moment');
 let _ = require('lodash');
@@ -41,6 +41,7 @@ class BookedScreen extends React.Component {
 			fullName: fullName,
 			highlightClassId: params.newClassId,
 			localDb: false,
+			message: params.message || '',
 			periodTab: 'future',
 			persons: persons,
 		}
@@ -49,6 +50,9 @@ class BookedScreen extends React.Component {
 		this.handleChooseDependant = this.handleChooseDependant.bind(this);
 		this.handlePeriodTab = this.handlePeriodTab.bind(this);
 		this.handleClassActions = this.handleClassActions.bind(this);
+
+		// Reset the parameters to avoid constant messages
+		this.props.navigation.state.params = {};
 	}
 
 	handleChooseDependant (person) {
@@ -239,6 +243,15 @@ class BookedScreen extends React.Component {
 					{ ChooseDependants() }
 
 					<ScrollView>
+
+						{ this.state.message ?
+							<Card containerStyle={{backgroundColor: 'lightgreen'}}>
+								<Text>
+									{ this.state.message }
+								</Text>
+							</Card>
+							: null }
+
 						{ BookedClasses() }
 					</ScrollView>
 				</View>

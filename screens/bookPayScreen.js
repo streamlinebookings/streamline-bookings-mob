@@ -158,7 +158,7 @@ class BookPayScreen extends React.Component {
 		responseData = await response.json();
 		console.log('BOOKCLASSREPONSE', responseData, responseData.classes);
 
-		// Update state with the result (not that state's really needed anymore)
+		// Update the dependants' classes
 		let dependantChosen = this.state.dependantChosen;
 		dependantChosen.classes = responseData.classes;
 
@@ -169,6 +169,7 @@ class BookPayScreen extends React.Component {
 			return person;
 		});
 
+		// Update state with the result (not that state's really needed anymore)
 		this.setState({
 			dependantChosen: dependantChosen,
 			persons: persons,

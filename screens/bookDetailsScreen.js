@@ -57,6 +57,17 @@ class BookDetailsScreen extends React.Component {
 	handleWaitingList () {
 		console.log('HANDLEWaitingList', this.state);
 
+
+
+		////////////////////////
+		// notify user: payment will be executed
+		// add flag in be
+		// conffrm the waiting join
+		// unjoin btn
+
+
+
+
 		// Notify back end
 		let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
 		fetch(beApiUrl + 'calendar/joinwait', {

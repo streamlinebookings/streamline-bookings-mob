@@ -23,6 +23,7 @@ class BookedClassActionsScreen extends React.Component {
 		let persons = props.persons;
 
 		this.state = {
+			cancelConfirm: false,
 			classChosen: props.classChosen,
 			dependantChosen: props.dependantsChosen[0],
 			errorText: '',
@@ -37,16 +38,21 @@ class BookedClassActionsScreen extends React.Component {
 		this.handleCancel = this.handleCancel.bind(this);
 	}
 
-	async handleCancel () {
-		console.log('HandleCancel', this.state);
+	async handleCancel (confirmed) {
+		console.log('HandleCancel', this.state, confirmed);
+
+		if (!confirmed) {
+			this.setState({
+				cancelConfirm: true,
+			});
+			return;
+		}
 
 		// Call backend to cancel the  class
 		let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
 
 		let classChosen = _.clone(this.state.classChosen);
 		classChosen.person.classes = [];                    // Remove recursive classes
-
-console.log('CHECK: DEPcHOSEN = CLASS.PERSON', this.state.dependantChosen.id, classChosen.person.id);
 
 		response = await fetch(beApiUrl + 'calendar/cancel', {
 			method: 'put',
@@ -68,31 +74,27 @@ console.log('CHECK: DEPcHOSEN = CLASS.PERSON', this.state.dependantChosen.id, cl
 		let responseData = await response.json();
 		console.log('CANCELREPONSE', responseData);
 
-		// Update state with the new classes for this dependant
-		let dependantChosen = this.state.dependantChosen;
-		dependantChosen.classes = responseData.classes;
+		// Remove this class from the swimmers classes
+		// Note: it is more consistent that the be returns a new person object for this swimmer. but that seems a bit overkill for this
+		if (responseData === true) {
 
-		let persons = this.state.persons.map(person => {
-			if (person.id === dependantChosen.id) {
-				person.classes = responseData.classes;
-			}
-			return person;
-		});
+			let newClasses = this.state.dependantChosen.classes.filter(oneClass => oneClass.id === classChosen.id ? false : true);
 
-		this.setState({
-			dependantChosen: dependantChosen,
-			persons: persons,
-		});
+			let persons = this.state.persons.map(person => {
+				if (person.id === this.state.dependantChosen.id) {
+					person.classes = newClasses;
+				}
+				return person;
+			});
 
-		// Update redux store with the result
-		this.props.setDependantsChosen([dependantChosen]);
-		this.props.setPersons(persons);
-
-		// TODO notify user that cancelled and credits given
+			// Update redux store with the result
+			this.props.setPersons(persons);
+		}
 
 		// Navigate back to bookedscreen. Force selection of the chosen dependant
 		this.props.navigation.navigate('Booked', {
-			dependantChosen: dependantChosen,
+			dependantChosen: this.state.dependantChosen,
+			message: 'Credits given for ' + this.state.dependantChosen.firstName + ' not attending ' + this.state.classChosen.level.name,
 		});
 	}
 
@@ -108,12 +110,16 @@ console.log('CHECK: DEPcHOSEN = CLASS.PERSON', this.state.dependantChosen.id, cl
 					<Button
 						icon={{ name: 'power-off', type: 'font-awesome' }}
 						backgroundColor='green'
-						title={ this.state.dependantChosen.firstName + ' won\'t attend' }
-						onPress={ () => this.handleCancel() }
+						title={ this.state.cancelConfirm ? 'Click again to confirm' : this.state.dependantChosen.firstName + ' won\'t attend' }
+						onPress={ () => this.state.cancelConfirm ? this.handleCancel(true) : this.handleCancel(false) }
 						disabled={ hoursDiff < 24 ? true : false } />
 
 					{ hoursDiff < 24 ?
 						<Text style={{ width: '50%', color: '#6b6b6b' }}>You may only cancel more than 24 hours in advance</Text>
+						: null }
+
+					{ this.state.cancelConfirm ?
+						<Text style={{ width: '50%', color: '#6b6b6b' }}>After confirming this cancellation, credit will be added to your account</Text>
 						: null }
 
 				</View>
