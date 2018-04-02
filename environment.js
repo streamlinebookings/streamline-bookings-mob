@@ -2,6 +2,8 @@
  * Environment dependant variables
  */
 
+let Buffer = require('buffer').Buffer;
+
 let envData = {};
 
 if (process.env.NODE_ENV === 'production') {
@@ -11,7 +13,7 @@ if (process.env.NODE_ENV === 'production') {
 		beApiUrl: 'https://streamlinebookings.com:9056/api/',
 		imagesUrl: 'https://streamlinebookings.com:9056/imgs/',
 		payGateUrl: 'https://gw1.judopay-sandbox.com/',
-		payGateAuth: 'Basic ' + btoa('CXqeHXubEnhgpz0L:a4024f6285af0e64096b5e0e6ae736d210a69dc14b7a562db17dc45d4829c2f7'),
+		payGateAuth: 'Basic ' + Buffer.from('CXqeHXubEnhgpz0L:a4024f6285af0e64096b5e0e6ae736d210a69dc14b7a562db17dc45d4829c2f7').toString('base64'),
 		payGateId: '100236-439',
 	};
 
@@ -23,7 +25,7 @@ if (process.env.NODE_ENV === 'production') {
 		beApiUrl: 'https://streamlinebookings.com:9056/api/',
 		imagesUrl: 'https://streamlinebookings.com:9056/imgs/',
 		payGateUrl: 'https://gw1.judopay-sandbox.com/',
-		payGateAuth: 'Basic ' + btoa('CXqeHXubEnhgpz0L:a4024f6285af0e64096b5e0e6ae736d210a69dc14b7a562db17dc45d4829c2f7'),
+		payGateAuth: 'Basic ' + Buffer.from('CXqeHXubEnhgpz0L:a4024f6285af0e64096b5e0e6ae736d210a69dc14b7a562db17dc45d4829c2f7').toString('base64'),
 		payGateId: '100236-439',
 	};
 }
@@ -31,4 +33,7 @@ if (process.env.NODE_ENV === 'production') {
 console.log('ENVIRONMENT', process.env.NODE_ENV, envData);
 
 export const env = envData;
+
+
+
 

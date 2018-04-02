@@ -19,6 +19,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "buffer": "^5.1.0",
     "exp": "^49.2.2",
     "expo": "^22.0.2",
     "moment": "^2.19.3",
