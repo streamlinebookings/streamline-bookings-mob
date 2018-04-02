@@ -22,10 +22,13 @@ class BookPayScreen extends React.Component {
 		console.log('BOOKPAYCONSTRUCTOR', props);
 
 		let fullName = props.person && props.person.firstName + ' ' + props.person.lastName || 'Not logged in';
-		
+
+		// These params passed in after leaving a previous screen
+		let params = props.navigation.state.params || {};
+
 		this.state = {
 			agree: false,
-			amount: props.navigation.state.params.amount,
+			amount: params.amount,
 			classChosen: props.classChosen,
 			currency: 'GBP',
 			dependantChosen: props.dependantsChosen[0],
@@ -33,15 +36,17 @@ class BookPayScreen extends React.Component {
 			fullName: fullName,
 			group: props.group,
 			localDb: props.localDb,
-			oneOrTerm: props.navigation.state.params.oneOrTerm,
+			oneOrTerm: params.oneOrTerm,
 			paymentMethodChosen: {},
 			person: props.person,
 			persons: props.persons,
+			preAuthorise: params.preAuthorise || false,
 			token: props.token,
 		};
 
 		// Bind local methods
 		this.handleAgree = this.handleAgree.bind(this);
+		this.handleAuthorisation = this.handleAuthorisation.bind(this);
 		this.handlePay = this.handlePay.bind(this);
 		this.handlePaymentMethod = this.handlePaymentMethod.bind(this);
 	}
@@ -186,6 +191,57 @@ class BookPayScreen extends React.Component {
 		});
 	}
 
+	async handleAuthorisation() {
+		console.log('HANDLEAUTHORISATION', this.state);
+
+		// Check agree + payment method
+		if (!this.state.agree) {
+			this.setState({
+				errorText: 'Please agree with stuff',
+			})
+			return;
+		}
+		if (_.isEmpty(this.state.paymentMethodChosen)) {
+			this.setState({
+				errorText: 'Please select a payment method',
+			})
+			return;
+		}
+
+		// Notify back end
+		let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
+		fetch(beApiUrl + 'calendar/joinwait', {
+			method: 'put',
+			body: JSON.stringify({
+				class: this.state.classChosen,
+				paymentMethod: this.state.paymentMethodChosen,
+				// Removing the classes from the chosen dependant. This avoids a circular JSON structure
+				swimmer: Object.assign({}, this.state.dependantChosen, {classes: []}),
+				token: this.state.token,
+			})
+		})
+			.then(response => {
+				console.log('JOINWAITFETCHRAWRESPONSE', response);
+				if (response.status == 200) return response.json();
+				return response;
+			})
+			.then(response => {
+				console.log('JOINWAITREPONSE', response);
+				this.props.navigation.navigate('Book');
+			})
+			.catch(err => {
+				console.log('JOINWAITERROR', err);
+				this.setState({
+					errorText: 'ERROR: ' + err,
+				});
+			});
+
+		// Change button text
+		this.setState({
+			errorText: 'Please wait while adding authorisation...'
+		});
+	}
+
 	//
 	// Rendering
 	//
@@ -195,8 +251,10 @@ class BookPayScreen extends React.Component {
 
 		const description = (
 			<View style={{ flex: 1, borderBottomColor: 'darkgrey', borderBottomWidth: 3, padding: 10 }}>
+
 				<Text>
-					Book a { this.state.classChosen.recurring ? 'recurring' : 'single' } lesson for
+					{ this.state.preAuthorise ? 'Authorise payment for ' : 'Book' } a
+					{ this.state.classChosen.recurring ? ' recurring' : ' single' } lesson for
 					{ ' ' + this.state.dependantChosen.firstName } in
 					{ ' ' + this.state.classChosen.level.name } on
 					{ ' ' + moment(this.state.classChosen.datetime).format('dddd Do MMMM h:mma') }.
@@ -237,10 +295,25 @@ class BookPayScreen extends React.Component {
 				      justifyContent='flex-start'
 				      style={{ flex: 7, borderBottomColor: 'darkgrey', borderBottomWidth: 3, padding: 10 }}>
 					<ScrollView>
-						<Text>
-							Please select your payment method
-						</Text>
+
+						{ this.state.preAuthorise ?
+							<Card containerStyle={{backgroundColor: 'lightgreen'}}>
+								<Text>
+									Authorise the payment method for when { this.state.dependantChosen.firstName } leaves
+									the waiting list and actually joins the class. The payment will only then be executed.
+								</Text>
+								<Text>
+									Joining the class can happen automatically at any time. You will be notified.
+								</Text>
+							</Card>
+							:
+							<Text>
+								Please select your payment method
+							</Text>
+						}
+
 						{ paymentMethods }
+
 					</ScrollView>
 				</View>
 			);
@@ -270,8 +343,8 @@ class BookPayScreen extends React.Component {
 							icon={{ name: 'dollar', type: 'font-awesome' }}
 							buttonStyle={{ width: 130, borderRadius: 5}}
 							backgroundColor='green'
-							title='Pay'
-							onPress={ this.handlePay }
+							title={ this.state.preAuthorise ? 'Authorise' : 'Pay' }
+							onPress={ this.state.preAuthorise ? this.handleAuthorisation : this.handlePay }
 							disabled={ isNaN(this.state.amount) }
 						/>
 					</View>
@@ -290,7 +363,7 @@ class BookPayScreen extends React.Component {
 				/>
 
 				{/* Payment screen */}
-				<View style={{ flex: 5}}>
+				<View style={{ flex: 5 }}>
 
 					{ description }
 

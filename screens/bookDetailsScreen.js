@@ -31,10 +31,11 @@ class BookDetailsScreen extends React.Component {
 			dependantChosen: props.dependantsChosen[0],
 			fullName: fullName,
 			group: props.group,
+			leaveWaitListConfirm: false,
 			localDb: props.localDb,
 			persons: persons,
 			token: props.token,
-			waitingListButtonText: 'Join wait list',
+			waitingListButtonText: props.classChosen.onWaitingList ? 'Leave wait list' : 'Join wait list',
 		};
 
 		// Bind local methods
@@ -54,57 +55,65 @@ class BookDetailsScreen extends React.Component {
 		});
 	}
 
-	handleWaitingList () {
-		console.log('HANDLEWaitingList', this.state);
+	handleWaitingList (joinOrLeave) {
+		console.log('HANDLEWaitingList', joinOrLeave, this.state);
 
+		if (joinOrLeave === 'join') {
 
+			let restOfTermPrice = this.state.classChosen.term.termRate;
 
-		////////////////////////
-		// notify user: payment will be executed
-		// add flag in be
-		// conffrm the waiting join
-		// unjoin btn
-
-
-
-
-		// Notify back end
-		let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
-		fetch(beApiUrl + 'calendar/joinwait', {
-			method: 'put',
-			body: JSON.stringify({
-				class: this.state.classChosen,
-
-				// Removing the classes from the chosen dependant. This avoids a circular JSON structure
-				swimmer: Object.assign({}, this.state.dependantChosen, {classes: []}),
-
-				token: this.state.token,
-			})
-		})
-			.then(response => {
-				console.log('JOINWAITFETCHRAWRESPONSE', response);
-				if (response.status == 200) return response.json();
-				return response;
-			})
-			.then(response => {
-				console.log('JOINWAITREPONSE', response);
-
-				let text = response.queueLength ? response.queueLength.toString() + 'p waiting' : 'On wait list'
-				this.setState({
-					waitingListButtonText: text,
-				});
-			})
-			.catch(err => {
-				console.log('JOINWAITERROR', err);
-				this.setState({
-					waitingListButtonText: 'ERROR!',
-				});
+			this.props.navigation.navigate('BookPay', {
+				amount: joinOrLeave === 'join' ? this.state.classChosen.term.singleRate : restOfTermPrice,
+				oneOrTerm: 1,
+				preAuthorise: true,
 			});
 
-		// Change button text
-		this.setState({
-			waitingListButtonText: 'Joining...'
-		});
+		} else if (joinOrLeave === 'leave' && !this.state.leaveWaitListConfirm) {
+
+			this.setState({
+				leaveWaitListConfirm: true,
+				waitingListButtonText: 'Click to confirm',
+			});
+			return;
+
+		} else if (joinOrLeave === 'leave') {
+
+			console.log('LEAVING');
+
+			// Notify back end
+			let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
+			fetch(beApiUrl + 'calendar/leavewait', {
+				method: 'put',
+				body: JSON.stringify({
+					class: this.state.classChosen,
+					// Removing the classes from the chosen dependant. This avoids a circular JSON structure
+					swimmer: Object.assign({}, this.state.dependantChosen, {classes: []}),
+					token: this.state.token,
+				})
+			})
+				.then(response => {
+					console.log('LEAVEWAITFETCHRAWRESPONSE', response);
+					if (response.status == 200) return response.json();
+					return response;
+				})
+				.then(response => {
+					console.log('LEAVEWAITREPONSE', response);
+					this.props.navigation.navigate('Book');
+				})
+				.catch(err => {
+					console.log('LEAVEWAITERROR', err);
+					this.setState({
+						errorText: 'ERROR: ' + err,
+					});
+				});
+
+			// Change button text
+			this.setState({
+				waitingListButtonText: 'Leaving...'
+			});
+
+
+		}
 	}
 
 	//
@@ -167,6 +176,8 @@ class BookDetailsScreen extends React.Component {
 		let childNameStatus = this.state.dependantChosen.firstName;
 		if (this.state.classChosen.alreadyBooked) {
 			childNameStatus += ' is already booked into this class';
+		} else if (this.state.classChosen.onWaitingList) {
+			childNameStatus = this.state.dependantChosen.firstName + ' is number ' + this.state.classChosen.placeInWaitingList + ' on the waiting list';
 		} else if (this.state.classChosen.isFull) {
 			childNameStatus = 'Sorry, ' + this.state.dependantChosen.firstName + ', this class is full';
 		}
@@ -191,23 +202,18 @@ class BookDetailsScreen extends React.Component {
 							<ListItem
 								leftIcon={{ name: 'child', type: 'font-awesome' }}
 								title={
-									<View style={{ flex: 1 }} flexDirection='row' justifyContent='space-between' alignItems='center'>
-										<Text>{ childNameStatus }</Text>
-										{ this.state.classChosen.isFull && !this.state.classChosen.alreadyBooked && !this.state.classChosen.onWaitingList ?
+									<View style={{ flex: 5 }} flexDirection='row' justifyContent='space-between' alignItems='center'>
+										<Text style={{ width: this.state.classChosen.alreadyBooked ? 300 : 170 }}>{ childNameStatus }</Text>
+										{ this.state.classChosen.isFull && !this.state.classChosen.alreadyBooked ?
 											<Button
 												icon={{ name: 'hourglass', type: 'font-awesome' }}
 												backgroundColor='green'
 												title={ this.state.waitingListButtonText }
-												onPress={ this.handleWaitingList }
+												onPress={ () => this.handleWaitingList(this.state.classChosen.onWaitingList ? 'leave' : 'join') }
 												buttonStyle={{ width: 130, borderRadius: 5 }}
 											/>
 										: null }
 									</View>
-								}
-								subtitle={
-									this.state.classChosen.onWaitingList ?
-										this.state.dependantChosen.firstName + ' is on the waiting list (' + this.state.classChosen.waiters.length.toString() + ' persons)'
-										: null
 								}
 								hideChevron={ true }
 							/>

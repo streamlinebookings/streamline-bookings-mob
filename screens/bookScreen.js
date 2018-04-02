@@ -79,7 +79,9 @@ class BookScreen extends React.Component {
 				let classes = response.classes.map(oneClass => {
 					oneClass.alreadyBooked = this.state.dependantChosen.classes.findIndex(c => c.id === oneClass.id) > -1 ? true : false;
 
-					oneClass.onWaitingList = oneClass.waiters.findIndex(c => c.id === this.state.dependantChosen.id) > -1 ? true : false;
+					let placeInList = oneClass.waiters.findIndex(c => c.id === this.state.dependantChosen.id);
+					oneClass.onWaitingList = placeInList > -1 ? true : false;
+					oneClass.placeInWaitingList = placeInList + 1;
 
 					return oneClass;
 				});
