@@ -93,7 +93,7 @@ class BookPayScreen extends React.Component {
 		// Create payment Id, pass it to the be to use there
 		paymentId = shortid.generate();
 
-		// Request payment thru Judo
+		// Request payment thru payment gateway
 		let response, responseData;
 
 		response = await fetch(env.payGateUrl + 'transactions/payments', {
