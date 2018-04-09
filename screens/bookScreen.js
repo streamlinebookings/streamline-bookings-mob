@@ -2,7 +2,7 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, View, ScrollView, Image } from 'react-native';
 import { connect } from 'react-redux';
-import { Button, ButtonGroup, CheckBox, Badge, Card, List, ListItem } from 'react-native-elements';
+import { Button, ButtonGroup, CheckBox, Badge, Icon, List, ListItem } from 'react-native-elements';
 
 let moment = require('moment');
 
@@ -144,7 +144,7 @@ class BookScreen extends React.Component {
 
 		const BookClasses = () => {
 
-			console.log('creating cards', this.state);
+			console.log('creating list of classes', this.state);
 
 			if (!this.state.classes) return;
 
@@ -158,11 +158,20 @@ class BookScreen extends React.Component {
 						textStyle = oneClass.alreadyBooked ? { color:  'grey' } : null;
 						textStyle = oneClass.isFull ? { color:  'grey' } : textStyle;
 
+						let statusIcon = null;
+						if (oneClass.isFull) statusIcon = ( <Icon name='times' type='font-awesome' color='grey' size={ 12 }/> );
+						if (oneClass.alreadyBooked) statusIcon = ( <Icon name='thumbs-up' type='font-awesome' color='grey' size={ 12 }/> );
+						if (oneClass.onWaitingList) statusIcon = ( <Icon name='hourglass' type='font-awesome' color='grey' size={ 12 }/> );
+
 						return (
 							<ListItem key={ oneClass.id }
 							          onPress={ () => this.handleBook(oneClass) }
 							          title={
-											<View>
+							          	<View flexDirection='row'>
+											<View style={{ flex: 1, justifyContent: 'space-around' }}>
+												{ statusIcon }
+											</View>
+											<View style={{ flex: 11 }}>
 												<View flexDirection='row' justifyContent='space-between'>
 													<Text style={ textStyle }>{ moment(oneClass.datetime).format('dddd h:mma') + (oneClass.recurring ? ' (Recurring)' : ' (Once)')}</Text>
 													<Text style={ textStyle }>{ oneClass.level.name || ''}</Text>
@@ -182,6 +191,7 @@ class BookScreen extends React.Component {
 													}</Text>
 												</View>
 											</View>
+							            </View>
 							          }
 							></ListItem>
 						)

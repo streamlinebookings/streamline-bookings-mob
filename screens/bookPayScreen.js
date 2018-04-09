@@ -158,27 +158,31 @@ class BookPayScreen extends React.Component {
 				token: this.state.token,
 			})
 		});
-		console.log('BOOKCLASSFETCHRAWRESPONSE', response);
+		// console.log('BOOKCLASSFETCHRAWRESPONSE', response);
 
 		responseData = await response.json();
-		console.log('BOOKCLASSREPONSE', responseData, responseData.classes);
+		console.log('BOOKCLASSREPONSE', responseData);
 
-		// Update the dependants' classes
+		// Update the dependants' classes.
+		// The response contains a list of all classes for that leve. Get the class we just booked and add that to the dependant
 		let dependantChosen = this.state.dependantChosen;
-		dependantChosen.classes = responseData.classes;
+		let classChosen = responseData.classes.filter(oneClass => oneClass.id === this.state.classChosen.id);
+		dependantChosen.classes.push(classChosen[0]);
+		console.log('BOOKCLASSREPONSE2', classChosen, dependantChosen);
 
+		// Update the persons array
 		let persons = this.state.persons.map(person => {
 			if (person.id === dependantChosen.id) {
-				person.classes = responseData.classes;
+				person.classes = dependantChosen.classes;
 			}
 			return person;
 		});
 
-		// Update state with the result (not that state's really needed anymore)
-		this.setState({
-			dependantChosen: dependantChosen,
-			persons: persons,
-		});
+		// // Update state with the result (not that state's really needed anymore)
+		// this.setState({
+		// 	dependantChosen: dependantChosen,
+		// 	persons: persons,
+		// });
 
 		// Update redux store with the result
 		this.props.setDependantsChosen([dependantChosen]);

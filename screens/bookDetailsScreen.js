@@ -52,6 +52,7 @@ class BookDetailsScreen extends React.Component {
 		this.props.navigation.navigate('BookPay', {
 			amount: oneOrTerm === 1 ? this.state.classChosen.term.singleRate : restOfTermPrice,
 			oneOrTerm: oneOrTerm,
+			preAuthorise: false,
 		});
 	}
 
