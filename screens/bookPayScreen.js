@@ -23,12 +23,19 @@ class BookPayScreen extends React.Component {
 
 		let fullName = props.person && props.person.firstName + ' ' + props.person.lastName || 'Not logged in';
 
+		let person = props.person;
+		let totalCredits = 0;
+		person.credits.forEach(credit => totalCredits += credit.amount);
+		person.totalCredits = totalCredits;
+
 		// These params passed in after leaving a previous screen
 		let params = props.navigation.state.params || {};
+		let price = params.amount;
+		let toPay = Math.max(0, price - person.totalCredits);
+		let usedCredit = price - toPay;
 
 		this.state = {
 			agree: false,
-			amount: params.amount,
 			classChosen: props.classChosen,
 			currency: 'GBP',
 			dependantChosen: props.dependantsChosen[0],
@@ -38,10 +45,14 @@ class BookPayScreen extends React.Component {
 			localDb: props.localDb,
 			oneOrTerm: params.oneOrTerm,
 			paymentMethodChosen: {},
-			person: props.person,
+			person: person,
 			persons: props.persons,
 			preAuthorise: params.preAuthorise || false,
+			price: price,
 			token: props.token,
+			toPay: toPay,
+			toPayFormatted: (toPay / 100).toFixed(2),
+			usedCredit: usedCredit,
 		};
 
 		// Bind local methods
@@ -79,7 +90,7 @@ class BookPayScreen extends React.Component {
 			})
 			return;
 		}
-		if (_.isEmpty(this.state.paymentMethodChosen)) {
+		if (this.state.toPay > 0 && _.isEmpty(this.state.paymentMethodChosen)) {
 			this.setState({
 				errorText: 'Please select a payment method',
 			})
@@ -94,42 +105,42 @@ class BookPayScreen extends React.Component {
 		paymentId = shortid.generate();
 
 		// Request payment thru payment gateway
-		let response, responseData;
+		let response, responseData = {};
+		if (this.state.toPay <= 0) {
+			responseData.result = 'No payment required';
 
-		response = await fetch(env.payGateUrl + 'transactions/payments', {
-			method: 'post',
-			headers: {
-				'API-Version': '5.2',
-				'Content-Type': 'application/json',
-				'Authorization': env.payGateAuth,
-			},
-			body: JSON.stringify({
-				yourConsumerReference: this.state.person.id,
-				yourPaymentReference: paymentId,
-				cardToken: this.state.paymentMethodChosen.cardToken,
-				amount: (this.state.amount / 100).toFixed(2),
-				currency: this.state.currency,
-				judoId: env.payGateId,
-			}),
-		});
-		console.log('JUDOPAYRAWRESPONSE', response);
-
-		responseData = await response.json();
-		console.log('JUDOPAYREPONSE', responseData);
-
-		if (response.status != 200) {
-			let allMessages = [responseData.message];
-			responseData.details && responseData.details.forEach(detail => allMessages.push(detail.message));
-			console.log('ALLMESSAGES', responseData.message, allMessages.join(', '));
-			this.setState({
-				errorText: allMessages.join(', '),
+		} else {
+			response = await fetch(env.payGateUrl + 'transactions/payments', {
+				method: 'post',
+				headers: {
+					'API-Version': '5.2',
+					'Content-Type': 'application/json',
+					'Authorization': env.payGateAuth,
+				},
+				body: JSON.stringify({
+					yourConsumerReference: this.state.person.id,
+					yourPaymentReference: paymentId,
+					cardToken: this.state.paymentMethodChosen.cardToken,
+					amount: this.state.toPayFormatted,
+					currency: this.state.currency,
+					judoId: env.payGateId,
+				}),
 			});
-			return;
-		}
+			console.log('JUDOPAYRAWRESPONSE', response);
 
-		this.setState({
-			errorText: responseData.result + ': ' + responseData.message,
-		});
+			responseData = await response.json();
+			console.log('JUDOPAYREPONSE', responseData);
+
+			if (response.status != 200) {
+				let allMessages = [responseData.message];
+				responseData.details && responseData.details.forEach(detail => allMessages.push(detail.message));
+				console.log('ALLMESSAGES', responseData.message, allMessages.join(', '));
+				this.setState({
+					errorText: allMessages.join(', '),
+				});
+				return;
+			}
+		}
 
 		//////////// NEXT - see JUDOPAY
 		//////////// if (responseData.result != 'Success') return;
@@ -148,10 +159,11 @@ class BookPayScreen extends React.Component {
 				class: this.state.classChosen,
 				oneOrTerm: this.state.oneOrTerm,
 				payment: {
-					amount: this.state.amount,
 					id: paymentId,
 					paymentMethod: this.state.paymentMethodChosen,
 					receiptId: responseData.receiptId,
+					amountPaid: this.state.toPay,
+					usedCredit: this.state.usedCredit,
 				},
 				// Removing the classes from the chosen dependant. This avoids a circular JSON structure
 				swimmer: Object.assign({}, this.state.dependantChosen, {classes: []}),
@@ -177,12 +189,6 @@ class BookPayScreen extends React.Component {
 			}
 			return person;
 		});
-
-		// // Update state with the result (not that state's really needed anymore)
-		// this.setState({
-		// 	dependantChosen: dependantChosen,
-		// 	persons: persons,
-		// });
 
 		// Update redux store with the result
 		this.props.setDependantsChosen([dependantChosen]);
@@ -251,21 +257,27 @@ class BookPayScreen extends React.Component {
 	//
 	render() {
 
-		console.log('RENDERING PAYSCREEN',  isNaN(this.state.amount), _.isNaN(this.state.amount));
+		console.log('RENDERING PAYSCREEN',  this.state.price);
 
-		const description = (
-			<View style={{ flex: 1, borderBottomColor: 'darkgrey', borderBottomWidth: 3, padding: 10 }}>
+		const description = () => {
 
-				<Text>
-					{ this.state.preAuthorise ? 'Authorise payment for ' : 'Book' } a
-					{ this.state.classChosen.recurring ? ' recurring' : ' single' } lesson for
-					{ ' ' + this.state.dependantChosen.firstName } in
-					{ ' ' + this.state.classChosen.level.name } on
-					{ ' ' + moment(this.state.classChosen.datetime).format('dddd Do MMMM h:mma') }.
-					The cost is $ { (this.state.amount / 100).toFixed(2) }
-				</Text>
-			</View>
-		);
+			return (
+				<View style={{flex: 1, borderBottomColor: 'darkgrey', borderBottomWidth: 3, padding: 10}}>
+					<Text>
+						{this.state.preAuthorise ? 'Authorise payment for ' : 'Book'} a
+						{this.state.classChosen.recurring ? ' recurring' : ' single'} lesson for
+						{' ' + this.state.dependantChosen.firstName} in
+						{' ' + this.state.classChosen.level.name} on
+						{' ' + moment(this.state.classChosen.datetime).format('dddd Do MMMM h:mma')}.
+						{ ' The cost is $' + (this.state.price / 100).toFixed(2)}.
+						{ this.state.person.totalCredits !== 0 ?
+							' You now have $' + (this.state.person.totalCredits / 100).toFixed(2) + ' in credits.'
+							: null
+						}
+					</Text>
+				</View>
+			);
+		};
 
 		const choosePaymentMethod = () => {
 
@@ -275,6 +287,14 @@ class BookPayScreen extends React.Component {
 				return (
 					<View style={{ flex: 6, borderBottomColor: 'darkgrey', borderBottomWidth: 3, padding: 30 }}>
 						<Text>Please add a payment method in your 'account' details</Text>
+					</View>
+				);
+			}
+
+			if (!this.state.preAuthorise && this.state.toPay <= 0) {
+				return (
+					<View style={{ flex: 6, borderBottomColor: 'darkgrey', borderBottomWidth: 3, padding: 30 }}>
+						<Text>Payment method is not required</Text>
 					</View>
 				);
 			}
@@ -301,10 +321,13 @@ class BookPayScreen extends React.Component {
 					<ScrollView>
 
 						{ this.state.preAuthorise ?
-							<Card containerStyle={{backgroundColor: 'lightgreen'}}>
+							<Card containerStyle={{ backgroundColor: 'lightgreen' }}>
 								<Text>
 									Authorise the payment method for when { this.state.dependantChosen.firstName } leaves
 									the waiting list and actually joins the class. The payment will only then be executed.
+								</Text>
+								<Text>
+									Any credits you then have will be used first before payment.
 								</Text>
 								<Text>
 									Joining the class can happen automatically at any time. You will be notified.
@@ -347,9 +370,9 @@ class BookPayScreen extends React.Component {
 							icon={{ name: 'dollar', type: 'font-awesome' }}
 							buttonStyle={{ width: 130, borderRadius: 5}}
 							backgroundColor='green'
-							title={ this.state.preAuthorise ? 'Authorise' : 'Pay' }
+							title={ this.state.preAuthorise ? 'Authorise' : 'Pay $' + this.state.toPayFormatted }
 							onPress={ this.state.preAuthorise ? this.handleAuthorisation : this.handlePay }
-							disabled={ isNaN(this.state.amount) }
+							disabled={ isNaN(this.state.toPay) }
 						/>
 					</View>
 				</View>
@@ -369,7 +392,7 @@ class BookPayScreen extends React.Component {
 				{/* Payment screen */}
 				<View style={{ flex: 5 }}>
 
-					{ description }
+					{ description() }
 
 					{ choosePaymentMethod() }
 

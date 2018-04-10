@@ -1,7 +1,7 @@
 // Third party imports
 import React from 'react';
 import { Image, Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { Button, ButtonFinancial, Card, CheckBox, FormLabel, FormInput, FormValidationMessage, Icon, Input } from 'react-native-elements';
+import { Button, ButtonPaymentMethod, Card, CheckBox, FormLabel, FormInput, FormValidationMessage, Icon, Input } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -14,11 +14,11 @@ import { Header } from './header';
 import VenuesScreen from "./venuesScreen";
 
 
-class FinancialDetailsScreen extends React.Component {
+class PaymentMethodDetailsScreen extends React.Component {
 
 	constructor(props) {
 		super(props);
-		console.log('FinancialDetailsCONSTRUCTOR', props);
+		console.log('PaymentMethodDetailsCONSTRUCTOR', props);
 
 		let fullName = props.person && props.person.firstName + ' ' + props.person.lastName || 'Not logged in';
 
@@ -105,10 +105,9 @@ class FinancialDetailsScreen extends React.Component {
 
 		// TODO try/catch around this
 		responseData = await response.json();
-		console.log('DELETEINANCIALREPONSE', responseData);
+		console.log('DELETEPAYMENTMETHODREPONSE', responseData);
 
 		// TODO Void the card at the gateway
-
 		// this.setState({
 		// 	errorText: 'Revoking card details...',
 		// });
@@ -142,8 +141,8 @@ class FinancialDetailsScreen extends React.Component {
 		this.props.setPerson(responseData.person);
 		this.props.setPersons(this.state.persons);
 
-		// Go back to financials
-		this.props.navigation.navigate('Financials')
+		// Go back to paymentMethods
+		this.props.navigation.navigate('PaymentMethods')
 	}
 
 	async handleSave () {
@@ -223,7 +222,7 @@ class FinancialDetailsScreen extends React.Component {
 
 			// TODO try/catch around this
 			responseData = await response.json();
-			console.log('SAVEFINANCIALREPONSE', responseData);
+			console.log('SAVEPaymentMethodREPONSE', responseData);
 
 			// TODO Prefer a toast message 'saved'
 			// https://www.npmjs.com/package/react-native-simple-toast
@@ -236,8 +235,8 @@ class FinancialDetailsScreen extends React.Component {
 			this.props.setPerson(responseData.person);
 			this.props.setPersons(this.state.persons);
 
-			// Go back to financials
-			this.props.navigation.navigate('Financials')
+			// Go back to paymentMethods
+			this.props.navigation.navigate('PaymentMethods')
 		}
 	}
 
@@ -302,7 +301,7 @@ class FinancialDetailsScreen extends React.Component {
 	//
 	render() {
 
-		console.log('rendering financial details', this.state, this.props);
+		console.log('rendering paymentMethod details', this.state, this.props);
 
 		const errorStyle = { backgroundColor: '#f7edf6' };
 
@@ -471,7 +470,7 @@ class FinancialDetailsScreen extends React.Component {
 				<Header fullName={ this.state.fullName }
 				        image={ 'mob/backgrounds/background-account.jpg' }
 				        navigation={ this.props.navigation }
-				        backTo={ 'Financials' }
+				        backTo={ 'PaymentMethods' }
 				        title='Payment Method Details'
 				/>
 
@@ -498,4 +497,4 @@ class FinancialDetailsScreen extends React.Component {
 	}
 }
 
-export default FinancialDetailsScreen
+export default PaymentMethodDetailsScreen

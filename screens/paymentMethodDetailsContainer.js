@@ -4,25 +4,25 @@ import { connect } from 'react-redux';
 
 // Our imports
 import * as Action from '../common/actions';
-import FinancialDetailsScreen from './financialDetailsScreen';
+import PaymentMethodDetailsScreen from './paymentMethodDetailsScreen';
 
 
 const mapStateToProps = state => {
-	console.log('financialDetailsContainerMAPPINGSTATETOPROPS', state);
+	console.log('paymentMethodDetailsContainerMAPPINGSTATETOPROPS', state);
 	return state;
 }
 
 const mapDispatchToProps = dispatch => {
-	console.log('financialDetailsMAPPINGDISPATCHTOPROPS');
+	console.log('paymentMethodDetailsMAPPINGDISPATCHTOPROPS');
 	return {
 		setPerson: person => dispatch(Action.setPerson(person)),
 		setPersons: persons => dispatch(Action.setPersons(persons)),
 	};
 }
 
-const FinancialDetailsContainer = connect (
+const PaymentMethodDetailsContainer = connect (
 	mapStateToProps,
 	mapDispatchToProps,
-)(FinancialDetailsScreen);
+)(PaymentMethodDetailsScreen);
 
-export default FinancialDetailsContainer;
+export default PaymentMethodDetailsContainer;

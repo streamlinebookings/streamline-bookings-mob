@@ -23,7 +23,9 @@ import LoginContainer from './screens/loginContainer';
 import VenuesContainer from './screens/venuesContainer';
 // import VenueDetailsContainer from './screens/venueDetailsContainer';
 import FinancialsContainer from './screens/financialsContainer';
-import FinancialDetailsContainer from './screens/financialDetailsContainer';
+import PaymentMethodsContainer from "./screens/paymentMethodsContainer";
+import PaymentMethodDetailsContainer from './screens/paymentMethodDetailsContainer';
+import CreditsContainer from './screens/creditsContainer';
 
 // Define redux store
 let store = createStore(Action.Slb);
@@ -176,8 +178,20 @@ const RootNavigator = DrawerNavigator(
 				drawerLabel: () => null
 			},
 		},
-		FinancialDetails: {
-			screen: FinancialDetailsContainer,
+		PaymentMethods: {
+			screen: PaymentMethodsContainer,
+			navigationOptions: {
+				drawerLabel: () => null
+			},
+		},
+		PaymentMethodDetails: {
+			screen: PaymentMethodDetailsContainer,
+			navigationOptions: {
+				drawerLabel: () => null
+			},
+		},
+		Credits: {
+			screen: CreditsContainer,
 			navigationOptions: {
 				drawerLabel: () => null
 			},
