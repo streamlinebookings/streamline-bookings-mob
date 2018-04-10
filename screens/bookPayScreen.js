@@ -32,7 +32,7 @@ class BookPayScreen extends React.Component {
 		let params = props.navigation.state.params || {};
 		let price = params.amount;
 		let toPay = Math.max(0, price - person.totalCredits);
-		let usedCredit = price - toPay;
+		let usedCredits = price - toPay;
 
 		this.state = {
 			agree: false,
@@ -52,7 +52,7 @@ class BookPayScreen extends React.Component {
 			token: props.token,
 			toPay: toPay,
 			toPayFormatted: (toPay / 100).toFixed(2),
-			usedCredit: usedCredit,
+			usedCredits: usedCredits,
 		};
 
 		// Bind local methods
@@ -163,7 +163,7 @@ class BookPayScreen extends React.Component {
 					paymentMethod: this.state.paymentMethodChosen,
 					receiptId: responseData.receiptId,
 					amountPaid: this.state.toPay,
-					usedCredit: this.state.usedCredit,
+					usedCredits: this.state.usedCredits,
 				},
 				// Removing the classes from the chosen dependant. This avoids a circular JSON structure
 				swimmer: Object.assign({}, this.state.dependantChosen, {classes: []}),
