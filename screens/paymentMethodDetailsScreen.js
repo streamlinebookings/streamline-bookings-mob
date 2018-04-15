@@ -107,35 +107,6 @@ class PaymentMethodDetailsScreen extends React.Component {
 		responseData = await response.json();
 		console.log('DELETEPAYMENTMETHODREPONSE', responseData);
 
-		// TODO Void the card at the gateway
-		// this.setState({
-		// 	errorText: 'Revoking card details...',
-		// });
-		//
-		// let response, responseData;
-		// response = await fetch(env.payGateUrl + 'transactions/voids', {
-		// 	method: 'post',
-		// 	headers: {
-		// 		'API-Version': '5.2',
-		// 		'Content-Type': 'application/json',
-		// 		'Authorization': env.payGateAuth,
-		// 	},
-		// 	body: JSON.stringify({
-		// 		yourConsumerReference: this.props.person.id,
-		// 		cardToken: this.state.paymentMethod[this.state.paymentMethodType].cardToken,
-		// 		// yourPaymentReference: timestamp,
-		// 		// cardNumber: this.state.paymentMethod.creditcard.number,
-		// 		// expiryDate: moment(this.state.paymentMethod.creditcard.expiryDate).format('MM/YY'),
-		// 		// cv2: this.state.paymentMethod.creditcard.cv2,
-		// 		judoId: env.payGateId,
-		// 	}),
-		// });
-		// console.log('JUDOVOIDRAWRESPONSE', response);
-		//
-		// responseData = await response.json();
-		// console.log('JUDOVOIDEPONSE', response.status, responseData);
-		//
-
 		// Update state and redux
 		this.replacePersonInGroup(responseData.person);
 		this.props.setPerson(responseData.person);
@@ -154,37 +125,32 @@ class PaymentMethodDetailsScreen extends React.Component {
 				errorText: 'Please wait while checking card details...',
 			});
 
-
 			let timestamp = new Date().getTime();
 			let response, responseData;
+			let headers = {
+				'Content-Type': 'application/json',
+				'Authorization': env.payGateAuth,
+			};
+			let body = JSON.stringify({
+				card_number: this.state.paymentMethod.creditcard.number,
+				card_expiry: moment(this.state.paymentMethod.creditcard.expiryDate).format('MM/YYYY'),
+				card_holder: this.state.fullName,
+				cvv: this.state.paymentMethod.creditcard.cv2,
+			});
 
 			response = await fetch(env.payGateUrl + 'transactions/registercard', {
 				method: 'post',
-				headers: {
-					'API-Version': '5.2',
-					'Content-Type': 'application/json',
-					'Authorization': env.payGateAuth,
-				},
-				body: JSON.stringify({
-					yourConsumerReference: this.props.person.id,
-					yourPaymentReference: timestamp,
-					cardNumber: this.state.paymentMethod.creditcard.number,
-					expiryDate: moment(this.state.paymentMethod.creditcard.expiryDate).format('MM/YY'),
-					cv2: this.state.paymentMethod.creditcard.cv2,
-					judoId: env.payGateId,
-				}),
+				headers: headers,
+				body: body,
 			});
-			console.log('JUDOREGISTERRAWRESPONSE', response);
+			console.log('PAYGREGISTERRAWRESPONSE', response, headers, body);
 
 			responseData = await response.json();
-			console.log('JUDOREGISTERREPONSE', response.status, responseData);
+			console.log('PAYGREGISTERREPONSE', response.status, responseData);
 
-			if (response.status != 200) {
-				let allMessages = [responseData.message];
-				responseData.details && responseData.details.forEach(detail => allMessages.push(detail.message));
-				console.log('ALLMESSAGES', responseData.message, allMessages.join(', '));
+			if (response.status > 201) {
 				this.setState({
-					errorText: allMessages.join(', '),
+					errorText: responseData.errors.join(', '),
 				});
 				return;
 			}
@@ -200,7 +166,6 @@ class PaymentMethodDetailsScreen extends React.Component {
 			let methodTokenized = {
 				type: this.state.paymentMethodType,
 				cardDetails: responseData.cardDetails,
-				// consumer: responseData.consumer,
 			};
 
 			response = await fetch(beApiUrl + 'person/update', {

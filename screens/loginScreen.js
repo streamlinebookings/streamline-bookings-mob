@@ -55,7 +55,7 @@ class LoginScreen extends React.Component {
 		let beApiUrl = localDb ? env.localApiUrl : env.beApiUrl;
 
 		// email = localDb ? 'mary@smith.com' : email;
-		email = localDb ? 'joe@smith.com' : email;
+		email = localDb ? 'mark@filius.cc' : email;
 		password = localDb ? '123456789' : password;
 
 		fetch(beApiUrl + 'login', {
