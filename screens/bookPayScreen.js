@@ -107,7 +107,10 @@ class BookPayScreen extends React.Component {
 		// Request payment thru payment gateway
 		let response, responseData = {};
 		if (this.state.toPay <= 0) {
-			responseData.result = 'No payment required';
+			responseData.response = {
+				message: 'No payment required',
+				transaction_id: '(no receiptId)',
+			};
 
 		} else {
 			response = await fetch(env.payGateUrl + 'purchases', {
@@ -129,9 +132,11 @@ class BookPayScreen extends React.Component {
 			responseData = await response.json();
 			console.log('PAYGRESPONSE', responseData);
 
-			if (response.status > 201) {
+			responseData.response = responseData.response || { message: 'Error - please try again', errors: ['No response from payment gateway'] };
+
+			if (!responseData.response.successful) {
 				this.setState({
-					errorText: responseData.errors.join(', '),
+					errorText: responseData.response.message.toUpperCase() + ': ' + responseData.errors.join(', '),
 				});
 				return;
 			}
