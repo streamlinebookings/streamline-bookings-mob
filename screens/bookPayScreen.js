@@ -37,7 +37,7 @@ class BookPayScreen extends React.Component {
 		this.state = {
 			agree: false,
 			classChosen: props.classChosen,
-			currency: 'GBP',
+			currency: 'AUD',
 			dependantChosen: props.dependantsChosen[0],
 			errorText: '',
 			fullName: fullName,
@@ -110,44 +110,36 @@ class BookPayScreen extends React.Component {
 			responseData.result = 'No payment required';
 
 		} else {
-			response = await fetch(env.payGateUrl + 'transactions/payments', {
+			response = await fetch(env.payGateUrl + 'purchases', {
 				method: 'post',
 				headers: {
-					'API-Version': '5.2',
 					'Content-Type': 'application/json',
 					'Authorization': env.payGateAuth,
 				},
 				body: JSON.stringify({
-					yourConsumerReference: this.state.person.id,
-					yourPaymentReference: paymentId,
-					cardToken: this.state.paymentMethodChosen.cardToken,
-					amount: this.state.toPayFormatted,
+					amount: this.state.toPay,
+					reference: paymentId + ' ' + this.state.dependantChosen.firstName + this.state.dependantChosen.lastName,
+					customer_ip: '123.456.789.012',
+					card_token: this.state.paymentMethodChosen.cardToken,
 					currency: this.state.currency,
-					judoId: env.payGateId,
 				}),
 			});
-			console.log('JUDOPAYRAWRESPONSE', response);
+			console.log('PAYGRAWRESPONSE', response);
 
 			responseData = await response.json();
-			console.log('JUDOPAYREPONSE', responseData);
+			console.log('PAYGRESPONSE', responseData);
 
-			if (response.status != 200) {
-				let allMessages = [responseData.message];
-				responseData.details && responseData.details.forEach(detail => allMessages.push(detail.message));
-				console.log('ALLMESSAGES', responseData.message, allMessages.join(', '));
+			if (response.status > 201) {
 				this.setState({
-					errorText: allMessages.join(', '),
+					errorText: responseData.errors.join(', '),
 				});
 				return;
 			}
 		}
 
-		//////////// NEXT - see JUDOPAY
-		//////////// if (responseData.result != 'Success') return;
-
 		// Update backend
 		this.setState({
-			errorText:  responseData.result.toUpperCase() + ': ' + 'Please wait while updating account details...',
+			errorText:  responseData.response.message.toUpperCase() + ': ' + 'Please wait while updating account details...',
 		});
 
 		// Call backend to update class status
@@ -161,7 +153,7 @@ class BookPayScreen extends React.Component {
 				payment: {
 					id: paymentId,
 					paymentMethod: this.state.paymentMethodChosen,
-					receiptId: responseData.receiptId,
+					receiptId: responseData.response.transaction_id,
 					amountPaid: this.state.toPay,
 					usedCredits: this.state.usedCredits,
 				},
@@ -176,7 +168,7 @@ class BookPayScreen extends React.Component {
 		console.log('BOOKCLASSREPONSE', responseData);
 
 		// Update the dependants' classes.
-		// The response contains a list of all classes for that leve. Get the class we just booked and add that to the dependant
+		// The response contains a list of all classes for that level. Get the class we just booked and add that to the dependant
 		let dependantChosen = this.state.dependantChosen;
 		let classChosen = responseData.classes.filter(oneClass => oneClass.id === this.state.classChosen.id);
 		dependantChosen.classes.push(classChosen[0]);

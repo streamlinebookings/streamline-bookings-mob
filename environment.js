@@ -24,7 +24,7 @@ if (process.env.NODE_ENV === 'production') {
 		imagesUrl: 'https://streamlinebookings.com:9056/imgs/',
 
 		// FatZebra
-		payGateUrl: 'https://gateway.sandbox.fatzebra.com.au/v1.0/credit_cards/',
+		payGateUrl: 'https://gateway.sandbox.fatzebra.com.au/v1.0/',
 		payGateAuth: 'Basic ' + Buffer.from('TESTstreamlinebookings:3df4b3bb71a31aa13bb2994ea04540c2bcd1f805').toString('base64'),
 
 		// JudoPay
@@ -42,7 +42,7 @@ if (process.env.NODE_ENV === 'production') {
 		imagesUrl: 'https://streamlinebookings.com:9056/imgs/',
 
 		// FatZebra
-		payGateUrl: 'https://gateway.sandbox.fatzebra.com.au/v1.0/credit_cards/',
+		payGateUrl: 'https://gateway.sandbox.fatzebra.com.au/v1.0/',
 		payGateAuth: 'Basic ' + Buffer.from('TESTstreamlinebookings:3df4b3bb71a31aa13bb2994ea04540c2bcd1f805').toString('base64'),
 
 		// JudoPay

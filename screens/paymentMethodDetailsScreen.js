@@ -138,7 +138,7 @@ class PaymentMethodDetailsScreen extends React.Component {
 				cvv: this.state.paymentMethod.creditcard.cv2,
 			});
 
-			response = await fetch(env.payGateUrl + 'transactions/registercard', {
+			response = await fetch(env.payGateUrl + 'credit_cards', {
 				method: 'post',
 				headers: headers,
 				body: body,
@@ -146,7 +146,7 @@ class PaymentMethodDetailsScreen extends React.Component {
 			console.log('PAYGREGISTERRAWRESPONSE', response, headers, body);
 
 			responseData = await response.json();
-			console.log('PAYGREGISTERREPONSE', response.status, responseData);
+			console.log('PAYGREGISTERRESPONSE', response.status, responseData);
 
 			if (response.status > 201) {
 				this.setState({
@@ -160,12 +160,13 @@ class PaymentMethodDetailsScreen extends React.Component {
 				errorText: 'Please wait while updating your personal details...',
 			});
 
-			if (!responseData.cardDetails.cardToken) responseData.cardDetails.cardToken = 'fakeToken:-('
+			if (!responseData.response.token) responseData.response.token = 'fakeToken:-('
 
 			let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
 			let methodTokenized = {
 				type: this.state.paymentMethodType,
-				cardDetails: responseData.cardDetails,
+				last4: responseData.response.card_number.slice(-4),
+				cardToken:  responseData.response.token,
 			};
 
 			response = await fetch(beApiUrl + 'person/update', {
