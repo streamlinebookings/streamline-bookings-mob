@@ -21,7 +21,7 @@ import GroupDetailsContainer from './screens/groupDetailsContainer';
 import HomeContainer from './screens/homeContainer';
 import LoginContainer from './screens/loginContainer';
 import VenuesContainer from './screens/venuesContainer';
-// import VenueDetailsContainer from './screens/venueDetailsContainer';
+import VenueDetailsContainer from './screens/venueDetailsContainer';
 import FinancialsContainer from './screens/financialsContainer';
 import PaymentMethodsContainer from "./screens/paymentMethodsContainer";
 import PaymentMethodDetailsContainer from './screens/paymentMethodDetailsContainer';
@@ -148,12 +148,12 @@ const RootNavigator = DrawerNavigator(
 				drawerLabel: () => null
 			},
 		},
-		// VenueDetails: {
-		// 	screen: VenueDetailsContainer,
-		// 	navigationOptions: {
-		// 		drawerLabel: () => null
-		// 	},
-		// },
+		VenueDetails: {
+			screen: VenueDetailsContainer,
+			navigationOptions: {
+				drawerLabel: () => null
+			},
+		},
 		Login: {
 			screen: LoginContainer,
 			navigationOptions: {

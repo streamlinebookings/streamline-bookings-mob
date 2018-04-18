@@ -63,29 +63,6 @@ class PaymentMethodsScreen extends React.Component {
 		this.props.navigation.navigate('PaymentMethodDetails');
 	}
 
-
-	// handleInput (inputSource, data) {
-	// 	console.log('HANDLEINPUT', inputSource, data);
-	// 	let newData = Object.assign({}, this.state.paymentMethod);
-	// 	newData[inputSource] = data;
-	// 	this.setState({ paymentMethod: newData});
-	// }
-	// handleAddress (data) {
-	// 	this.handleInput('address', data);
-	// }
-	// handleName (data) {
-	// 	this.handleInput('name', data);
-	// }
-	// handlePostcode (data) {
-	// 	this.handleInput('postcode', data);
-	// }
-	// handleState (data) {
-	// 	this.handleInput('state', data);
-	// }
-	// handleSuburb (data) {
-	// 	this.handleInput('suburb', data);
-	// }
-
 	handleNext () {
 		console.log('HANDLENEXT', this.state);
 

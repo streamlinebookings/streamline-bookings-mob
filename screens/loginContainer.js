@@ -19,6 +19,7 @@ const mapDispatchToProps = dispatch => {
 		setPerson: person => dispatch(Action.setPerson(person)),
 		setPersons: persons => dispatch(Action.setPersons(persons)),
 		setToken: token => dispatch(Action.setToken(token)),
+		setVenue: venue => dispatch(Action.setVenue(venue)),
 		setLocalDb: localDb => dispatch(Action.setLocalDb(localDb)),
 	};
 }

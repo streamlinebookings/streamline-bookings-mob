@@ -61,15 +61,12 @@ class AccountScreen extends React.Component {
 						: null }
 
 						<List>
-							{ this.state.isRegistering ?
-			                    <ListItem key={ 'chooseVenue' }
-			                              onPress={ () => { this.props.navigation.navigate('Venues') }}
-			                              title={ <View flexDirection='row' justifyContent='space-between'>
-			                                          <Text>Choose a swimming school</Text>
-			                                      </View>}
-							              disabled={ !this.state.isRegistering ? true : false }
-			                      ></ListItem>
-							: null }
+		                    <ListItem key={ 'chooseVenue' }
+		                              onPress={ () => { this.props.navigation.navigate('VenueDetails') }}
+		                              title={ <View flexDirection='row' justifyContent='space-between'>
+		                                          <Text>Swimming school</Text>
+		                                      </View>}
+		                      ></ListItem>
 		   					<ListItem key={ 'groupDetails' }
 		   					          onPress={ () => { this.props.navigation.navigate('GroupDetails') }}
 		   					          title={ <View flexDirection='row' justifyContent='space-between'>

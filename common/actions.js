@@ -5,6 +5,7 @@ export const SET_GROUP = 'SET_GROUP'
 export const SET_PERSON = 'SET_PERSON'
 export const SET_PERSONS = 'SET_PERSONS'
 export const SET_TOKEN = 'SET_TOKEN'
+export const SET_VENUE = 'SET_VENUE'
 export const SET_LOCALDB = 'SET_LOCALDB'
 export const SET_CARERCHOSEN = 'SET_CARERCHOSEN'
 export const SET_DEPENDANTSCHOSEN = 'SET_DEPENDANTSCHOSEN'
@@ -26,6 +27,9 @@ export function setPersons(persons) {
 }
 export function setToken(token) {
 	return { type: SET_TOKEN, token };
+}
+export function setVenue(venue) {
+	return { type: SET_VENUE, venue };
 }
 export function setLocalDb(localDb) {
 	return { type: SET_LOCALDB, localDb };
@@ -63,6 +67,9 @@ export function Slb(state = {}, action) {
 
 		case SET_TOKEN:
 			return Object.assign({}, state, setToken(action.token));
+
+		case SET_VENUE:
+			return Object.assign({}, state, setVenue(action.venue));
 
 		case SET_LOCALDB:
 			return Object.assign({}, state, setLocalDb(action.localDb));

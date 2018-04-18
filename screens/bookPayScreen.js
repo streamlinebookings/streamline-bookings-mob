@@ -135,8 +135,9 @@ class BookPayScreen extends React.Component {
 			responseData.response = responseData.response || { message: 'Error - please try again', errors: ['No response from payment gateway'] };
 
 			if (!responseData.response.successful) {
+				let message = (responseData.response.message ? responseData.response.message.toUpperCase() + ': ' : '') + responseData.errors.join(', ');
 				this.setState({
-					errorText: responseData.response.message.toUpperCase() + ': ' + responseData.errors.join(', '),
+					errorText: message,
 				});
 				return;
 			}

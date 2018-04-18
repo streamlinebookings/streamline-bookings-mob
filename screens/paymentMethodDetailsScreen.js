@@ -40,7 +40,7 @@ class PaymentMethodDetailsScreen extends React.Component {
 			hasErrors: {},
 			localDb: props.localDb || false,
 			paymentMethod: paymentMethod,
-			paymentMethodType: paymentMethodType,
+			paymentMethodType: 'creditcard', // paymentMethodType,
 			paymentMethodEditable: editable,
 			persons: props.persons || [],
 			showDatePicker: false,
@@ -287,16 +287,16 @@ class PaymentMethodDetailsScreen extends React.Component {
 						checked={this.state.paymentMethodType === 'creditcard' ? true : false}
 						onPress={() => this.handleChooseMethod('creditcard')}
 					/>
-					<CheckBox
-						key={'paypal'}
-						title={'PayPal'}
-						iconType='font-awesome'
-						checkedIcon='check'
-						checkedColor='red'
-						containerStyle={{width: '32%'}}
-						checked={this.state.paymentMethodType === 'paypal' ? true : false}
-						onPress={() => this.handleChooseMethod('paypal')}
-					/>
+					{/*<CheckBox*/}
+						{/*key={'paypal'}*/}
+						{/*title={'PayPal'}*/}
+						{/*iconType='font-awesome'*/}
+						{/*checkedIcon='check'*/}
+						{/*checkedColor='red'*/}
+						{/*containerStyle={{width: '32%'}}*/}
+						{/*checked={this.state.paymentMethodType === 'paypal' ? true : false}*/}
+						{/*onPress={() => this.handleChooseMethod('paypal')}*/}
+					{/*/>*/}
 				</View>
 			)
 		}
