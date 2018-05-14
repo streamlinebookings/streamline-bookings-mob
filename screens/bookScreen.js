@@ -163,6 +163,8 @@ class BookScreen extends React.Component {
 						if (oneClass.alreadyBooked) statusIcon = ( <Icon name='thumbs-up' type='font-awesome' color='grey' size={ 12 }/> );
 						if (oneClass.onWaitingList) statusIcon = ( <Icon name='hourglass' type='font-awesome' color='grey' size={ 12 }/> );
 
+						let instructors = oneClass.instructors.map(inst => inst.displayName).join(',');
+
 						return (
 							<ListItem key={ oneClass.id }
 							          onPress={ () => this.handleBook(oneClass) }
@@ -178,7 +180,7 @@ class BookScreen extends React.Component {
 												</View>
 												<View flexDirection='row' justifyContent='space-between'>
 													<Text style={ textStyle }>{ moment(oneClass.datetime).format('Do MMMM') }</Text>
-													<Text style={ textStyle }>{ (oneClass.instructor.firstName ? oneClass.instructor.firstName + ', ' : '') + 'lane ' + oneClass.laneId}</Text>
+													<Text style={ textStyle }>{ (instructors || '') + ' lane ' + oneClass.laneId}</Text>
 												</View>
 												<View flexDirection='row' justifyContent='space-between'>
 													<Text style={ textStyle }>{ oneClass.duration ? oneClass.duration + ' minutes' : '' }</Text>

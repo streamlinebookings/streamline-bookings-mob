@@ -183,6 +183,9 @@ class BookDetailsScreen extends React.Component {
 			childNameStatus = 'Sorry, ' + this.state.dependantChosen.firstName + ', this class is full';
 		}
 
+		let instructors = this.state.classChosen.instructors.map(inst => inst.displayName).join(', ');
+		let instructorsFullName = this.state.classChosen.instructors.map(inst => inst.firstName + ' ' + inst.lastName).join(', ');
+
 		return (
 
 			<View style={{ flex: 1 }}>
@@ -253,10 +256,8 @@ class BookDetailsScreen extends React.Component {
 							/>
 							<ListItem
 								leftIcon={{ name: 'male', type: 'font-awesome' }}
-								title={ this.state.classChosen.instructor.displayName || '' }
-								subtitle={ this.state.classChosen.instructor.displayName
-											? this.state.classChosen.instructor.firstName + ' ' + this.state.classChosen.instructor.lastName
-											: '' }
+								title={ instructors || '' }
+								subtitle={ instructorsFullName || '' }
 								hideChevron={ true }
 							/>
 							<ListItem

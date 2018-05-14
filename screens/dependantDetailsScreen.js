@@ -21,12 +21,13 @@ class DependantDetailsScreen extends React.Component {
 
 		let fullName = props.person && props.person.firstName + ' ' + props.person.lastName || 'Not logged in';
 
+		// Note: isRegistering is not used anymore in this screen and should always be false
 		this.state = {
 			dependant: props.dependantsChosen ? props.dependantsChosen[0] : {},
 			errorText: false,
 			fullName: fullName,
 			hasErrors: {},
-			isRegistering: !props.person ? true : false,
+			isRegistering: false, // !props.person ? true : false,
 			localDb: props.localDb || false,
 			passwordVisible: false,
 			persons: props.persons || [],
@@ -44,6 +45,7 @@ class DependantDetailsScreen extends React.Component {
 		this.handleMedicalIndication = this.handleMedicalIndication.bind(this);
 		this.handlePhone = this.handlePhone.bind(this);
 		this.handleSaveOrNext = this.handleSaveOrNext.bind(this);
+		this.handleRemove = this.handleRemove.bind(this);
 		this.toggleDatePicker = this.toggleDatePicker.bind(this);
 	}
 
@@ -158,6 +160,66 @@ class DependantDetailsScreen extends React.Component {
 
 					});
 			}
+		}
+	}
+
+	handleRemove () {
+		console.log('HANDLEREMOVE', this.state);
+
+		if (this.state.isRegistering) {
+			// isRegistering is not used anymore in this screen
+		} else {
+			// Remove
+			let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
+
+			fetch(beApiUrl + 'person/delete', {
+				method: 'put',
+				body: JSON.stringify({
+					fromMobile: true,
+					dependant: Object.assign({}, this.state.dependant, { isDependant: true }),
+					token: this.props.token,
+				})
+			})
+			.then(response => {
+				console.log('FETCHRAWRESPONSE', response);
+				if (response.status == 200) return response;
+
+				// This isn't nice. I can't force the Promise to reject here (why???), so have to pass a
+				// error string and let the then() decide if the data is good or not :-(
+				return response._bodyText;
+			})
+			.then(response => {
+				console.log('REMOVEDEPENDANTREPONSE', response);
+
+				if (!_.isObject(response)) {
+					this.setState({
+						errorText: response.replace('[', '').replace(']', '').replace(/\"/g, '').trim(),
+					});
+					return;
+				}
+
+				// TODO Prefer a toast message 'saved'
+				// https://www.npmjs.com/package/react-native-simple-toast
+				this.setState({
+					errorText: 'Removed',
+				});
+
+				// Remove the dependant from the group
+				let newPersons = this.state.persons ? this.state.persons.slice(0) : [];  // create clone of all persons
+				newPersons = newPersons.filter(person => person.id !== this.state.dependant.id);
+
+				// Fill redux store with new group persons
+				this.props.setPersons(newPersons);
+
+				// Go back to dependants
+				this.props.navigation.navigate('Dependants')
+			})
+			.catch(error => {
+				console.log('REMOVEDEPENDANTerror', error);
+				this.setState({
+					errorText: error,
+				});
+			});
 		}
 	}
 
@@ -296,11 +358,21 @@ class DependantDetailsScreen extends React.Component {
 							<Text style={{ fontWeight: 'bold' }}>{ this.state.errorText || '' }</Text>
 						</FormValidationMessage>
 
-						<Button
-							icon={{ name: 'paper-plane', type: 'font-awesome' }}
-							backgroundColor='green'
-							title={ this.state.isRegistering ? 'Next' : 'Save' }
-							onPress={ this.handleSaveOrNext }/>
+						<View style={{ flex: 1 }} flexDirection='row' justifyContent='space-around' >
+							<Button
+								buttonStyle={{ width: 100 }}
+								icon={{ name: 'trash', type: 'font-awesome' }}
+								backgroundColor='grey'
+								title={ 'Remove' }
+								onPress={ this.handleRemove }/>
+
+							<Button
+								buttonStyle={{ width: 200 }}
+								icon={{ name: 'paper-plane', type: 'font-awesome' }}
+								backgroundColor='green'
+								title={ this.state.isRegistering ? 'Next' : 'Save' }
+								onPress={ this.handleSaveOrNext }/>
+						</View>
 
 					</KeyboardAwareScrollView>
 				</View>
