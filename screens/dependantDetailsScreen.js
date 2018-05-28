@@ -1,6 +1,6 @@
 // Third party imports
 import React from 'react';
-import { Image, Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Image, Keyboard, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Button, ButtonDependant, Card, CheckBox, FormLabel, FormInput, FormValidationMessage, Icon } from 'react-native-elements';
 import DateTimePicker from 'react-native-modal-datetime-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -163,13 +163,25 @@ class DependantDetailsScreen extends React.Component {
 		}
 	}
 
-	handleRemove () {
-		console.log('HANDLEREMOVE', this.state);
+	handleRemove (event, confirmed = false) {
+		console.log('HANDLEREMOVE', this.state, event, confirmed);
 
 		if (this.state.isRegistering) {
 			// isRegistering is not used anymore in this screen
 		} else {
 			// Remove
+			if (!confirmed) {
+				Alert.alert(
+					'Remove dependant',
+					'Remove ' + this.state.dependant.firstName + ' ?',
+					[
+						{ text: 'No', onPress: () => { }},
+						{ text: 'Yes', onPress: () => { this.handleRemove(event, true);	}},
+					]
+				);
+				return;
+			}
+
 			let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
 
 			fetch(beApiUrl + 'person/delete', {

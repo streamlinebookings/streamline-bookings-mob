@@ -37,7 +37,7 @@ if (process.env.NODE_ENV === 'production') {
 	// Development or otherwise non-prod
 	envData = {
 		env: 'development',
-		localApiUrl: 'http://192.168.0.2:9057/api/',
+		localApiUrl: 'http://192.168.0.4:9057/api/',
 		beApiUrl: 'https://streamlinebookings.com:9056/api/',
 		imagesUrl: 'https://streamlinebookings.com:9056/imgs/',
 

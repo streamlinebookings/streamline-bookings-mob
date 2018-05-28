@@ -1,6 +1,6 @@
 // Third party imports
 import React from 'react';
-import { StyleSheet, Text, TextInput, View, ScrollView, Image } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Button, ButtonCarer, Card, FormLabel, FormInput, FormValidationMessage, Icon } from 'react-native-elements';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -172,13 +172,25 @@ class CarerDetailsScreen extends React.Component {
 		}
 	}
 
-	handleRemove () {
-		console.log('HANDLEREMOVE', this.state);
+	handleRemove (event, confirmed) {
+		console.log('HANDLEREMOVE', this.state, event, confirmed);
 
 		if (this.state.isRegistering) {
 			// isRegistering is not used anymore in this screen
 		} else {
 			// Remove
+			if (!confirmed) {
+				Alert.alert(
+					'Remove carer',
+					'Remove ' + this.state.carer.firstName + ' ?',
+					[
+						{ text: 'No', onPress: () => { }},
+						{ text: 'Yes', onPress: () => { this.handleRemove(event, true);	}},
+					]
+				);
+				return;
+			}
+
 			let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
 
 			fetch(beApiUrl + 'person/delete', {
