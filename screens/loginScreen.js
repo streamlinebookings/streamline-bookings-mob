@@ -85,7 +85,7 @@ class LoginScreen extends React.Component {
 					this.props.setLocalDb(localDb);
 
 					// Go to next screen
-					this.props.navigation.navigate('Account'); // Account, Home
+					this.props.navigation.navigate('Home'); // Account, Home, Book
 
 				} else {
 					this.setState({

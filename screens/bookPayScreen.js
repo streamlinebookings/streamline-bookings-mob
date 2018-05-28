@@ -360,15 +360,15 @@ class BookPayScreen extends React.Component {
 					<View flexDirection='row' justifyContent='space-around'>
 						<Button
 							icon={{ name: 'remove', type: 'font-awesome' }}
-							buttonStyle={{ width: 130, borderRadius: 5}}
 							title='Cancel'
+							buttonStyle={{ width: '80%' }}
 							onPress={ () => this.props.navigation.navigate('BookDetails') }
 						/>
 						<Button
 							icon={{ name: 'dollar', type: 'font-awesome' }}
-							buttonStyle={{ width: 130, borderRadius: 5}}
 							backgroundColor='green'
 							title={ this.state.preAuthorise ? 'Authorise' : 'Pay $' + this.state.toPayFormatted }
+							buttonStyle={{ width: '80%' }}
 							onPress={ this.state.preAuthorise ? this.handleAuthorisation : this.handlePay }
 							disabled={ isNaN(this.state.toPay) }
 						/>

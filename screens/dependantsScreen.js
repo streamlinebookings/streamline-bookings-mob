@@ -19,8 +19,6 @@ class DependantsScreen extends React.Component {
 
 		let fullName = props.person && props.person.firstName + ' ' + props.person.lastName || 'Not logged in';
 
-		// let from = !props.person && props.navigation.state && props.navigation.state.params && props.navigation.state.params.from || null;
-
 		this.state = {
 			group: props.group || {},
 			persons: props.persons || [],
@@ -32,12 +30,6 @@ class DependantsScreen extends React.Component {
 		};
 
 		// Bind local methods
-		// this.handleInput = this.handleInput.bind(this);
-		// this.handleAddress = this.handleAddress.bind(this);
-		// this.handleName = this.handleName.bind(this);
-		// this.handlePostcode = this.handlePostcode.bind(this);
-		// this.handleState = this.handleState.bind(this);
-		// this.handleSuburb = this.handleSuburb.bind(this);
 		this.handleNext = this.handleNext.bind(this);
 		this.handleAddDependant = this.handleAddDependant.bind(this);
 	}
@@ -62,30 +54,11 @@ class DependantsScreen extends React.Component {
 		this.props.navigation.navigate('DependantDetails');
 	}
 
-
-	// handleInput (inputSource, data) {
-	// 	console.log('HANDLEINPUT', inputSource, data);
-	// 	let newData = Object.assign({}, this.state.dependant);
-	// 	newData[inputSource] = data;
-	// 	this.setState({ dependant: newData});
-	// }
-	// handleAddress (data) {
-	// 	this.handleInput('address', data);
-	// }
-	// handleName (data) {
-	// 	this.handleInput('name', data);
-	// }
-	// handlePostcode (data) {
-	// 	this.handleInput('postcode', data);
-	// }
-	// handleState (data) {
-	// 	this.handleInput('state', data);
-	// }
-	// handleSuburb (data) {
-	// 	this.handleInput('suburb', data);
-	// }
-
 	handleNext () {
+
+		// Not used
+		return;
+
 		console.log('HANDLENEXT', this.state);
 
 		if (this.state.isRegistering) {
@@ -100,40 +73,9 @@ class DependantsScreen extends React.Component {
 			}
 		} else {
 			// Save
-
-			let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
-
-			/////////////// NEXT
-
-			// fetch(beApiUrl + 'group/update', {
-			// 	method: 'put',
-			// 	body: JSON.stringify({
-			// 		fromMobile: true,
-			// 		group: this.state.group,
-			// 	})
-			// })
-			// 	.then(response => {
-			// 		console.log('FETCHRAWRESPONSE', response);
-			// 		if (response.status == 200) return response.json();
-			// 		return response;
-			// 	})
-			// 	.then(response => {
-			// 		console.log('SAVEGROUPREPONSE', response);
-			// 	});
 		}
 	}
 
-	// validateDependant() {
-	// 	this.setState({errorText: ''});
-	//
-	// 	if (this.state.dependant && !this.state.dependant.name) {
-	// 		this.setState({errorText: 'Please give a family or dependant name'});
-	// 		this.formInputName.shake();
-	// 		return false;
-	// 	}
-	// 	return true;
-	// }
-	
 	//
 	//
 	// Rendering
@@ -190,11 +132,12 @@ class DependantsScreen extends React.Component {
 
 		const buttons = () => {
 			return (
-				<View style={{ flex: 1 }} flexDirection='row' justifyContent='space-around' alignItems='center'>
+				<View style={{ flex: 1, paddingTop: 5 }} flexDirection='row' justifyContent='space-around' alignItems='center'>
 					<Button
 						icon={{name: 'plus', type: 'font-awesome'}}
 						backgroundColor='green'
 						title='Add a dependant'
+						buttonStyle={{ width: (this.state.isRegistering ? '80%' : '100%') }}
 						onPress={ this.handleAddDependant }
 					/>
 
@@ -203,6 +146,7 @@ class DependantsScreen extends React.Component {
 							icon={{ name: 'paper-plane', type: 'font-awesome' }}
 							backgroundColor='green'
 							title={ 'Next' }
+							buttonStyle={{ width: '80%' }}
 							onPress={ this.handleNext }
 						/>
 						: null

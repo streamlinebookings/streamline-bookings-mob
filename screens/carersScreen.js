@@ -191,11 +191,12 @@ class CarersScreen extends React.Component {
 
 		const buttons = () => {
 			return (
-				<View style={{ flex: 1 }} flexDirection='row' justifyContent='space-around' alignItems='center'>
+				<View style={{ flex: 1, paddingTop: 5 }} flexDirection='row' justifyContent='space-around' alignItems='center'>
 					<Button
 						icon={{name: 'plus', type: 'font-awesome'}}
 						backgroundColor='green'
 						title='Add a carer'
+						buttonStyle={{ width: (this.state.isRegistering ? '80%' : '100%') }}
 						onPress={ this.handleAddCarer }
 					/>
 
@@ -204,6 +205,7 @@ class CarersScreen extends React.Component {
 							icon={{ name: 'paper-plane', type: 'font-awesome' }}
 							backgroundColor='green'
 							title={ 'Next' }
+							buttonStyle={{ width: '80%' }}
 							onPress={ this.handleNext }
 						/>
 						: null
@@ -212,8 +214,6 @@ class CarersScreen extends React.Component {
 				</View>
 			)
 		}
-
-
 
 		return (
 			<View style={{ flex: 1 }}>

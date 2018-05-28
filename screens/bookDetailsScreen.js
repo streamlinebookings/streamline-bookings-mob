@@ -157,6 +157,7 @@ class BookDetailsScreen extends React.Component {
 							icon={{name: 'tag', type: 'font-awesome'}}
 							backgroundColor='green'
 							title='Book 1 lesson'
+							buttonStyle={{ width: (this.state.classChosen.recurring ? '80%' : '100%') }}
 							onPress={() => this.handleBook(1)}
 						/>
 						: null
@@ -166,6 +167,7 @@ class BookDetailsScreen extends React.Component {
 							icon={{name: 'tags', type: 'font-awesome'}}
 							backgroundColor='green'
 							title='Book all term'
+							buttonStyle={{ width: '80%' }}
 							onPress={ () => this.handleBook('term') }
 						/>
 						: null
