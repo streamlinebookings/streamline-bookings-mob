@@ -74,7 +74,11 @@ class DependantDetailsScreen extends React.Component {
 		this.handleInput('lastName', data);
 	}
 	handleMedicalIndication (data) {
-		this.handleInput('hasMedicalIndication', !this.state.dependant.hasMedicalIndication);
+		if (_.isObject(data)) {
+			this.handleInput('hasMedicalIndication', !this.state.dependant.hasMedicalIndication);
+			return;
+		}
+		this.handleInput('medicalIndication', data);
 	}
 	handlePhone (data) {
 		this.handleInput('phone', data);
@@ -331,6 +335,13 @@ class DependantDetailsScreen extends React.Component {
 								  onPress={ this.handleMedicalIndication }
 								  onIconPress={ this.handleMedicalIndication }
 								  checked={ this.state.dependant.hasMedicalIndication }/>
+
+						{ this.state.dependant.hasMedicalIndication ?
+							<FormInput placeholder={ 'Short description of the medical indication' }
+							           value={ this.state.dependant.medicalIndication }
+							           onChangeText={ this.handleMedicalIndication }/>
+							: null
+						}
 
 						{/* Gender */}
 						<View style={{ flex: 3 }} flexDirection='row' justifyContent='flex-start' >

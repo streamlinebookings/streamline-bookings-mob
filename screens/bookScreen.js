@@ -73,7 +73,7 @@ class BookScreen extends React.Component {
 				return response;
 			})
 			.then(response => {
-				console.log('CLASSESREPONSE', response);
+				console.log('CLASSESRESPONSE', response);
 
 				// Discover which classes are already booked, and, discover if the swimmer is on a waiting list for this class
 				let classes = response.classes.map(oneClass => {
