@@ -2,7 +2,7 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, View, ScrollView, Image } from 'react-native';
 import { connect } from 'react-redux';
-import { Button, ButtonGroup, CheckBox, Badge, Card, List, ListItem } from 'react-native-elements';
+import { Button, ButtonGroup, CheckBox, Badge, Card, FormValidationMessage, List, ListItem } from 'react-native-elements';
 
 let moment = require('moment');
 
@@ -26,6 +26,11 @@ class BookDetailsScreen extends React.Component {
 			dependantSwimmers = persons.filter(p => p.isSwimmer);
 		}
 
+		// Calculate restOfTermPrice = remaining lessons * single price, or, termRate
+		let restOfTermPrice = props.classChosen.term && Math.min(
+			props.classChosen.term.termRate,
+			props.classChosen.remainingLessons * props.classChosen.term.singleRate);
+
 		this.state = {
 			classChosen: props.classChosen,
 			dependantChosen: props.dependantsChosen[0],
@@ -34,6 +39,7 @@ class BookDetailsScreen extends React.Component {
 			leaveWaitListConfirm: false,
 			localDb: props.localDb,
 			persons: persons,
+			restOfTermPrice: restOfTermPrice,
 			token: props.token,
 			waitingListButtonText: props.classChosen.onWaitingList ? 'Leave wait list' : 'Join wait list',
 		};
@@ -46,12 +52,18 @@ class BookDetailsScreen extends React.Component {
 	handleBook (oneOrTerm) {
 		console.log('HANDLEBOOK1ORTERM', oneOrTerm, this.state);
 
-		let restOfTermPrice = this.state.classChosen.term.termRate;
+		if (!this.state.classChosen.term) {
+			this.setState({
+				errorText: 'Class or term prices haven\'t been determined',
+			});
+			return;
+		}
 
 		// Navigate to pay screen:
 		this.props.navigation.navigate('BookPay', {
-			amount: oneOrTerm === 1 ? this.state.classChosen.term.singleRate : restOfTermPrice,
+			amount: oneOrTerm === 1 ? this.state.classChosen.term.singleRate : this.state.restOfTermPrice,
 			oneOrTerm: oneOrTerm,
+			remainingLessons: this.state.classChosen.remainingLessons,
 			preAuthorise: false,
 		});
 	}
@@ -140,7 +152,9 @@ class BookDetailsScreen extends React.Component {
 				/>
 				: <ListItem
 					leftIcon={{ name: 'usd', type: 'font-awesome' }}
-					title={ formatPrice(this.state.classChosen.term.singleRate)}
+					title={ this.state.classChosen.term &&
+							formatPrice(this.state.classChosen.term.singleRate) + ' single class or ' +
+							formatPrice(this.state.restOfTermPrice) + ' for ' + this.state.classChosen.remainingLessons + ' classes' }
 					hideChevron={ true }
 				/>
 		}
@@ -157,17 +171,17 @@ class BookDetailsScreen extends React.Component {
 							icon={{name: 'tag', type: 'font-awesome'}}
 							backgroundColor='green'
 							title='Book 1 lesson'
-							buttonStyle={{ width: (this.state.classChosen.recurring ? '80%' : '100%') }}
+							buttonStyle={{ width: (this.state.classChosen.repeatId ? '70%' : '100%') }}
 							onPress={() => this.handleBook(1)}
 						/>
 						: null
 					}
-					{ this.state.classChosen.recurring ?
+					{ !this.state.classChosen.alreadyBooked && !this.state.classChosen.isFull && this.state.classChosen.repeatId ?
 						<Button
 							icon={{name: 'tags', type: 'font-awesome'}}
 							backgroundColor='green'
-							title='Book all term'
-							buttonStyle={{ width: '80%' }}
+							title='Book term'
+							buttonStyle={{ width: '70%' }}
 							onPress={ () => this.handleBook('term') }
 						/>
 						: null
@@ -230,17 +244,13 @@ class BookDetailsScreen extends React.Component {
 							/>
 							<ListItem
 								leftIcon={{ name: 'calendar', type: 'font-awesome' }}
-								title={
-									this.state.classChosen.recurring
-										? moment(this.state.classChosen.datetime).format('dddd h:mma')
-										: moment(this.state.classChosen.datetime).format('dddd Do MMMM h:mma')
-								}
+								title={ moment(this.state.classChosen.datetime).format('dddd Do MMMM h:mma') }
 								subtitle={ this.state.classChosen.duration ? this.state.classChosen.duration + ' minutes' : null }
 								hideChevron={ true }
 							/>
 							<ListItem
 								leftIcon={{ name: 'repeat', type: 'font-awesome' }}
-								title={ this.state.classChosen.recurring ? 'Recurring' : 'Single lesson' }
+								title={ this.state.classChosen.repeatId ? this.state.classChosen.repeatShortDescription : 'Single lesson' }
 								hideChevron={ true }
 							/>
 							{ exceptions() }
@@ -270,6 +280,11 @@ class BookDetailsScreen extends React.Component {
 						</List>
 						</ScrollView>
 					</View>
+
+					<FormValidationMessage
+						containerStyle={{ backgroundColor: 'transparent' }}>
+						<Text style={{ fontWeight: 'bold' }}>{ this.state.errorText || '' }</Text>
+					</FormValidationMessage>
 
 					{ buttons() }
 				</View>

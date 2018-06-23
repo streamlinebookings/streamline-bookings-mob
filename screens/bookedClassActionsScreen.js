@@ -126,6 +126,19 @@ class BookedClassActionsScreen extends React.Component {
 			);
 		};
 
+		const dependantsRepeatInfo = () => {
+
+			let repeatId = this.state.classChosen.repeatId;
+
+			if (!repeatId) return 'Not a recurring class';
+
+			let myRepeatedClasses = this.state.dependantChosen.classes.filter(oneClass => oneClass.repeatId === repeatId);
+
+			console.log('STATE', this.state, myRepeatedClasses);
+
+			return this.state.dependantChosen.firstName + ' is booked into ' + myRepeatedClasses.length.toString() + ' of the repeating classes';
+		}
+
 		return (
 
 			<View style={{ flex: 1 }}>
@@ -162,6 +175,18 @@ class BookedClassActionsScreen extends React.Component {
 									subtitle={ this.state.classChosen.duration ? this.state.classChosen.duration + ' minutes' : null }
 									hideChevron={ true }
 								/>
+								<ListItem
+									leftIcon={{ name: 'repeat', type: 'font-awesome' }}
+									title={ this.state.classChosen.repeatId ? this.state.classChosen.repeatShortDescription : 'Single lesson' }
+									hideChevron={ true }
+								/>
+								{ this.state.classChosen.repeatId ?
+									<ListItem
+										leftIcon={{ name: 'thumbs-up', type: 'font-awesome' }}
+										title={ dependantsRepeatInfo() }
+										hideChevron={ true }
+									/>
+									: null }
 							</List>
 						</ScrollView>
 					</View>

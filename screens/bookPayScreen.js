@@ -49,6 +49,7 @@ class BookPayScreen extends React.Component {
 			persons: props.persons,
 			preAuthorise: params.preAuthorise || false,
 			price: price,
+			remainingLessons: params.remainingLessons,
 			token: props.token,
 			toPay: toPay,
 			toPayFormatted: (toPay / 100).toFixed(2),
@@ -151,52 +152,59 @@ class BookPayScreen extends React.Component {
 		// Call backend to update class status
 		let beApiUrl = this.state.localDb ? env.localApiUrl : env.beApiUrl;
 
-		response = await fetch(beApiUrl + 'calendar/book', {
-			method: 'put',
-			body: JSON.stringify({
-				class: this.state.classChosen,
-				oneOrTerm: this.state.oneOrTerm,
-				payment: {
-					id: paymentId,
-					paymentMethod: this.state.paymentMethodChosen,
-					receiptId: responseData.response.transaction_id,
-					amountPaid: this.state.toPay,
-					usedCredits: this.state.usedCredits,
-				},
-				// Removing the classes from the chosen dependant. This avoids a circular JSON structure
-				swimmer: Object.assign({}, this.state.dependantChosen, {classes: []}),
-				token: this.state.token,
-			})
-		});
-		// console.log('BOOKCLASSFETCHRAWRESPONSE', response);
+		try {
+			response = await fetch(beApiUrl + 'calendar/book', {
+				method: 'put',
+				body: JSON.stringify({
+					class: this.state.classChosen,
+					oneOrTerm: this.state.oneOrTerm,
+					payment: {
+						id: paymentId,
+						paymentMethod: this.state.paymentMethodChosen,
+						receiptId: responseData.response.transaction_id,
+						amountPaid: this.state.toPay,
+						usedCredits: this.state.usedCredits,
+					},
+					// Removing the classes from the chosen dependant. This avoids a circular JSON structure
+					swimmer: Object.assign({}, this.state.dependantChosen, {classes: []}),
+					token: this.state.token,
+				})
+			});
 
-		responseData = await response.json();
-		console.log('BOOKCLASSREPONSE', responseData);
+			responseData = await response.json();
+			console.log('BOOKCLASSREPONSE', responseData);
 
-		// Update the dependants' classes.
-		// The response contains a list of all classes for that level. Get the class we just booked and add that to the dependant
-		let dependantChosen = this.state.dependantChosen;
-		let classChosen = responseData.classes.filter(oneClass => oneClass.id === this.state.classChosen.id);
-		dependantChosen.classes.push(classChosen[0]);
-		console.log('BOOKCLASSREPONSE2', classChosen, dependantChosen);
+			// Update the dependants' classes.
+			// The response contains a list of all classes for that level. Get the class we just booked and add that to the dependant
+			let dependantChosen = this.state.dependantChosen;
+			let classChosen = responseData.classes.filter(oneClass => oneClass.id === this.state.classChosen.id);
+			dependantChosen.classes.push(classChosen[0]);
+			console.log('BOOKCLASSREPONSE2', classChosen, dependantChosen);
 
-		// Update the persons array
-		let persons = this.state.persons.map(person => {
-			if (person.id === dependantChosen.id) {
-				person.classes = dependantChosen.classes;
-			}
-			return person;
-		});
+			// Update the persons array
+			let persons = this.state.persons.map(person => {
+				if (person.id === dependantChosen.id) {
+					person.classes = dependantChosen.classes;
+				}
+				return person;
+			});
 
-		// Update redux store with the result
-		this.props.setDependantsChosen([dependantChosen]);
-		this.props.setPersons(persons);
+			// Update redux store with the result
+			this.props.setDependantsChosen([dependantChosen]);
+			this.props.setPersons(persons);
 
-		// Navigate to bookedscreen. Force selection of the chosen dependant
-		this.props.navigation.navigate('Booked', {
-			dependantChosen: dependantChosen,
-			newClassId: this.state.classChosen.id,
-		});
+			// Navigate to bookedscreen. Force selection of the chosen dependant
+			this.props.navigation.navigate('Booked', {
+				dependantChosen: dependantChosen,
+				newClassId: this.state.classChosen.id,
+			});
+
+		} catch(error) {
+			console.log('Booking error', error);
+			this.setState({
+				errorText: 'Error:' + error.toString(),
+			});
+		}
 	}
 
 	async handleAuthorisation() {
@@ -260,14 +268,17 @@ class BookPayScreen extends React.Component {
 		const description = () => {
 
 			return (
-				<View style={{flex: 1, borderBottomColor: 'darkgrey', borderBottomWidth: 3, padding: 10}}>
+				<View style={{ flex: 1, borderBottomColor: 'darkgrey', borderBottomWidth: 3, padding: 10 }}>
 					<Text>
-						{this.state.preAuthorise ? 'Authorise payment for ' : 'Book'} a
-						{this.state.classChosen.recurring ? ' recurring' : ' single'} lesson for
-						{' ' + this.state.dependantChosen.firstName} in
-						{' ' + this.state.classChosen.level.name} on
-						{' ' + moment(this.state.classChosen.datetime).format('dddd Do MMMM h:mma')}.
-						{ ' The cost is $' + (this.state.price / 100).toFixed(2)}.
+						{ this.state.preAuthorise ? 'Authorise payment for ' : 'Book' }
+						{ this.state.classChosen.repeatId
+							? ' ' + this.state.remainingLessons.toString() + ' recurring lessons'
+							: ' a single lesson'} for
+						{ ' ' + this.state.dependantChosen.firstName } in
+						{ ' ' + this.state.classChosen.level.name }
+						{ this.state.classChosen.repeatId ? ' starting ' : ' on ' }
+						{ ' ' + moment(this.state.classChosen.datetime).format('dddd Do MMMM h:mma') }.
+						{ ' The cost is $' + (this.state.price / 100).toFixed(2) }.
 						{ this.state.person.totalCredits !== 0 ?
 							' You now have $' + (this.state.person.totalCredits / 100).toFixed(2) + ' in credits.'
 							: null

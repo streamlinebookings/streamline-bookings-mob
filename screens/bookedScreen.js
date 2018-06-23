@@ -197,7 +197,7 @@ class BookedScreen extends React.Component {
 								          <View>
 									          <View flexDirection='row' justifyContent='space-between'>
 										          <Text
-											          style={textStyle}>{moment(oneClass.datetime).format('dddd h:mma') + (oneClass.recurring ? ' (Recurring)' : ' (Once)')}</Text>
+											          style={textStyle}>{moment(oneClass.datetime).format('dddd h:mma') + (oneClass.repeatId ? ' (Recurring)' : ' (Once)')}</Text>
 										          <Text style={textStyle}>{oneClass.level.name || ''}</Text>
 									          </View>
 									          <View flexDirection='row' justifyContent='space-between'>
@@ -208,7 +208,7 @@ class BookedScreen extends React.Component {
 									          </View>
 									          <View flexDirection='row' justifyContent='space-between'>
 										          <Text
-											          style={textStyle}>{oneClass.duration ? oneClass.duration + ' minutes' : ''}</Text>
+											          style={textStyle}>{oneClass.duration ? oneClass.duration + ' mmminutes' : ''}</Text>
 										          <Text style={textStyle}>{
 											          oneClass.countBooked && oneClass.countBooked > 1
 											              ? oneClass.person.firstName + ' and ' + (oneClass.countBooked - 1).toString() + ' other swimmers'

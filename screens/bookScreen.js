@@ -1,6 +1,6 @@
 // Third party imports
 import React from 'react';
-import { StyleSheet, Text, TextInput, View, ScrollView, Image } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, View, ScrollView, Image } from 'react-native';
 import { connect } from 'react-redux';
 import { Button, ButtonGroup, CheckBox, Badge, Icon, List, ListItem } from 'react-native-elements';
 
@@ -36,6 +36,8 @@ class BookScreen extends React.Component {
 			persons: persons,
 			token: props.token,
 		};
+
+		this.colorPool = ['lightpink', 'lightseagreen', 'lightyellow', 'lightcyan', 'lightblue', 'orange', 'lightgreen', 'lightgrey', 'yellow', 'aqua', 'lightsteelblue'];
 	}
 
 	componentDidMount(props) {
@@ -97,6 +99,31 @@ class BookScreen extends React.Component {
 	handleBook (oneClass) {
 		console.log('HANDLEBOOKACLASS', oneClass);
 
+		// Repeating classes: find the number of remaining lessons in the series (to calculate restOfTerm price)
+		if (oneClass.repeatId) {
+
+			let series = this.state.classes.filter(c => c.repeatId === oneClass.repeatId);
+
+			// series.sort((a, b) => {
+			// 	// a.datetime.localeCompare(b.datetime);
+			// 	return a < b ? 1 : -1
+			// });
+
+			let place = false;
+			series.forEach((c, index) => {
+				if (moment(c.datetime).isSame(oneClass.datetime, 'minute')) {
+					place = index;
+				}
+			});
+			if (place === false) {
+				Alert.alert('Can\'t find this class in the series of repeated classes. PLease contact us');
+				return;
+			}
+
+			oneClass.remainingLessons = series.length - place;
+			oneClass.totalLessons = series.length;
+		}
+
 		// Update the redux store with the chosen class
 		this.props.setClassChosen(oneClass);
 
@@ -148,21 +175,35 @@ class BookScreen extends React.Component {
 
 			if (!this.state.classes) return;
 
+			let colorPerRepeatingClass = {};
+
 			return (
 
 				<List>
 
-					{ this.state.classes.map(oneClass => {
+					{ this.state.classes.map((oneClass, classIndex) => {
 
+						// Define the text style
 						let textStyle;
-						textStyle = oneClass.alreadyBooked ? { color:  'grey' } : null;
-						textStyle = oneClass.isFull ? { color:  'grey' } : textStyle;
+						if (oneClass.alreadyBooked || oneClass.isFull) textStyle = localStyles.greyedText;
 
+						// Define background color of repeating class
+						let repeatedClassStyle;
+						let color;
+						if (!colorPerRepeatingClass[oneClass.repeatId]) {
+							color = this.colorPool[classIndex % this.colorPool.length];
+							colorPerRepeatingClass[oneClass.repeatId] = color;
+						} else {
+							color = colorPerRepeatingClass[oneClass.repeatId];
+						}
+
+						// Define an icon
 						let statusIcon = null;
 						if (oneClass.isFull) statusIcon = ( <Icon name='times' type='font-awesome' color='grey' size={ 12 }/> );
 						if (oneClass.alreadyBooked) statusIcon = ( <Icon name='thumbs-up' type='font-awesome' color='grey' size={ 12 }/> );
 						if (oneClass.onWaitingList) statusIcon = ( <Icon name='hourglass' type='font-awesome' color='grey' size={ 12 }/> );
 
+						// Define the instructors
 						let instructors = oneClass.instructors.map(inst => inst.displayName).join(',');
 
 						return (
@@ -175,11 +216,13 @@ class BookScreen extends React.Component {
 											</View>
 											<View style={{ flex: 11 }}>
 												<View flexDirection='row' justifyContent='space-between'>
-													<Text style={ textStyle }>{ moment(oneClass.datetime).format('dddd h:mma') + (oneClass.recurring ? ' (Recurring)' : ' (Once)')}</Text>
+													<Text style={ textStyle }>{ moment(oneClass.datetime).format('dddd Do MMMM, h:mma') }</Text>
 													<Text style={ textStyle }>{ oneClass.level.name || ''}</Text>
 												</View>
 												<View flexDirection='row' justifyContent='space-between'>
-													<Text style={ textStyle }>{ moment(oneClass.datetime).format('Do MMMM') }</Text>
+													<Text style={ oneClass.repeatId ? [repeatedClassStyle, {backgroundColor: color}] : textStyle }>{
+														(oneClass.repeatId ? oneClass.repeatShortDescription  : 'Single class')}
+													</Text>
 													<Text style={ textStyle }>{ (instructors || '') + ' lane ' + oneClass.laneId}</Text>
 												</View>
 												<View flexDirection='row' justifyContent='space-between'>
@@ -229,5 +272,10 @@ class BookScreen extends React.Component {
 		);
 	}
 }
+
+localStyles = {
+	greyedText: { color:  'grey' },
+	repeatedClass: { backgroundColor: 'yellow' },
+};
 
 export default BookScreen;
