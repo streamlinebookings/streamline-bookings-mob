@@ -9,6 +9,7 @@ export const SET_VENUE = 'SET_VENUE'
 export const SET_LOCALDB = 'SET_LOCALDB'
 export const SET_CARERCHOSEN = 'SET_CARERCHOSEN'
 export const SET_DEPENDANTSCHOSEN = 'SET_DEPENDANTSCHOSEN'
+export const SET_DEPENDANTSCLASSES = 'SET_DEPENDANTSCLASSES'
 export const SET_CLASSCHOSEN = 'SET_CLASSCHOSEN'
 export const SET_VENUECHOSEN = 'SET_VENUECHOSEN'
 export const SET_PAYMENTMETHODCHOSEN = 'SET_PAYMENTMETHODCHOSEN'
@@ -39,6 +40,9 @@ export function setCarerChosen(carerChosen) {
 }
 export function setDependantsChosen(dependantsChosen) {
 	return { type: SET_DEPENDANTSCHOSEN, dependantsChosen };
+}
+export function setDependantsClasses(dependantsClasses) {
+	return { type: SET_DEPENDANTSCLASSES, dependantsClasses };
 }
 export function setClassChosen(classChosen) {
 	return { type: SET_CLASSCHOSEN, classChosen };
@@ -79,6 +83,9 @@ export function Slb(state = {}, action) {
 
 		case SET_DEPENDANTSCHOSEN:
 			return Object.assign({}, state, setDependantsChosen(action.dependantsChosen));
+
+		case SET_DEPENDANTSCLASSES:
+			return Object.assign({}, state, setDependantsClasses(action.dependantsClasses));
 
 		case SET_CLASSCHOSEN:
 			return Object.assign({}, state, setClassChosen(action.classChosen));

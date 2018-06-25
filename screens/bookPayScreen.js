@@ -175,10 +175,23 @@ class BookPayScreen extends React.Component {
 			console.log('BOOKCLASSREPONSE', responseData);
 
 			// Update the dependants' classes.
-			// The response contains a list of all classes for that level. Get the class we just booked and add that to the dependant
+			// The response contains a list of all classes for that level. Get the class(ses) we just booked and add that to the dependant
 			let dependantChosen = this.state.dependantChosen;
-			let classChosen = responseData.classes.filter(oneClass => oneClass.id === this.state.classChosen.id);
-			dependantChosen.classes.push(classChosen[0]);
+			let classChosen = responseData.classes.filter(oneClass => oneClass.id === this.state.classChosen.id)[0];
+			if (this.state.oneOrTerm === 1) {
+				// Add the single booked class to the swimmer
+				dependantChosen.classes.push(classChosen);
+
+			} else {
+				// Add the (term) booked classes to the swimmer. The returned class wil contain a list of the repeatedClasses-ids for this swimmer
+				let classesChosenIds = classChosen.repeatedClassesPerSwimmer[dependantChosen.id];
+
+				classesChosenIds.forEach(oneClassId => {
+					if (_.findIndex(dependantChosen.classes, c => c.id === oneClassId) < 0) {
+						dependantChosen.classes.push(_.find(this.props.dependantsClasses, c => c.id === oneClassId));
+					}
+				});
+			}
 			console.log('BOOKCLASSREPONSE2', classChosen, dependantChosen);
 
 			// Update the persons array

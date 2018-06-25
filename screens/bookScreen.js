@@ -88,10 +88,16 @@ class BookScreen extends React.Component {
 					return oneClass;
 				});
 
-				if (response.classes) this.setState({ classes: classes });
+				if (response.classes) {
+					this.setState({ classes: classes });
+
+					// Update the redux store with the dependant's level's classes
+					this.props.setDependantsClasses(classes);
+				}
 			})
 			.catch(err => {
 				console.log('CLASSESERROR', err);
+				Alert.alert('Error while fetching classes: ' + err);
 			});
 
 	}
