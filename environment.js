@@ -20,8 +20,8 @@ if (process.env.NODE_ENV === 'production') {
 	// Production
 	envData = {
 		env: 'production',
-		beApiUrl: 'https://streamlinebookings.com:9056/api/',
-		imagesUrl: 'https://streamlinebookings.com:9056/imgs/',
+		beApiUrl: 'https://dev.streamlinebookings.com/api/v1/',
+		imagesUrl: 'https://dev.streamlinebookings.com/imgs/',
 
 		// FatZebra
 		payGateUrl: 'https://gateway.sandbox.fatzebra.com.au/v1.0/',

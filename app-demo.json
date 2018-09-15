@@ -1,10 +1,10 @@
 {
   "expo": {
     "sdkVersion": "22.0.0",
-    "name": "Streamline Bookings (dev)",
+    "name": "Streamline Bookings (demo)",
     //"icon": "./path/to/your/app-icon.png",
     "version": "1.0.0",
-    "slug": "streamline-bookings-dev",
+    "slug": "streamline-bookings-demo",
     "ios": {
       "bundleIdentifier": "com.streamlinebookings.bookingsapp"
     },
